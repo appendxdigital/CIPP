@@ -1,9 +1,17 @@
 import { ArrowDropDown } from "@mui/icons-material";
-import { Autocomplete, CircularProgress, createFilterOptions, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  CircularProgress,
+  createFilterOptions,
+  TextField,
+  IconButton,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSettings } from "../../hooks/use-settings";
 import { getCippError } from "../../utils/get-cipp-error";
 import { ApiGetCallWithPagination } from "../../api/ApiCall";
+import { Sync } from "@mui/icons-material";
+import { Stack } from "@mui/system";
 
 export const CippAutoComplete = (props) => {
   const {
@@ -187,6 +195,9 @@ export const CippAutoComplete = (props) => {
             }
             return item;
           });
+          newValue = newValue.filter(
+            (item) => item.value && item.value !== "" && item.value !== "error" && item.value !== -1
+          );
         } else {
           if (newValue?.manual || !newValue?.label) {
             newValue = {
@@ -196,6 +207,9 @@ export const CippAutoComplete = (props) => {
             if (onCreateOption) {
               onCreateOption(newValue, newValue?.addedFields);
             }
+          }
+          if (!newValue?.value || newValue.value === "error") {
+            newValue = null;
           }
         }
         if (onChange) {
@@ -212,13 +226,25 @@ export const CippAutoComplete = (props) => {
       }
       sx={sx}
       renderInput={(params) => (
-        <TextField
-          variant="filled"
-          placeholder={placeholder}
-          required={required}
-          label={label}
-          {...params}
-        />
+        <Stack direction="row" spacing={1}>
+          <TextField
+            variant="filled"
+            placeholder={placeholder}
+            required={required}
+            label={label}
+            {...params}
+          />
+          {api?.url && api?.showRefresh && (
+            <IconButton
+              size="small"
+              onClick={() => {
+                actionGetRequest.refetch();
+              }}
+            >
+              <Sync />
+            </IconButton>
+          )}
+        </Stack>
       )}
       {...other}
     />

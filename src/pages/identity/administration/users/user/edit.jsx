@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import CippFormSkeleton from "/src/components/CippFormPages/CippFormSkeleton";
 import { getCippLicenseTranslation } from "/src/utils/get-cipp-license-translation";
 import CalendarIcon from "@heroicons/react/24/outline/CalendarIcon";
-import { Mail } from "@mui/icons-material";
+import { Mail, Fingerprint } from "@mui/icons-material";
 import { HeaderedTabbedLayout } from "../../../../../layouts/HeaderedTabbedLayout";
 import tabOptions from "./tabOptions";
 import { CippCopyToClipBoard } from "../../../../../components/CippComponents/CippCopyToClipboard";
@@ -25,7 +25,7 @@ const Page = () => {
   });
 
   const formControl = useForm({
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       tenantFilter: userSettingsDefaults.currentTenant,
     },
@@ -34,8 +34,17 @@ const Page = () => {
   useEffect(() => {
     if (userRequest.isSuccess) {
       const user = userRequest.data?.[0];
+      //if we have userSettingsDefaults.userAttributes set, grab the .label from each userSsettingsDefaults, then set defaultAttributes.${label}.value to user.${label}
+      let defaultAttributes = {};
+      if (userSettingsDefaults.userAttributes) {
+        userSettingsDefaults.userAttributes.forEach((attribute) => {
+          defaultAttributes[attribute.label] = { Value: user?.[attribute.label] };
+        });
+      }
+      console.log(defaultAttributes);
       formControl.reset({
         ...user,
+        defaultAttributes: defaultAttributes,
         tenantFilter: userSettingsDefaults.currentTenant,
         licenses: user.assignedLicenses.map((license) => ({
           label: getCippLicenseTranslation([license]),
@@ -56,10 +65,14 @@ const Page = () => {
           text: <CippCopyToClipBoard type="chip" text={userRequest.data?.[0]?.userPrincipalName} />,
         },
         {
+          icon: <Fingerprint />,
+          text: <CippCopyToClipBoard type="chip" text={userRequest.data?.[0]?.id} />,
+        },
+        {
           icon: <CalendarIcon />,
           text: (
             <>
-              Created <CippTimeAgo data={userRequest.data?.[0]?.createdDateTime} />
+              Created: <CippTimeAgo data={userRequest.data?.[0]?.createdDateTime} />
             </>
           ),
         },

@@ -645,6 +645,7 @@
     "addedComponent": [
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "Who can send invites?",
         "name": "standards.GuestInvite.allowInvitesFrom",
@@ -1413,6 +1414,26 @@
     "recommendedBy": ["CIS"]
   },
   {
+    "name": "standards.RetentionPolicyTag",
+    "cat": "Exchange Standards",
+    "tag": ["highimpact"],
+    "helpText": "Creates a CIPP - Deleted Items retention policy tag that permanently deletes items in the Deleted Items folder after X days.",
+    "docsDescription": "Creates a CIPP - Deleted Items retention policy tag that permanently deletes items in the Deleted Items folder after X days.",
+    "addedComponent": [
+      {
+      "type": "number",
+      "name": "standards.RetentionPolicyTag.AgeLimitForRetention",
+      "label": "Retention Days",
+      "required": true
+      }
+    ],
+    "label": "Retention Policy, permanently delete items in Deleted Items after X days",
+    "impact": "High Impact",
+    "impactColour": "danger",
+    "powershellEquivalent": "Set-RetentionPolicyTag",
+    "recommendedBy": []
+  },
+  {
     "name": "standards.QuarantineRequestAlert",
     "cat": "Defender Standards",
     "tag": ["lowimpact"],
@@ -1851,6 +1872,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "Spam Action",
         "name": "standards.SpamFilterPolicy.SpamAction",
@@ -1867,6 +1889,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "Spam Quarantine Tag",
         "name": "standards.SpamFilterPolicy.SpamQuarantineTag",
@@ -1887,6 +1910,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "High Confidence Spam Action",
         "name": "standards.SpamFilterPolicy.HighConfidenceSpamAction",
@@ -1903,6 +1927,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "High Confidence Spam Quarantine Tag",
         "name": "standards.SpamFilterPolicy.HighConfidenceSpamQuarantineTag",
@@ -1923,6 +1948,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "Bulk Spam Action",
         "name": "standards.SpamFilterPolicy.BulkSpamAction",
@@ -1939,6 +1965,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "Bulk Quarantine Tag",
         "name": "standards.SpamFilterPolicy.BulkQuarantineTag",
@@ -1959,6 +1986,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "Phish Spam Action",
         "name": "standards.SpamFilterPolicy.PhishSpamAction",
@@ -1975,6 +2003,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "Phish Quarantine Tag",
         "name": "standards.SpamFilterPolicy.PhishQuarantineTag",
@@ -1995,6 +2024,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "label": "High Confidence Phish Quarantine Tag",
         "name": "standards.SpamFilterPolicy.HighConfidencePhishQuarantineTag",
@@ -2118,6 +2148,7 @@
     "addedComponent": [
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "name": "standards.IntuneComplianceSettings.secureByDefault",
         "label": "Mark devices with no compliance policy as",
@@ -2568,6 +2599,7 @@
     "addedComponent": [
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "name": "standards.TeamsGlobalMeetingPolicy.DesignatedPresenterRoleMode",
         "label": "Default value of the `Who can present?`",
@@ -2597,6 +2629,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "name": "standards.TeamsGlobalMeetingPolicy.MeetingChatEnabledType",
         "label": "Meeting chat policy",
@@ -2688,6 +2721,8 @@
     "addedComponent": [
       {
         "type": "autoComplete",
+        "required": true,
+        "multiple": false,
         "name": "standards.TeamsEnrollUser.EnrollUserOverride",
         "label": "Voice and Face Enrollment",
         "options": [
@@ -2756,6 +2791,7 @@
       },
       {
         "type": "autoComplete",
+        "required" : true,
         "multiple": false,
         "name": "standards.TeamsFederationConfiguration.DomainControl",
         "label": "Communication Mode",
@@ -2824,6 +2860,7 @@
       },
       {
         "type": "autoComplete",
+        "required": true,
         "multiple": false,
         "name": "standards.TeamsMessagingPolicy.ReadReceiptsEnabledType",
         "label": "Read Receipts Enabled Type",
