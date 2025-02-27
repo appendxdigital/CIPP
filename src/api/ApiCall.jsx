@@ -16,6 +16,8 @@ export function ApiGetCall(props) {
     bulkRequest = false,
     toast = false,
     onResult,
+    staleTime = 600000, // 10 minutes
+    refetchOnWindowFocus = false,
   } = props;
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
@@ -93,8 +95,8 @@ export function ApiGetCall(props) {
         return response.data;
       }
     },
-    staleTime: 600000, // 10 minutes
-    refetchOnWindowFocus: false,
+    staleTime: staleTime,
+    refetchOnWindowFocus: refetchOnWindowFocus,
     retry: retryFn,
   });
   return queryInfo;
@@ -190,7 +192,11 @@ export function ApiGetCallWithPagination({
       return response.data;
     },
     getNextPageParam: (lastPage) => {
-      if (data?.noPagination || data?.manualPagination === false) {
+      if (
+        data?.noPagination ||
+        data?.manualPagination === false ||
+        data?.tenantFilter === "AllTenants"
+      ) {
         return undefined;
       }
       return lastPage?.Metadata?.nextLink ? { nextLink: lastPage.Metadata.nextLink } : undefined;
