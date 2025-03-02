@@ -9,10 +9,19 @@ import { useSettings } from "../../hooks/use-settings";
 import countryList from "../../data/countryList.json";
 import { CippSettingsSideBar } from "../../components/CippComponents/CippSettingsSideBar";
 import CippDevOptions from "/src/components/CippComponents/CippDevOptions";
+import { ApiGetCall } from "../../api/ApiCall";
+import { getCippFormatting } from "../../utils/get-cipp-formatting";
 
 const Page = () => {
   const settings = useSettings();
   const formcontrol = useForm({ mode: "onChange", defaultValues: settings });
+
+  const auth = ApiGetCall({
+    url: "/.auth/me",
+    queryKey: "authmecipp",
+    staleTime: 120000,
+    refetchOnWindowFocus: true,
+  });
 
   const addedAttributes = [
     { value: "consentProvidedForMinor", label: "consentProvidedForMinor" },
@@ -255,12 +264,43 @@ const Page = () => {
                             />
                           ),
                         },
+                        {
+                          label: "Disable Sign in",
+                          value: (
+                            <CippFormComponent
+                              type="switch"
+                              name="offboardingDefaults.DisableSignIn"
+                              formControl={formcontrol}
+                            />
+                          ),
+                        },
+                        {
+                          label: "Remove all MFA Devices",
+                          value: (
+                            <CippFormComponent
+                              type="switch"
+                              name="offboardingDefaults.RemoveMFADevices"
+                              formControl={formcontrol}
+                            />
+                          ),
+                        },
                       ]}
                     />
                   </Stack>
                 </Grid>
                 <Grid size={{ xs: 12, lg: 4 }}>
                   <Stack spacing={3}>
+                    <CippPropertyListCard
+                      title={`CIPP Roles for ${auth?.data?.clientPrincipal?.userDetails}`}
+                      propertyItems={(auth?.data?.clientPrincipal?.userRoles ?? [])
+                        .filter((role) => !['anonymous', 'authenticated'].includes(role))
+                        .map((role) => ({
+                          label: "",
+                          value: getCippFormatting(role,"role"),
+                        }))}
+                      showDivider={false}
+                    />
+
                     <CippSettingsSideBar formcontrol={formcontrol} />
                     <CippDevOptions />
                   </Stack>
