@@ -3,6 +3,10 @@ import M365Licenses from "../data/M365Licenses.json";
 export const getCippLicenseTranslation = (licenseArray) => {
   let licenses = [];
 
+  if (!Array.isArray(licenseArray) && typeof licenseArray === "object") {
+    licenseArray = [licenseArray];
+  }
+
   licenseArray?.forEach((licenseAssignment) => {
     let found = false;
     for (let x = 0; x < M365Licenses.length; x++) {
@@ -21,5 +25,8 @@ export const getCippLicenseTranslation = (licenseArray) => {
     }
   });
 
-  return licenses.join(", ");
+  if (!licenses || licenses.length === 0) {
+    return ["No Licenses Assigned"];
+  }
+  return licenses;
 };
