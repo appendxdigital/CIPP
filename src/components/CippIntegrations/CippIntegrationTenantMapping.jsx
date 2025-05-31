@@ -3,13 +3,13 @@ import {
   Button,
   CardActions,
   CardContent,
-  Grid,
   Stack,
   Skeleton,
   SvgIcon,
   Tooltip,
   Typography,
 } from "@mui/material";
+import { Grid } from "@mui/system";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { ApiGetCall, ApiPostCall } from "/src/api/ApiCall";
@@ -85,47 +85,49 @@ const CippIntegrationSettings = ({ children }) => {
     if (tableData?.find((item) => item.TenantId === selectedTenant.addedFields.customerId)) return;
 
     const newRowData = {
-      TenantId: selectedTenant.addedFields.customerId,
+      TenantId: selectedTenant.value,
       Tenant: selectedTenant.label,
       IntegrationName: selectedCompany.label,
       IntegrationId: selectedCompany.value,
+      TenantDomain: selectedTenant.addedFields.defaultDomainName,
     };
 
     setTableData([...tableData, newRowData]);
   };
 
   const handleAutoMap = () => {
-      const newTableData = [];
-      tenantList.data?.pages[0]?.forEach((tenant) => {
-        const matchingCompany = mappings.data.Companies.find(
-          (company) => company.name === tenant.displayName
-        );
-        if (
-          Array.isArray(tableData) &&
-          tableData?.find((item) => item.TenantId === tenant.customerId)
-        )
-          return;
-        if (matchingCompany) {
-          newTableData.push({
-            TenantId: tenant.customerId,
-            Tenant: tenant.displayName,
-            IntegrationName: matchingCompany.name,
-            IntegrationId: matchingCompany.value,
-          });
-        }
-      });
-      if (Array.isArray(tableData)) {
-        setTableData([...tableData, ...newTableData]);
-      } else {
-        setTableData(newTableData);
-      }
-      if (extension.autoMapSyncApi) {
-        automapPostCall.mutate({
-          url: `/api/ExecExtensionMapping?AutoMapping=${router.query.id}`,
-          queryKey: `IntegrationTenantMapping-${router.query.id}`,
+    const newTableData = [];
+    tenantList.data?.pages[0]?.forEach((tenant) => {
+      const matchingCompany = mappings.data.Companies.find(
+        (company) => company.name === tenant.displayName
+      );
+      if (
+        Array.isArray(tableData) &&
+        tableData?.find((item) => item.TenantId === tenant.customerId)
+      )
+        return;
+      if (matchingCompany) {
+        newTableData.push({
+          TenantId: tenant.customerId,
+          Tenant: tenant.displayName,
+          TenantDomain: tenant.defaultDomainName,
+          IntegrationName: matchingCompany.name,
+          IntegrationId: matchingCompany.value,
         });
       }
-    };
+    });
+    if (Array.isArray(tableData)) {
+      setTableData([...tableData, ...newTableData]);
+    } else {
+      setTableData(newTableData);
+    }
+    if (extension.autoMapSyncApi) {
+      automapPostCall.mutate({
+        url: `/api/ExecExtensionMapping?AutoMapping=${router.query.id}`,
+        queryKey: `IntegrationTenantMapping-${router.query.id}`,
+      });
+    }
+  };
 
   const actions = [
     {
@@ -140,7 +142,7 @@ const CippIntegrationSettings = ({ children }) => {
 
   useEffect(() => {
     if (mappings.isSuccess) {
-      setTableData(mappings.data.Mappings);
+      setTableData(mappings.data.Mappings ?? []);
     }
   }, [mappings.isSuccess]);
 
@@ -160,13 +162,15 @@ const CippIntegrationSettings = ({ children }) => {
                 mb: 3,
               }}
             >
-              <Grid item xs={12} md={4}>
+              <Grid item size={{ md: 4, xs: 12 }}>
                 <Box sx={{ my: "auto" }}>
                   <CippFormTenantSelector
                     formControl={formControl}
                     multiple={false}
                     required={false}
                     disableClearable={false}
+                    removeOptions={tableData.map((item) => item.TenantId)}
+                    valueField="customerId"
                   />
                 </Box>
               </Grid>
@@ -177,7 +181,7 @@ const CippIntegrationSettings = ({ children }) => {
                   </SvgIcon>
                 </Box>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item size={{ md: 4, xs: 12 }}>
                 <CippFormComponent
                   type="autoComplete"
                   fullWidth
@@ -193,6 +197,7 @@ const CippIntegrationSettings = ({ children }) => {
                   creatable={false}
                   multiple={false}
                   isFetching={mappings.isFetching}
+                  sortOptions={true}
                 />
               </Grid>
               <Grid item>
@@ -235,7 +240,7 @@ const CippIntegrationSettings = ({ children }) => {
                 reportTitle={`${extension.id}-tenant-map`}
                 data={tableData}
                 simple={false}
-                simpleColumns={["Tenant", "IntegrationName"]}
+                simpleColumns={["IntegrationName", "Tenant", "TenantDomain"]}
                 isFetching={mappings.isFetching}
                 refreshFunction={() => mappings.refetch()}
               />
@@ -258,17 +263,17 @@ const CippIntegrationSettings = ({ children }) => {
           {mappings.isLoading && (
             <Box>
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <Grid item size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={60} />
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={60} />
                   </Box>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item size={{ xs: 12 }}>
                   <Box>
                     <Skeleton variant="rectangular" height={300} />
                   </Box>
@@ -278,7 +283,7 @@ const CippIntegrationSettings = ({ children }) => {
           )}
           {mappings.isSuccess && !extension && (
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid item size={{ xs: 12 }}>
                 <Box sx={{ p: 3 }}>
                   <Box sx={{ textAlign: "center" }}>Extension not found</Box>
                 </Box>
