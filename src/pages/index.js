@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
-import { Box, Container, Grid, Button } from "@mui/material";
+import { Box, Container, Button } from "@mui/material";
+import { Grid } from "@mui/system";
 import { CippInfoBar } from "../components/CippCards/CippInfoBar";
 import { CippChartCard } from "../components/CippCards/CippChartCard";
 import { CippPropertyListCard } from "../components/CippCards/CippPropertyListCard";
@@ -80,7 +81,12 @@ const Page = () => {
       name: "Default Domain",
       data: (
         <>
-          <CippCopyToClipBoard text={organization.data?.verifiedDomains?.[0]?.name} type="chip" />
+          <CippCopyToClipBoard
+            text={
+              organization.data?.verifiedDomains?.find((domain) => domain.isDefault === true)?.name
+            }
+            type="chip"
+          />
         </>
       ),
     },
@@ -167,6 +173,7 @@ const Page = () => {
         label: portal.label,
         target: "_blank",
         link: portal.url.replace(portal.variable, tenantLookup?.[portal.variable]),
+        icon: portal.icon,
       }));
       setPortalMenuItems(menuItems);
     }
@@ -180,20 +187,20 @@ const Page = () => {
       <Box sx={{ flexGrow: 1, py: 4 }}>
         <Container maxWidth={false}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={12}>
+            <Grid size={{ md: 12, xs: 12 }}>
               <CippUniversalSearch />
             </Grid>
-            <Grid item xs={12} md={12}>
+            <Grid size={{ md: 12, xs: 12 }}>
               <BulkActionsMenu
                 buttonName="Portals"
                 actions={PortalMenuItems}
                 disabled={!currentTenantInfo.isSuccess}
               />
             </Grid>
-            <Grid item xs={12} md={12}>
+            <Grid size={{ md: 12, xs: 12 }}>
               <CippInfoBar data={tenantInfo} isFetching={organization.isFetching} />
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ md: 4, xs: 12 }}>
               <CippChartCard
                 title="User Statistics"
                 isFetching={dashboard.isFetching || GlobalAdminList.isFetching}
@@ -218,7 +225,7 @@ const Page = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ md: 4, xs: 12 }}>
               <CippChartCard
                 title="Standards Set"
                 isFetching={standards.isFetching}
@@ -228,7 +235,7 @@ const Page = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ md: 4, xs: 12 }}>
               <CippChartCard
                 title="SharePoint Quota"
                 isFetching={sharepoint.isFetching}
@@ -247,7 +254,7 @@ const Page = () => {
             </Grid>
 
             {/* Converted Domain Names to Property List */}
-            <Grid item xs={12} md={4}>
+            <Grid size={{ md: 4, xs: 12 }}>
               <CippPropertyListCard
                 title="Domain Names"
                 showDivider={false}
@@ -269,7 +276,7 @@ const Page = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ md: 4, xs: 12 }}>
               <CippPropertyListCard
                 showDivider={false}
                 copyItems={true}
@@ -282,7 +289,7 @@ const Page = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid size={{ md: 4, xs: 12 }}>
               <CippPropertyListCard
                 copyItems={true}
                 showDivider={false}
