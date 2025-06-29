@@ -1,12 +1,9 @@
 import { BuildingOfficeIcon, HomeIcon, UsersIcon, WrenchIcon } from "@heroicons/react/24/outline";
 import {
-  Cloud,
   CloudOutlined,
-  DeviceHub,
   HomeRepairService,
   Laptop,
   MailOutline,
-  Shield,
   ShieldOutlined,
 } from "@mui/icons-material";
 import { SvgIcon } from "@mui/material";
@@ -87,8 +84,8 @@ export const nativeMenuItems = [
           },
           { title: "Audit Logs", path: "/tenant/administration/audit-logs" },
           {
-            title: "Enterprise Applications",
-            path: "/tenant/administration/enterprise-apps",
+            title: "Applications",
+            path: "/tenant/administration/applications/enterprise-apps",
           },
           { title: "Secure Score", path: "/tenant/administration/securescore" },
           {
@@ -154,15 +151,15 @@ export const nativeMenuItems = [
         items: [
           {
             title: "Licence Report",
-            path: "/tenant/administration/list-licenses",
+            path: "/tenant/reports/list-licenses",
           },
           {
             title: "Sherweb Licence Report",
-            path: "/tenant/administration/list-csp-licenses",
+            path: "/tenant/reports/list-csp-licenses",
           },
           {
             title: "Consented Applications",
-            path: "/tenant/administration/application-consent",
+            path: "/tenant/reports/application-consent",
           },
         ],
       },
@@ -210,6 +207,14 @@ export const nativeMenuItems = [
           },
         ],
       },
+      {
+        title: "Safe Links",
+        path: "/security/safelinks",
+        items: [
+          { title: "Safe Links Policies", path: "/security/safelinks/safelinks" },
+          { title: "Safe Links Templates", path: "/security/safelinks/safelinks-template" },
+        ],
+      },
     ],
   },
   {
@@ -244,12 +249,13 @@ export const nativeMenuItems = [
         title: "Device Management",
         path: "/endpoint/MEM",
         items: [
-          { title: "Devices", path: "/endpoint/reports/devices" },
+          { title: "Devices", path: "/endpoint/MEM/devices" },
           { title: "Configuration Policies", path: "/endpoint/MEM/list-policies" },
           { title: "Compliance Policies", path: "/endpoint/MEM/list-compliance-policies" },
           { title: "Protection Policies", path: "/endpoint/MEM/list-appprotection-policies" },
           { title: "Apply Policy", path: "/endpoint/MEM/add-policy" },
           { title: "Policy Templates", path: "/endpoint/MEM/list-templates" },
+          { title: "Scripts", path: "/endpoint/MEM/list-scripts" },
         ],
       },
       {
@@ -257,6 +263,8 @@ export const nativeMenuItems = [
         path: "/endpoint/reports",
         items: [
           { title: "Analytics Device Score", path: "/endpoint/reports/analyticsdevicescore" },
+          { title: "Work from anywhere", path: "/endpoint/reports/workfromanywhere" },
+          { title: "Autopilot Deployments", path: "/endpoint/reports/autopilot-deployment" },
         ],
       },
     ],
@@ -300,12 +308,13 @@ export const nativeMenuItems = [
     items: [
       {
         title: "Administration",
-        path: "/email/Administration",
+        path: "/email/administration",
         items: [
           { title: "Mailboxes", path: "/email/administration/mailboxes" },
           { title: "Deleted Mailboxes", path: "/email/administration/deleted-mailboxes" },
           { title: "Mailbox Rules", path: "/email/administration/mailbox-rules" },
           { title: "Contacts", path: "/email/administration/contacts" },
+          { title: "Contact Templates", path: "/email/administration/contacts-template" },
           { title: "Quarantine", path: "/email/administration/quarantine" },
           {
             title: "Tenant Allow/Block Lists",
@@ -315,17 +324,17 @@ export const nativeMenuItems = [
       },
       {
         title: "Transport",
-        path: "/email/Transport",
+        path: "/email/transport",
         items: [
           { title: "Transport rules", path: "/email/transport/list-rules" },
           {
             title: "Transport Templates",
             path: "/email/transport/list-templates",
           },
-          { title: "Connectors", path: "/email/connectors/list-connectors" },
+          { title: "Connectors", path: "/email/transport/list-connectors" },
           {
             title: "Connector Templates",
-            path: "/email/connectors/list-connector-templates",
+            path: "/email/transport/list-connector-templates",
           },
         ],
       },
@@ -335,14 +344,22 @@ export const nativeMenuItems = [
         items: [
           { title: "Spamfilter", path: "/email/spamfilter/list-spamfilter" },
           { title: "Spamfilter templates", path: "/email/spamfilter/list-templates" },
-          { title: "Connection filter", path: "/email/connectionfilter/list-connectionfilter" },
-          { title: "Connection filter templates", path: "/email/connectionfilter/list-templates" },
+          { title: "Connection filter", path: "/email/spamfilter/list-connectionfilter" },
+          {
+            title: "Connection filter templates",
+            path: "/email/spamfilter/list-connectionfilter-templates",
+          },
+          {
+            title: "Quarantine Policies",
+            path: "/email/spamfilter/list-quarantine-policies",
+          },
         ],
       },
       {
         title: "Resource Management",
         path: "/email/resources/management",
         items: [
+          { title: "Equipment", path: "/email/resources/management/equipment" },
           { title: "Rooms", path: "/email/resources/management/list-rooms" },
           { title: "Room Lists", path: "/email/resources/management/room-lists" },
         ],
@@ -399,11 +416,11 @@ export const nativeMenuItems = [
         items: [
           {
             title: "Graph Explorer",
-            path: "/tenant/administration/graph-explorer",
+            path: "/tenant/tools/graph-explorer",
           },
           {
             title: "Application Approval",
-            path: "/tenant/administration/appapproval",
+            path: "/tenant/tools/appapproval",
           },
           { title: "Tenant Lookup", path: "/tenant/tools/tenantlookup" },
 
@@ -411,7 +428,7 @@ export const nativeMenuItems = [
 
           {
             title: "Individual Domain Check",
-            path: "/tenant/standards/individual-domains",
+            path: "/tenant/tools/individual-domains",
           },
         ],
       },
@@ -438,6 +455,11 @@ export const nativeMenuItems = [
         roles: ["editor", "admin", "superadmin"],
       },
       {
+        title: "Community Repositories",
+        path: "/tools/community-repos",
+        roles: ["editor", "admin", "superadmin"],
+      },
+      {
         title: "Scheduler",
         path: "/cipp/scheduler",
         roles: ["editor", "admin", "superadmin"],
@@ -454,9 +476,14 @@ export const nativeMenuItems = [
     ),
     items: [
       { title: "Application Settings", path: "/cipp/settings", roles: ["admin", "superadmin"] },
-      { title: "Logbook", path: "/cipp/logs", roles: ["admin", "superadmin"] },
-      { title: "SAM Setup Wizard", path: "/onboarding", roles: ["admin", "superadmin"] },
+      { title: "Logbook", path: "/cipp/logs", roles: ["editor", "admin", "superadmin"] },
+      { title: "Setup Wizard", path: "/onboardingv2", roles: ["admin", "superadmin"] },
       { title: "Integrations", path: "/cipp/integrations", roles: ["admin", "superadmin"] },
+      {
+        title: "Custom Data",
+        path: "/cipp/custom-data/directory-extensions",
+        roles: ["admin", "superadmin"],
+      },
       {
         title: "Advanced",
         roles: ["superadmin"],
