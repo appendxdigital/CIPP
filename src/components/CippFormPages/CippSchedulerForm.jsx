@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Button, Grid, Skeleton, SvgIcon, Typography } from "@mui/material";
+import { Box, Button, Divider, Skeleton, SvgIcon, Typography } from "@mui/material";
+import { Grid } from "@mui/system";
 import { useWatch } from "react-hook-form";
 import CippFormComponent from "/src/components/CippComponents/CippFormComponent";
 import { CippFormTenantSelector } from "/src/components/CippComponents/CippFormTenantSelector";
@@ -51,7 +51,7 @@ const CippSchedulerForm = (props) => {
   };
 
   const recurrenceOptions = [
-    { value: "0", label: "Only once" },
+    { value: "0", label: "Once" },
     { value: "1d", label: "Every 1 day" },
     { value: "7d", label: "Every 7 days" },
     { value: "30d", label: "Every 30 days" },
@@ -65,16 +65,27 @@ const CippSchedulerForm = (props) => {
   const router = useRouter();
   const scheduledTaskList = ApiGetCall({
     url: "/api/ListScheduledItems",
-    queryKey: "ListScheduledItems-Edit",
+    queryKey: "ListScheduledItems-Edit-" + router.query.id,
+    waiting: !!router.query.id,
+    data: {
+      Id: router.query.id,
+    },
   });
 
   const tenantList = ApiGetCall({
-    url: "/api/ListTenants",
-    queryKey: "ListTenants",
+    url: "/api/ListTenants?AllTenantSelector=true",
+    queryKey: "ListTenants-AllTenants",
   });
   useEffect(() => {
     if (scheduledTaskList.isSuccess && router.query.id) {
       const task = scheduledTaskList.data.find((task) => task.RowKey === router.query.id);
+
+      // Early return if task is not found
+      if (!task) {
+        console.warn(`Task with RowKey ${router.query.id} not found`);
+        return;
+      }
+
       const postExecution = task?.postExecution?.split(",").map((item) => {
         return { label: item, value: item };
       });
@@ -86,19 +97,52 @@ const CippSchedulerForm = (props) => {
         );
         if (commands.isSuccess) {
           const command = commands.data.find((command) => command.Function === task.Command);
+
+          // If command is not found in the list, create a placeholder command entry
+          let commandForForm = command;
+          if (!command && task.Command) {
+            commandForForm = {
+              Function: task.Command,
+              Parameters: [],
+              // Add minimal required structure for system jobs
+            };
+          }
+
+          var recurrence = recurrenceOptions.find(
+            (option) => option.value === task.Recurrence || option.label === task.Recurrence
+          );
+
+          // If recurrence is not found in predefined options, create a custom option
+          if (!recurrence && task.Recurrence) {
+            recurrence = {
+              value: task.Recurrence,
+              label: `${task.Recurrence}`,
+            };
+          }
+
+          // if scheduledtime type is a date, convert to unixtime
+          if (typeof task.ScheduledTime === "date") {
+            task.ScheduledTime = Math.floor(task.ScheduledTime.getTime() / 1000);
+          } else if (typeof task.ScheduledTime === "string") {
+            task.ScheduledTime = Math.floor(new Date(task.ScheduledTime).getTime() / 1000);
+          }
+
           const ResetParams = {
             tenantFilter: {
               value: tenantFilter?.defaultDomainName,
-              label: tenantFilter?.defaultDomainName,
+              label: `${tenantFilter?.displayName} (${tenantFilter?.defaultDomainName})`,
             },
             RowKey: router.query.Clone ? null : task.RowKey,
             Name: router.query.Clone ? `${task.Name} (Clone)` : task?.Name,
-            command: { label: task.Command, value: task.Command, addedFields: command },
+            command: { label: task.Command, value: task.Command, addedFields: commandForForm },
             ScheduledTime: task.ScheduledTime,
-            Recurrence: task.Recurrence,
+            Recurrence: recurrence,
             parameters: task.Parameters,
             postExecution: postExecution,
-            advancedParameters: task.RawJsonParameters ? true : false,
+            // Show advanced parameters if RawJsonParameters exist OR if it's a system command with no defined parameters
+            advancedParameters: task.RawJsonParameters
+              ? true
+              : !commandForForm?.Parameters || commandForForm.Parameters.length === 0,
           };
           formControl.reset(ResetParams);
         }
@@ -112,190 +156,269 @@ const CippSchedulerForm = (props) => {
     commands.isSuccess,
   ]);
 
+  const advancedParameters = useWatch({ control: formControl.control, name: "advancedParameters" });
+
+  useEffect(() => {
+    if (advancedParameters === true) {
+      var schedulerValues = formControl.getValues("parameters");
+      // Add null check to prevent error when no command is selected
+      if (schedulerValues && typeof schedulerValues === "object") {
+        Object.keys(schedulerValues).forEach((key) => {
+          if (schedulerValues[key] === "" || schedulerValues[key] === null) {
+            delete schedulerValues[key];
+          }
+        });
+        const jsonString = JSON.stringify(schedulerValues, null, 2);
+        formControl.setValue("RawJsonParameters", jsonString);
+      } else {
+        // If no parameters, set empty object
+        formControl.setValue("RawJsonParameters", "{}");
+      }
+    }
+  }, [advancedParameters]);
+
   const gridSize = fullWidth ? 12 : 4; // Adjust size based on fullWidth prop
 
   return (
-    <Grid container spacing={2}>
-      {(scheduledTaskList.isFetching || tenantList.isLoading || commands.isLoading) && (
-        <Skeleton width={"100%"} />
-      )}
-      <Grid item xs={12} md={12}>
-        <CippFormTenantSelector
-          label="Select a Tenant"
-          formControl={formControl}
-          type="single"
-          allTenants={true}
-        />
-      </Grid>
-
-      <Grid item xs={12} md={12}>
-        <CippFormComponent
-          type="textField"
-          name="Name"
-          label="Task Name"
-          formControl={formControl}
-        />
-      </Grid>
-
-      <Grid item xs={12} md={gridSize}>
-        <CippFormComponent
-          name="command"
-          type="autoComplete"
-          label="Select Command"
-          multiple={false}
-          required={true}
-          formControl={formControl}
-          options={
-            commands.data?.map((command) => {
-              return {
-                label: command.Function,
-                value: command.Function,
-                addedFields: command,
-              };
-            }) || []
-          }
-          validators={{
-            validate: (value) => {
-              if (!value) {
-                return "Please select a Command";
-              }
-              return true;
-            },
-          }}
-        />
-      </Grid>
-      <Grid item xs={12} md={gridSize}>
-        <CippFormComponent
-          type="datePicker"
-          name="ScheduledTime"
-          label="Start Date"
-          fullWidth
-          formControl={formControl}
-          validators={{
-            required: { value: true, message: "You must set a start date." },
-          }}
-        />
-      </Grid>
-      <Grid item xs={12} md={gridSize}>
-        <CippFormComponent
-          type="autoComplete"
-          name="Recurrence"
-          label="Recurrence"
-          formControl={formControl}
-          options={recurrenceOptions}
-          multiple={false}
-          disableClearable={true}
-        />
-      </Grid>
-      {selectedCommand?.addedFields?.Synopsis && (
-        <Grid item xs={12} md={12}>
-          <Box sx={{ my: 1 }}>
-            <Typography variant="h6">PowerShell Command:</Typography>
-            <Typography variant="body2" color={"text.secondary"}>
-              {selectedCommand.addedFields.Synopsis}
-            </Typography>
-          </Box>
+    <>
+      <Grid container spacing={2}>
+        {(scheduledTaskList.isFetching || tenantList.isLoading || commands.isLoading) && (
+          <Skeleton width={"100%"} />
+        )}
+        <Grid size={{ md: 12, xs: 12 }}>
+          <CippFormTenantSelector
+            label="Select a Tenant"
+            formControl={formControl}
+            type="single"
+            allTenants={true}
+          />
         </Grid>
-      )}
 
-      {selectedCommand?.addedFields?.Parameters?.map((param, idx) => (
+        <Grid size={{ md: 12, xs: 12 }}>
+          <CippFormComponent
+            type="textField"
+            name="Name"
+            label="Task Name"
+            formControl={formControl}
+          />
+        </Grid>
+
+        <Grid size={{ md: gridSize, xs: 12 }}>
+          <CippFormComponent
+            name="command"
+            type="autoComplete"
+            label="Select Command"
+            multiple={false}
+            creatable={false}
+            required={true}
+            formControl={formControl}
+            isFetching={commands.isFetching}
+            options={(() => {
+              const baseOptions =
+                commands.data?.map((command) => {
+                  return {
+                    label: command.Function,
+                    value: command.Function,
+                    addedFields: command,
+                  };
+                }) || [];
+
+              // If we're editing a task and the command isn't in the base options, add it
+              if (router.query.id && scheduledTaskList.isSuccess) {
+                const task = scheduledTaskList.data.find((task) => task.RowKey === router.query.id);
+                if (task?.Command && !baseOptions.find((opt) => opt.value === task.Command)) {
+                  baseOptions.unshift({
+                    label: task.Command,
+                    value: task.Command,
+                    addedFields: {
+                      Function: task.Command,
+                      Parameters: [],
+                    },
+                  });
+                }
+              }
+
+              return baseOptions;
+            })()}
+            validators={{
+              validate: (value) => {
+                if (!value) {
+                  return "Please select a Command";
+                }
+                return true;
+              },
+            }}
+          />
+        </Grid>
+        <Grid size={{ md: gridSize, xs: 12 }}>
+          <CippFormComponent
+            type="datePicker"
+            name="ScheduledTime"
+            label="Start Date"
+            fullWidth
+            formControl={formControl}
+            validators={{
+              required: { value: true, message: "You must set a start date." },
+            }}
+          />
+        </Grid>
+        <Grid size={{ md: gridSize, xs: 12 }}>
+          <CippFormComponent
+            type="autoComplete"
+            name="Recurrence"
+            label="Recurrence"
+            formControl={formControl}
+            options={(() => {
+              let options = [...recurrenceOptions];
+
+              // If we're editing a task and the recurrence isn't in the base options, add it
+              if (router.query.id && scheduledTaskList.isSuccess) {
+                const task = scheduledTaskList.data.find((task) => task.RowKey === router.query.id);
+                if (task?.Recurrence && !options.find((opt) => opt.value === task.Recurrence)) {
+                  options.push({
+                    value: task.Recurrence,
+                    label: `Custom: ${task.Recurrence}`,
+                  });
+                }
+              }
+
+              return options;
+            })()}
+            multiple={false}
+            disableClearable={true}
+            creatable={true}
+          />
+        </Grid>
+        {selectedCommand?.addedFields?.Synopsis && (
+          <Grid size={{ md: 12, xs: 12 }}>
+            <Box sx={{ my: 1 }}>
+              <Typography variant="h6">PowerShell Command:</Typography>
+              <Typography variant="body2" color={"text.secondary"}>
+                {selectedCommand.addedFields.Synopsis}
+              </Typography>
+            </Box>
+          </Grid>
+        )}
+
+        {selectedCommand?.addedFields?.Parameters?.map((param, idx) => (
+          <CippFormCondition
+            field="advancedParameters"
+            compareType="isNot"
+            compareValue={true}
+            formControl={formControl}
+            key={idx}
+          >
+            <Grid
+              size={{ md: param.Type === "System.Collections.Hashtable" ? 12 : gridSize, xs: 12 }}
+            >
+              {param.Type === "System.Boolean" ||
+              param.Type === "System.Management.Automation.SwitchParameter" ? (
+                <CippFormComponent
+                  type="switch"
+                  name={`parameters.${param.Name}`}
+                  label={param.Name}
+                  formControl={formControl}
+                />
+              ) : param.Type === "System.Collections.Hashtable" ? (
+                <CippFormInputArray
+                  formControl={formControl}
+                  name={`parameters.${param.Name}`}
+                  label={`${param.Name}`}
+                  key={idx}
+                />
+              ) : param.Type?.startsWith("System.String") ? (
+                <CippFormComponent
+                  type="textField"
+                  name={`parameters.${param.Name}`}
+                  label={param.Name}
+                  formControl={formControl}
+                  placeholder={`Enter a value for ${param.Name}`}
+                  validators={fieldRequired(param)}
+                  required={param.Required}
+                />
+              ) : (
+                <CippFormComponent
+                  type="textField"
+                  name={`parameters.${param.Name}`}
+                  label={param.Name}
+                  formControl={formControl}
+                  placeholder={`Enter a value for ${param.Name}`}
+                  validators={fieldRequired(param)}
+                  required={param.Required}
+                />
+              )}
+            </Grid>
+          </CippFormCondition>
+        ))}
+        <Grid size={{ md: 12, xs: 12 }}>
+          <Divider />
+        </Grid>
+        <Grid size={{ md: 12, xs: 12 }}>
+          <CippFormComponent
+            type="switch"
+            name="advancedParameters"
+            label="Advanced Parameters (JSON Input)"
+            formControl={formControl}
+          />
+        </Grid>
         <CippFormCondition
           field="advancedParameters"
-          compareType="isNot"
+          compareType="is"
           compareValue={true}
           formControl={formControl}
         >
-          <Grid item xs={12} md={gridSize} key={idx}>
-            {param.Type === "System.Boolean" ? (
-              <CippFormComponent
-                type="switch"
-                name={`parameters.${param.Name}`}
-                label={param.Name}
-                formControl={formControl}
-              />
-            ) : param.Type === "System.Collections.Hashtable" ? (
-              <CippFormInputArray
-                formControl={formControl}
-                name={`parameters.${param.Name}`}
-                label={`${param.Name}`}
-                key={idx}
-              />
-            ) : param.Type?.startsWith("System.String") ? (
-              <CippFormComponent
-                type="textField"
-                name={`parameters.${param.Name}`}
-                label={param.Name}
-                formControl={formControl}
-                placeholder={`Enter a value for ${param.Name}`}
-                validators={fieldRequired(param)}
-              />
-            ) : null}
+          <Grid size={{ md: 12, xs: 12 }}>
+            <CippFormComponent
+              type="textField"
+              name="RawJsonParameters"
+              label="Advanced Parameters (JSON Input)"
+              validators={{
+                validate: (value) => getCippValidator(value, "json"),
+              }}
+              formControl={formControl}
+              multiline
+              rows={4}
+              placeholder={`Enter a JSON object`}
+            />
           </Grid>
         </CippFormCondition>
-      ))}
-      <Grid item xs={12} md={12}>
-        <CippFormComponent
-          type="switch"
-          name="advancedParameters"
-          label="Advanced Parameters (JSON Input)"
-          formControl={formControl}
-        />
-      </Grid>
-      <CippFormCondition
-        field="advancedParameters"
-        compareType="is"
-        compareValue={true}
-        formControl={formControl}
-      >
-        <Grid item xs={12} md={12}>
+        <Grid size={{ md: 12, xs: 12 }}>
           <CippFormComponent
-            type="textField"
-            name="RawJsonParameters"
-            label="Advanced Parameters (JSON Input)"
-            validators={{
-              validate: (value) => getCippValidator(value, "json"),
-            }}
+            type="autoComplete"
+            name="postExecution"
+            label="Post Execution Actions"
             formControl={formControl}
-            multiline
-            rows={4}
-            placeholder={`Enter a JSON object`}
+            multiple
+            creatable={false}
+            options={[
+              { label: "Webhook", value: "Webhook" },
+              { label: "Email", value: "Email" },
+              { label: "PSA", value: "PSA" },
+            ]}
           />
         </Grid>
-      </CippFormCondition>
-      <Grid item xs={12} md={12}>
-        <CippFormComponent
-          type="autoComplete"
-          name="postExecution"
-          label="Post Execution Actions"
-          formControl={formControl}
-          multiple
-          options={[
-            { label: "Webhook", value: "Webhook" },
-            { label: "Email", value: "Email" },
-            { label: "PSA", value: "PSA" },
-          ]}
-        />
+        <Grid size={{ xs: 12 }} sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+          <Button
+            onClick={() => {
+              formControl.trigger();
+              handleSubmit();
+            }}
+            disabled={postCall.isPending}
+            variant="contained"
+            color="primary"
+            type="submit"
+            startIcon={
+              <SvgIcon fontSize="small">
+                <CalendarDaysIcon />
+              </SvgIcon>
+            }
+          >
+            {router.query.id ? "Edit" : "Add"} Schedule
+          </Button>
+        </Grid>
       </Grid>
-      <Grid item xs={12} sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-        <Button
-          onClick={() => {
-            formControl.trigger();
-            handleSubmit();
-          }}
-          disabled={postCall.isPending}
-          variant="contained"
-          color="primary"
-          type="submit"
-          startIcon={
-            <SvgIcon fontSize="small">
-              <CalendarDaysIcon />
-            </SvgIcon>
-          }
-        >
-          {router.query.id ? "Edit" : "Add"} Schedule
-        </Button>
-      </Grid>
-    </Grid>
+      <CippApiResults apiObject={postCall} />
+    </>
   );
 };
 
