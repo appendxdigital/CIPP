@@ -1,7 +1,7 @@
 import { Layout as DashboardLayout } from "/src/layouts/index.js";
 import { CippTablePage } from "/src/components/CippComponents/CippTablePage.jsx";
 import { Button } from "@mui/material";
-import { Book, DoDisturb, Done } from "@mui/icons-material";
+import { Book, DoDisturb, Done, RocketLaunch } from "@mui/icons-material";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 
@@ -65,12 +65,21 @@ const Page = () => {
     actions: actions,
   };
 
-  const simpleColumns = ["Name", "State", "Mode", "RuleErrorAction", "WhenChanged", "Comments"];
+  const simpleColumns = [
+    "Name",
+    "State",
+    "Mode",
+    "RuleErrorAction",
+    "WhenChanged",
+    "Comments",
+    "Tenant",
+  ];
 
   return (
     <CippTablePage
       title={pageTitle}
       apiUrl="/api/ListTransportRules"
+      apiDataKey="Results"
       actions={actions}
       offCanvas={offCanvas}
       simpleColumns={simpleColumns}
@@ -88,7 +97,11 @@ const Page = () => {
       ]}
       cardButton={
         <>
-          <Button component={Link} href="/email/transport/list-rules/add">
+          <Button
+            component={Link}
+            href="/email/transport/list-rules/add"
+            startIcon={<RocketLaunch />}
+          >
             Deploy Template
           </Button>
         </>
@@ -97,5 +110,5 @@ const Page = () => {
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => <DashboardLayout allTenantsSupport={true}>{page}</DashboardLayout>;
 export default Page;

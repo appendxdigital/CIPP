@@ -3,7 +3,6 @@ import axios, { isAxiosError } from "axios";
 import { useDispatch } from "react-redux";
 import { showToast } from "../store/toasts";
 import { getCippError } from "../utils/get-cipp-error";
-import { useRouter } from "next/router";
 
 export function ApiGetCall(props) {
   const {
@@ -16,6 +15,12 @@ export function ApiGetCall(props) {
     bulkRequest = false,
     toast = false,
     onResult,
+    staleTime = 300000,
+    refetchOnWindowFocus = false,
+    refetchOnMount = true,
+    refetchOnReconnect = true,
+    keepPreviousData = false,
+    refetchInterval = false,
   } = props;
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
@@ -27,6 +32,12 @@ export function ApiGetCall(props) {
       returnRetry = false;
     }
     if (isAxiosError(error) && HTTP_STATUS_TO_NOT_RETRY.includes(error.response?.status ?? 0)) {
+      if (
+        error.response?.status === 302 &&
+        error.response?.headers.get("location").includes("/.auth/login/aad")
+      ) {
+        queryClient.invalidateQueries({ queryKey: ["authmecipp"] });
+      }
       returnRetry = false;
     }
     if (returnRetry === false && toast) {
@@ -93,8 +104,12 @@ export function ApiGetCall(props) {
         return response.data;
       }
     },
-    staleTime: 600000, // 10 minutes
-    refetchOnWindowFocus: false,
+    staleTime: staleTime,
+    refetchOnWindowFocus: refetchOnWindowFocus,
+    refetchOnMount: refetchOnMount,
+    refetchOnReconnect: refetchOnReconnect,
+    keepPreviousData: keepPreviousData,
+    refetchInterval: refetchInterval,
     retry: retryFn,
   });
   return queryInfo;
@@ -190,12 +205,16 @@ export function ApiGetCallWithPagination({
       return response.data;
     },
     getNextPageParam: (lastPage) => {
-      if (data?.noPagination || data?.manualPagination === false) {
+      if (
+        data?.noPagination ||
+        data?.manualPagination === false ||
+        data?.tenantFilter === "AllTenants"
+      ) {
         return undefined;
       }
       return lastPage?.Metadata?.nextLink ? { nextLink: lastPage.Metadata.nextLink } : undefined;
     },
-    staleTime: 600000, // 10 minutes
+    staleTime: 300000,
     refetchOnWindowFocus: false,
     retry: retryFn,
   });
