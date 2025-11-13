@@ -72,6 +72,7 @@ const CustomAddEditRowDialog = ({ formControl, open, onClose, onSubmit, defaultV
                       name={`fields[${index}].name`}
                       formControl={formControl}
                       label="Name"
+                      disableVariables={true}
                     />
                   </Box>
                   <Box width="10%">
@@ -101,6 +102,7 @@ const CustomAddEditRowDialog = ({ formControl, open, onClose, onSubmit, defaultV
                           return {};
                         }
                       }}
+                      disableVariables={true}
                     />
                   </Box>
 
@@ -274,7 +276,7 @@ const Page = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 4 }}>
+    <Container maxWidth={false} sx={{ mt: 4, width: "100%" }}>
       <Typography variant="h4" gutterBottom>
         {pageTitle}
       </Typography>
@@ -282,8 +284,8 @@ const Page = () => {
         This page allows you to view and manage data in Azure Tables. This is advanced functionality
         that should only be used when directed by CyberDrain support.
       </Alert>
-      <Grid container spacing={2}>
-        <Grid item size={3}>
+      <Grid sx={{ flexGrow: 1, display: "flex" }} container spacing={2}>
+        <Grid size={3}>
           <CippPropertyListCard
             title="Tables"
             propertyItems={propertyItems}
@@ -320,7 +322,7 @@ const Page = () => {
             }
           />
         </Grid>
-        <Grid item size={9}>
+        <Grid size={9}>
           {selectedTable && (
             <Box sx={{ width: "100%" }}>
               <Stack spacing={1}>

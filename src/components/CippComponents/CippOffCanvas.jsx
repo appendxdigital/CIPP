@@ -1,7 +1,9 @@
-import { Drawer, Box, Grid } from "@mui/material";
+import { Drawer, Box, IconButton, Typography, Divider } from "@mui/material";
 import { CippPropertyListCard } from "../CippCards/CippPropertyListCard";
 import { getCippTranslation } from "../../utils/get-cipp-translation";
 import { getCippFormatting } from "../../utils/get-cipp-formatting";
+import { useMediaQuery, Grid } from "@mui/system";
+import CloseIcon from "@mui/icons-material/Close";
 
 export const CippOffCanvas = (props) => {
   const {
@@ -14,8 +16,10 @@ export const CippOffCanvas = (props) => {
     isFetching,
     children,
     size = "sm",
+    footer,
   } = props;
 
+  const mdDown = useMediaQuery((theme) => theme.breakpoints.down("md"));
   const extendedInfo = extendedInfoFields.map((field) => {
     const value = field.split(".").reduce((acc, part) => acc && acc[part], extendedData);
     if (value === undefined || value === null) {
@@ -43,20 +47,24 @@ export const CippOffCanvas = (props) => {
     }
   });
 
-  var drawerWidth = 400;
-  switch (size) {
-    case "sm":
-      drawerWidth = 400;
-      break;
-    case "md":
-      drawerWidth = 600;
-      break;
-    case "lg":
-      drawerWidth = 800;
-      break;
-    case "xl":
-      drawerWidth = 1000;
-      break;
+  if (mdDown) {
+    drawerWidth = "100%";
+  } else {
+    var drawerWidth = 400;
+    switch (size) {
+      case "sm":
+        drawerWidth = 400;
+        break;
+      case "md":
+        drawerWidth = 600;
+        break;
+      case "lg":
+        drawerWidth = 800;
+        break;
+      case "xl":
+        drawerWidth = 1000;
+        break;
+    }
   }
 
   return (
@@ -72,30 +80,73 @@ export const CippOffCanvas = (props) => {
         open={visible}
         onClose={onClose}
       >
-        {/* Force vertical stacking in a column layout */}
         <Box
-          sx={{ overflowY: "auto", maxHeight: "100%", display: "flex", flexDirection: "column" }}
+          sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 1.5 }}
         >
-          <Grid container spacing={1}>
-            <Grid item xs={12}>
+          <Typography variant="h5">{title}</Typography>
+          <IconButton onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <Divider />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "calc(100vh - 73px)", // Account for header + divider
+            minHeight: 0,
+          }}
+        >
+          <Box
+            sx={{
+              overflowY: "auto",
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+            }}
+          >
+            <Grid container spacing={1} sx={{ flexGrow: 1 }}>
               {extendedInfo.length > 0 && (
-                <CippPropertyListCard
-                  isFetching={isFetching}
-                  align="vertical"
-                  title={title}
-                  propertyItems={extendedInfo}
-                  copyItems={true}
-                  actionItems={actions}
-                  data={extendedData}
-                />
+                <Grid size={{ xs: 12 }}>
+                  <CippPropertyListCard
+                    isFetching={isFetching}
+                    align="vertical"
+                    propertyItems={extendedInfo}
+                    copyItems={true}
+                    actionItems={actions}
+                    data={extendedData}
+                  />
+                </Grid>
               )}
+              <Grid
+                size={{ xs: 12 }}
+                sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+              >
+                <Box
+                  sx={{ display: "flex", flexDirection: "column", flexGrow: 1, minHeight: 0, p: 2 }}
+                >
+                  {/* Render children if provided, otherwise render default content */}
+                  {typeof children === "function" ? children(extendedData) : children}
+                </Box>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <Box sx={{ m: 2 }}>
-                {typeof children === "function" ? children(extendedData) : children}
-              </Box>
-            </Grid>
-          </Grid>
+          </Box>
+
+          {/* Footer section */}
+          {footer && (
+            <Box
+              sx={{
+                borderTop: 1,
+                borderColor: "divider",
+                p: 2,
+                flexShrink: 0,
+                mt: "auto",
+              }}
+            >
+              {footer}
+            </Box>
+          )}
         </Box>
       </Drawer>
     </>
