@@ -11,7 +11,7 @@ const Page = () => {
   const userSettingsDefaults = useSettings();
 
   const formControl = useForm({
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       tenantFilter: userSettingsDefaults.currentTenant,
       usageLocation: userSettingsDefaults.usageLocation,
@@ -36,6 +36,7 @@ const Page = () => {
         newFields.usageLocation = { label: usageLocation, value: usageLocation };
       }
       newFields.tenantFilter = userSettingsDefaults.currentTenant;
+
       formControl.reset(newFields);
     }
   }, [formValues]);
@@ -48,34 +49,6 @@ const Page = () => {
         backButtonTitle="User Overview"
         postUrl="/api/AddUser"
       >
-        <Box sx={{ my: 2 }}>
-          <CippFormUserSelector
-            formControl={formControl}
-            name="userProperties"
-            label="Copy properties from another user"
-            multiple={false}
-            select={
-              "id,userPrincipalName,displayName,givenName,surname,mailNickname,jobTitle,department,streetAddress,postalCode,companyName,mobilePhone,businessPhones,usageLocation"
-            }
-            addedField={{
-              groupType: "calculatedGroupType",
-              displayName: "displayName",
-              userPrincipalName: "userPrincipalName",
-              id: "id",
-              givenName: "givenName",
-              surname: "surname",
-              mailNickname: "mailNickname",
-              jobTitle: "jobTitle",
-              department: "department",
-              streetAddress: "streetAddress",
-              postalCode: "postalCode",
-              companyName: "companyName",
-              mobilePhone: "mobilePhone",
-              businessPhones: "businessPhones",
-              usageLocation: "usageLocation",
-            }}
-          />
-        </Box>
         <Box sx={{ my: 2 }}>
           <CippAddEditUser formControl={formControl} userSettingsDefaults={userSettingsDefaults} />
         </Box>
