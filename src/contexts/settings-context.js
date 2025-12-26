@@ -70,8 +70,17 @@ const storeSettings = (value) => {
 const initialSettings = {
   direction: "ltr",
   paletteMode: "light",
+  currentTheme: { value: "light", label: "light" },
   pinNav: true,
   currentTenant: null,
+  showDevtools: false,
+  customBranding: {
+    colour: "#F77F00",
+    logo: null,
+  },
+  persistFilters: false,
+  lastUsedFilters: {},
+  breadcrumbMode: "hierarchical",
 };
 
 const initialState = {
@@ -84,6 +93,7 @@ export const SettingsContext = createContext({
   handleReset: () => {},
   handleUpdate: () => {},
   isCustom: false,
+  setLastUsedFilter: () => {},
 });
 
 export const SettingsProvider = (props) => {
@@ -94,9 +104,19 @@ export const SettingsProvider = (props) => {
     const restored = restoreSettings();
 
     if (restored) {
+      if (!restored.currentTheme && restored.paletteMode) {
+        restored.currentTheme = { value: restored.paletteMode, label: restored.paletteMode };
+      }
+
       setState((prevState) => ({
         ...prevState,
         ...restored,
+        isInitialized: true,
+      }));
+    } else {
+      // No stored settings found, initialize with defaults
+      setState((prevState) => ({
+        ...prevState,
         isInitialized: true,
       }));
     }
@@ -112,14 +132,22 @@ export const SettingsProvider = (props) => {
 
   const handleUpdate = useCallback((settings) => {
     setState((prevState) => {
+      // Filter out null and undefined values to prevent resetting settings
+      const filteredSettings = Object.entries(settings).reduce((acc, [key, value]) => {
+        if (value !== null && value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {});
+
       storeSettings({
         ...prevState,
-        ...settings,
+        ...filteredSettings,
       });
 
       return {
         ...prevState,
-        ...settings,
+        ...filteredSettings,
       };
     });
   }, []);
@@ -128,6 +156,7 @@ export const SettingsProvider = (props) => {
     return !isEqual(initialSettings, {
       direction: state.direction,
       paletteMode: state.paletteMode,
+      currentTheme: state.currentTheme,
       pinNav: state.pinNav,
     });
   }, [state]);
@@ -139,6 +168,19 @@ export const SettingsProvider = (props) => {
         handleReset,
         handleUpdate,
         isCustom,
+        setLastUsedFilter: (page, filter) => {
+          setState((prevState) => {
+            const updated = {
+              ...prevState,
+              lastUsedFilters: {
+                ...prevState.lastUsedFilters,
+                [page]: filter,
+              },
+            };
+            storeSettings(updated);
+            return updated;
+          });
+        },
       }}
     >
       {children}
