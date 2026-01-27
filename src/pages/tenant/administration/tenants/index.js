@@ -1,33 +1,11 @@
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
-import { CippTablePage } from "/src/components/CippComponents/CippTablePage.jsx";
-import { ApiGetCall } from "../../../../api/ApiCall";
-import { useEffect } from "react";
+import { Layout as DashboardLayout } from "../../../../layouts/index.js";
+import { TabbedLayout } from "../../../../layouts/TabbedLayout";
+import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
+import { DeleteOutline, Edit } from "@mui/icons-material";
+import tabOptions from "./tabOptions";
 
 const Page = () => {
-  //this page is special and requires us to craft the columns and DashboardLayout
   const pageTitle = "Tenants";
-  const tenantData = ApiGetCall({
-    url: "/api/listTenants",
-    queryKey: "ListTenants",
-  });
-
-  useEffect(() => {
-    if (tenantData.isSuccess) {
-      tenantData.data.forEach((tenant) => {
-        Object.assign(tenant, {
-          portal_m365: `https://admin.microsoft.com/Partner/BeginClientSession.aspx?CTID=${tenant.customerId}&CSDEST=o365admincenter`,
-          portal_exchange: `https://admin.exchange.microsoft.com/?landingpage=homepage&form=mac_sidebar&delegatedOrg=${tenant.defaultDomainName}`,
-          portal_entra: `https://entra.microsoft.com/${tenant.defaultDomainName}`,
-          portal_teams: `https://admin.teams.microsoft.com/?delegatedOrg=${tenant.defaultDomainName}`,
-          portal_azure: `https://portal.azure.com/${tenant.defaultDomainName}`,
-          portal_intune: `https://intune.microsoft.com/${tenant.defaultDomainName}`,
-          portal_security: `https://security.microsoft.com/?tid=${tenant.customerId}`,
-          portal_compliance: `https://purview.microsoft.com/?tid=${tenant.customerId}`,
-          portal_sharepoint: `https://admin.microsoft.com/Partner/beginclientsession.aspx?CTID=${tenant.customerId}&CSDEST=SharePoint`,
-        });
-      });
-    }
-  }, [tenantData.isSuccess]);
 
   const simpleColumns = [
     "displayName",
@@ -35,23 +13,58 @@ const Page = () => {
     "portal_m365",
     "portal_exchange",
     "portal_entra",
+    "portal_sharepoint",
     "portal_teams",
     "portal_azure",
     "portal_intune",
     "portal_security",
     "portal_compliance",
+    "portal_platform",
+    "portal_bi",
   ];
+
+  const actions = [
+    {
+      label: "Edit Tenant",
+      link: "/tenant/manage/edit?tenantFilter=[defaultDomainName]",
+      icon: <Edit />,
+    },
+    {
+      label: "Configure Backup",
+      link: "/tenant/manage/configuration-backup?tenantFilter=[defaultDomainName]",
+      icon: <Edit />,
+    },
+    {
+      label: "Delete Capabilities Cache",
+      type: "GET",
+      url: "/api/RemoveTenantCapabilitiesCache",
+      data: { defaultDomainName: "defaultDomainName" },
+      confirmText: "Are you sure you want to delete the capabilities cache for this tenant?",
+      color: "info",
+      icon: <DeleteOutline />,
+    },
+  ];
+
   return (
     <CippTablePage
       title={pageTitle}
       tenantInTitle={false}
       simpleColumns={simpleColumns}
-      data={tenantData.data}
+      apiUrl="/api/ListTenants"
+      queryKey="TenantListPage"
+      apiData={{
+        Mode: "TenantList",
+        tenantFilter: null,
+      }}
+      actions={actions}
     />
   );
 };
 
-// Adding the layout for Dashboard
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => (
+  <DashboardLayout>
+    <TabbedLayout tabOptions={tabOptions}>{page}</TabbedLayout>
+  </DashboardLayout>
+);
 
 export default Page;

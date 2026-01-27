@@ -5,6 +5,7 @@ node_modules
 .pnp
 .pnp.js
 build
+package-lock.json
 # testing
 coverage
 
@@ -27,3 +28,8 @@ yarn-error.log*
 
 # vscode debug logs
 debug.log
+app.log
+
+# AI rules
+.*/rules
+AGENTS.md

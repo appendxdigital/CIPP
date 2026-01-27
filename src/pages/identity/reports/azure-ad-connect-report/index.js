@@ -1,5 +1,5 @@
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
-import { CippTablePage } from "/src/components/CippComponents/CippTablePage.jsx";
+import { Layout as DashboardLayout } from "../../../../layouts/index.js";
+import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
 
 const simpleColumns = [
   "displayName",
@@ -9,9 +9,6 @@ const simpleColumns = [
 ];
 
 const apiUrl = "/api/ListAzureADConnectStatus";
-const actions = []; // No actions specified in the original code
-
-const offCanvas = null; // No off-canvas details provided
 
 const Page = () => {
   return (
@@ -21,8 +18,6 @@ const Page = () => {
       apiData={{
         DataToReturn: "AzureADObjectsInError",
       }}
-      actions={actions}
-      offCanvas={offCanvas}
       simpleColumns={simpleColumns}
     />
   );

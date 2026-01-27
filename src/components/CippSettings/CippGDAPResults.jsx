@@ -1,9 +1,9 @@
 import { List, ListItem, Skeleton, SvgIcon, Typography } from "@mui/material";
 import { Cancel, CheckCircle, Warning } from "@mui/icons-material";
-import { CippPropertyList } from "/src/components/CippComponents/CippPropertyList";
+import { CippPropertyList } from "../CippComponents/CippPropertyList";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CippOffCanvas } from "../CippComponents/CippOffCanvas";
-import { CippDataTable } from "/src/components/CippTable/CippDataTable";
+import { CippDataTable } from "../CippTable/CippDataTable";
 import { useEffect, useState } from "react";
 
 export const CippGDAPResults = (props) => {
@@ -103,14 +103,14 @@ export const CippGDAPResults = (props) => {
       {propertyItems.length > 0 && (
         <CippPropertyList
           direction="row"
-          isFetching={executeCheck?.isFetching}
+          isFetching={!importReport && executeCheck?.isFetching}
           propertyItems={propertyItems}
           showDivider={false}
           layout
         />
       )}
 
-      {executeCheck.isFetching ? (
+      {!importReport && executeCheck.isFetching ? (
         <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 1, ml: 3, mr: 1 }} />
       ) : (
         <>
@@ -149,15 +149,11 @@ export const CippGDAPResults = (props) => {
             }}
             extendedInfo={[]}
           >
-            <Typography variant="h4" sx={{ mx: 3 }}>
-              GDAP Details
-            </Typography>
-
             {results?.Results?.GDAPIssues?.length > 0 && (
               <>
                 <CippDataTable
                   title="GDAP Issues"
-                  isFetching={executeCheck.isFetching}
+                  isFetching={!importReport && executeCheck.isFetching}
                   refreshFunction={executeCheck}
                   data={results?.Results?.GDAPIssues}
                   simpleColumns={["Tenant", "Type", "Issue", "Link"]}
@@ -169,7 +165,7 @@ export const CippGDAPResults = (props) => {
               <>
                 <CippDataTable
                   title="Missing Groups"
-                  isFetching={executeCheck.isFetching}
+                  isFetching={!importReport && executeCheck.isFetching}
                   refreshFunction={executeCheck}
                   data={results?.Results?.MissingGroups}
                   simpleColumns={["Name", "Type"]}
@@ -183,7 +179,7 @@ export const CippGDAPResults = (props) => {
               <>
                 <CippDataTable
                   title="Group Memberships"
-                  isFetching={executeCheck.isFetching}
+                  isFetching={!importReport && executeCheck.isFetching}
                   refreshFunction={executeCheck}
                   data={results?.Results?.Memberships?.filter(
                     (membership) => membership?.["@odata.type"] === "#microsoft.graph.group"
@@ -199,7 +195,7 @@ export const CippGDAPResults = (props) => {
               <>
                 <CippDataTable
                   title="Directory Roles"
-                  isFetching={executeCheck.isFetching}
+                  isFetching={!importReport && executeCheck.isFetching}
                   refreshFunction={executeCheck}
                   data={results?.Results?.Memberships?.filter(
                     (membership) => membership?.["@odata.type"] === "#microsoft.graph.directoryRole"

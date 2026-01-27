@@ -1,7 +1,8 @@
-import { Grid, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
+import { Grid } from "@mui/system";
 import CippWizardStepButtons from "./CippWizardStepButtons";
 import CippFormComponent from "../CippComponents/CippFormComponent";
-import countryList from "/src/data/countryList.json";
+import countryList from "../../data/countryList.json";
 import { CippFormLicenseSelector } from "../CippComponents/CippFormLicenseSelector";
 export const CippWizardBulkOptions = (props) => {
   const { postUrl, formControl, onPreviousStep, onNextStep, currentStep } = props;
@@ -10,7 +11,7 @@ export const CippWizardBulkOptions = (props) => {
     <Stack spacing={3}>
       <>
         <Grid container spacing={3}>
-          <Grid item xs={12} md={12}>
+          <Grid size={{ md: 12, xs: 12 }}>
             <CippFormComponent
               type="autoComplete"
               label="Usage Location"
@@ -25,7 +26,7 @@ export const CippWizardBulkOptions = (props) => {
               formControl={formControl}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <CippFormLicenseSelector
               fullWidth
               label="Assign License - We will attempt to assign the license to the user if it is available"

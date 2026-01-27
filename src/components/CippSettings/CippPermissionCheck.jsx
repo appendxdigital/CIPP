@@ -9,8 +9,8 @@ import {
   SvgIcon,
   Typography,
 } from "@mui/material";
-import CippButtonCard from "/src/components/CippCards/CippButtonCard";
-import { ApiGetCall } from "/src/api/ApiCall";
+import CippButtonCard from "../CippCards/CippButtonCard";
+import { ApiGetCall } from "../../api/ApiCall";
 import { useEffect, useState } from "react";
 import { CippPermissionResults } from "./CippPermissionResults";
 import { CippGDAPResults } from "./CippGDAPResults";
@@ -142,7 +142,7 @@ const CippPermissionCheck = (props) => {
         {(executeCheck.isSuccess || executeCheck.isLoading) && (
           <>
             {executeCheck.data?.Metadata?.AlertMessage && (
-              <Collapse in={showAlertMessage}>
+              <Collapse in={showAlertMessage} unmountOnExit>
                 <Alert
                   severity={executeCheck?.data?.Metadata?.AlertSeverity ?? "info"}
                   sx={{ mb: 2 }}

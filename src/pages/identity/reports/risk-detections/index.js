@@ -1,5 +1,5 @@
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
-import { CippTablePage } from "/src/components/CippComponents/CippTablePage.jsx";
+import { Layout as DashboardLayout } from "../../../../layouts/index.js";
+import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
 const Page = () => {
@@ -23,8 +23,7 @@ const Page = () => {
       "userDisplayName",
       "userPrincipalName",
       "detectedDateTime",
-      "location.city",
-      "location.countryOrRegion",
+      "location",
       "ipAddress",
       "riskLevel",
       "riskState",
@@ -39,8 +38,7 @@ const Page = () => {
   const simpleColumns = [
     "detectedDateTime",
     "userPrincipalName",
-    "location.city",
-    "location.countryOrRegion",
+    "location",
     "ipAddress",
     "riskState",
     "riskDetail",
