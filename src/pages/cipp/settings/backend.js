@@ -1,10 +1,11 @@
-import { Container, Grid } from "@mui/material";
-import { TabbedLayout } from "/src/layouts/TabbedLayout";
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
+import { Container } from "@mui/material";
+import { Grid } from "@mui/system";
+import { TabbedLayout } from "../../../layouts/TabbedLayout";
+import { Layout as DashboardLayout } from "../../../layouts/index.js";
 import tabOptions from "./tabOptions";
-import { ApiGetCall } from "/src/api/ApiCall.jsx";
-import { CippBackendCard } from "/src/components/CippSettings/CippBackendCard";
-import { CippCodeBlock } from "/src/components/CippComponents/CippCodeBlock";
+import { ApiGetCall } from "../../../api/ApiCall.jsx";
+import { CippBackendCard } from "../../../components/CippSettings/CippBackendCard";
+import { CippCodeBlock } from "../../../components/CippComponents/CippCodeBlock";
 import { CommandLineIcon } from "@heroicons/react/24/outline";
 
 const Page = () => {
@@ -104,8 +105,12 @@ const Page = () => {
     <Container sx={{ pt: 3 }} maxWidth="xl">
       <Grid container spacing={2}>
         {backendInfo.map((item) => (
-          <Grid item xs={12} sm={12} md={6} lg={4} key={item.id}>
-            <CippBackendCard backendComponents={backendComponents} item={item} />
+          <Grid size={{ lg: 4, md: 6, sm: 12, xs: 12 }} key={item.id}>
+            <CippBackendCard
+              backendComponents={backendComponents}
+              item={item}
+              hosted={backendComponents?.data?.Results?.Hosted}
+            />
           </Grid>
         ))}
       </Grid>

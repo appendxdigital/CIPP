@@ -1,14 +1,13 @@
-import { TabbedLayout } from "/src/layouts/TabbedLayout";
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
+import { TabbedLayout } from "../../../layouts/TabbedLayout";
+import { Layout as DashboardLayout } from "../../../layouts/index.js";
 import tabOptions from "./tabOptions";
-import CippFormPage from "/src/components/CippFormPages/CippFormPage";
+import CippFormPage from "../../../components/CippFormPages/CippFormPage";
 import { useForm } from "react-hook-form";
 import {
   Box,
   Button,
   Card,
   Chip,
-  Grid,
   Stack,
   Typography,
   Link,
@@ -17,7 +16,8 @@ import {
   IconButton,
   SvgIcon,
 } from "@mui/material";
-import CippFormComponent from "/src/components/CippComponents/CippFormComponent";
+import { Grid } from "@mui/system";
+import CippFormComponent from "../../../components/CippComponents/CippFormComponent";
 import { ApiGetCall, ApiPostCall } from "../../../api/ApiCall";
 import { useEffect } from "react";
 import { CippPropertyList } from "../../../components/CippComponents/CippPropertyList";
@@ -27,7 +27,7 @@ import { useState } from "react";
 import { Close } from "@mui/icons-material";
 
 const Page = () => {
-  const pageTitle = "Partner Webhooks";
+  const pageTitle = "Automated Onboarding";
   const [testRunning, setTestRunning] = useState(false);
   const [correlationId, setCorrelationId] = useState(null);
   const [validateRunning, setValidateRunning] = useState(false);
@@ -106,6 +106,7 @@ const Page = () => {
   useEffect(() => {
     if (listSubscription.isSuccess && listEventTypes.isSuccess) {
       formControl.reset({
+        enabled: listSubscription?.data?.Results?.enabled ?? false,
         EventType: listSubscription?.data?.Results?.webhookEvents?.map((eventType) => {
           var event = listEventTypes?.data?.Results?.find((event) => event === eventType);
           return { label: event, value: event };
@@ -118,8 +119,10 @@ const Page = () => {
   return (
     <CippFormPage
       title={pageTitle}
+      hideTitle={true}
       hideBackButton={true}
       hidePageType={true}
+      allowResubmit={true}
       formControl={formControl}
       resetForm={false}
       postUrl="/api/ExecPartnerWebhook?Action=CreateSubscription"
@@ -131,7 +134,7 @@ const Page = () => {
       }
     >
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={12} md={12}>
+        <Grid size={{ md: 12, xs: 12 }}>
           <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
             Subscribe to Microsoft Partner center webhooks to enable automatic tenant onboarding and
             alerting. Updating the settings will replace any existing webhook subscription with one
@@ -146,11 +149,20 @@ const Page = () => {
             for more information on the webhook types.
           </Typography>
         </Grid>
-        <Grid item xs={12} md={12}>
+        <Grid size={{ md: 12, xs: 12 }}>
           <CippPropertyList
             sx={{ mb: 3, mx: 0, p: 0 }}
             isFetching={listSubscription.isFetching}
             propertyItems={[
+              {
+                label: "Status",
+                value: (
+                  <Chip
+                    color={listSubscription?.data?.Results?.enabled ? "success" : "default"}
+                    label={listSubscription?.data?.Results?.enabled ? "Enabled" : "Disabled"}
+                  />
+                ),
+              },
               {
                 label: "Webhook URL",
                 value: <CippCodeBlock code={listSubscription?.data?.Results?.webhookUrl} />,
@@ -167,7 +179,15 @@ const Page = () => {
             showDivider={false}
           />
         </Grid>
-        <Grid item xs={12} md={12}>
+        <Grid size={{ md: 12, xs: 12 }}>
+          <CippFormComponent
+            type="switch"
+            label="Enable Automated Onboarding"
+            name="enabled"
+            formControl={formControl}
+          />
+        </Grid>
+        <Grid size={{ md: 12, xs: 12 }}>
           <CippFormComponent
             type="autoComplete"
             fullWidth
@@ -180,7 +200,7 @@ const Page = () => {
             formControl={formControl}
           />
         </Grid>
-        <Grid item xs={12} md={12}>
+        <Grid size={{ md: 12, xs: 12 }}>
           <CippFormComponent
             type="switch"
             label="Exclude onboarded tenants from top-level standards"
@@ -189,7 +209,7 @@ const Page = () => {
           />
         </Grid>
         {testRunning && (
-          <Grid item xs={12} md={12} sx={{ mt: 2 }}>
+          <Grid size={{ md: 12, xs: 12 }} sx={{ mt: 2 }}>
             <Card variant="outlined">
               <CardHeader
                 title={

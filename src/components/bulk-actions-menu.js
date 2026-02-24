@@ -2,6 +2,39 @@ import PropTypes from "prop-types";
 import ChevronDownIcon from "@heroicons/react/24/outline/ChevronDownIcon";
 import { Button, Link, ListItemText, Menu, MenuItem, SvgIcon } from "@mui/material";
 import { usePopover } from "../hooks/use-popover";
+import { FilePresent, Laptop, Mail, Share, Shield, ShieldMoon, PrecisionManufacturing, BarChart, Group } from "@mui/icons-material";
+import { GlobeAltIcon, UsersIcon, ServerIcon } from "@heroicons/react/24/outline";
+
+function getIconByName(iconName) {
+  switch (iconName) {
+    case "GlobeAltIcon":
+      return <GlobeAltIcon />;
+    case "Mail":
+      return <Mail />;
+    case "UsersIcon":
+      return <UsersIcon />;
+    case "FilePresent":
+      return <FilePresent />;
+    case "ServerIcon":
+      return <ServerIcon />;
+    case "Laptop":
+      return <Laptop />;
+    case "Share":
+      return <Share />;
+    case "Shield":
+      return <Shield />;
+    case "ShieldMoon":
+      return <ShieldMoon />;
+    case "PrecisionManufacturing":
+      return <PrecisionManufacturing />;
+    case "BarChart":
+      return <BarChart />;
+    case "Group":
+      return <Group />;
+    default:
+      return null;
+  }
+}
 
 export const BulkActionsMenu = (props) => {
   const { buttonName, sx, row, actions = [], ...other } = props;
@@ -55,12 +88,22 @@ export const BulkActionsMenu = (props) => {
                 target="_blank"
                 rel="noreferrer"
               >
+                <SvgIcon sx={{ mr: 1 }}>{getIconByName(action.icon)}</SvgIcon>
                 <ListItemText primary={action.label} />
               </MenuItem>
             );
           } else {
             return (
-              <MenuItem key={index} onClick={action.onClick}>
+              <MenuItem
+                key={index}
+                onClick={() => {
+                  if (action.onClick) {
+                    action.onClick();
+                  }
+                  popover.handleClose();
+                }}
+              >
+                <SvgIcon sx={{ mr: 1 }}>{getIconByName(action.icon)}</SvgIcon>
                 <ListItemText primary={action.label} />
               </MenuItem>
             );

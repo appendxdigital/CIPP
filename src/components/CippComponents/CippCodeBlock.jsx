@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import { CippCopyToClipBoard } from "./CippCopyToClipboard";
@@ -16,7 +16,7 @@ const CodeContainer = styled("div")`
   padding-bottom: 1rem;
   .cipp-code-copy-button {
     position: absolute;
-    right: 0.5rem;
+    right: 1rem; /* Moved further left to avoid Monaco scrollbar */
     top: 0.5rem;
     z-index: 1; /* Ensure the button is above the code block */
   }
@@ -25,7 +25,7 @@ const CodeContainer = styled("div")`
 export const CippCodeBlock = (props) => {
   const {
     code,
-    language = "javascript",
+    language = "json",
     showLineNumbers = false,
     startingLineNumber = 1,
     wrapLongLines = true,
@@ -47,13 +47,15 @@ export const CippCodeBlock = (props) => {
       </div>
       {type === "editor" && (
         <Editor
-          defaultLanguage="json"
-          defaultValue={code}
+          defaultLanguage={language}
+          value={code}
           theme={currentTheme === "dark" ? "vs-dark" : "vs-light"}
           height={editorHeight}
           options={{
             wordWrap: true,
-    
+            lineNumbers: showLineNumbers ? "on" : "off",
+            minimap: { enabled: showLineNumbers },
+            readOnly: true,
           }}
           {...other}
         />
@@ -66,7 +68,6 @@ export const CippCodeBlock = (props) => {
           showLineNumbers={showLineNumbers}
           startingLineNumber={startingLineNumber}
           wrapLongLines={wrapLongLines}
-          
         >
           {code}
         </SyntaxHighlighter>

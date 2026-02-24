@@ -1,4 +1,4 @@
-import { Layout as DashboardLayout } from "/src/layouts/index.js";
+import { Layout as DashboardLayout } from "../../../layouts/index.js";
 import {
   Box,
   Button,
@@ -7,16 +7,17 @@ import {
   CardActions,
   CardContent,
   Container,
-  Grid,
   Skeleton,
   Stack,
   Typography,
 } from "@mui/material";
-import extensions from "/src/data/Extensions";
+import extensions from "../../../data/Extensions";
 import { Sync } from "@mui/icons-material";
-import { useSettings } from "/src/hooks/use-settings";
-import { ApiGetCall } from "/src/api/ApiCall";
+import { useSettings } from "../../../hooks/use-settings";
+import { ApiGetCall } from "../../../api/ApiCall";
 import Link from "next/link";
+import { Grid } from "@mui/system";
+import { CippHead } from "../../../components/CippComponents/CippHead";
 
 const Page = () => {
   const settings = useSettings();
@@ -25,16 +26,19 @@ const Page = () => {
   const integrations = ApiGetCall({
     url: "/api/ListExtensionsConfig",
     queryKey: "Integrations",
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   return (
     <Container maxWidth={"xl"}>
+      <CippHead title="Integrations" noTenant={true} />
       <Stack
         direction="row"
         justifyContent="space-between"
         alignItems="center"
         spacing={4}
-        sx={{ mb: 3, mt: 3 }}
+        sx={{ mb: 3 }}
       >
         <Typography variant="h4">Integrations</Typography>
         <Button
@@ -56,16 +60,16 @@ const Page = () => {
           }
 
           var integrationConfig = integrations?.data?.[extension.id];
-          var isEnabled = integrationConfig?.Enabled;
+          var isEnabled = integrationConfig?.Enabled || extension.id === "cippapi";
           var status = "Unconfigured";
           if (integrationConfig && !isEnabled) {
             status = "Disabled";
-          } else if (integrationConfig && isEnabled) {
+          } else if ((integrationConfig && isEnabled) || extension.id === "cippapi") {
             status = "Enabled";
           }
 
           return (
-            <Grid item sm={12} md={6} xl={3} key={extension.id}>
+            <Grid size={{ md: 6, sm: 12, xl: 3 }} key={extension.id}>
               <CardActionArea
                 component={Link}
                 sx={{
