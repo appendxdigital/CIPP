@@ -1,350 +1,148 @@
-import { Layout as DashboardLayout } from "../../../../layouts/index.js";
-import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
-import { Book, LaptopChromebook } from "@mui/icons-material";
-import { GlobeAltIcon, TrashIcon, UserIcon, UserGroupIcon } from "@heroicons/react/24/outline";
-import { PermissionButton } from "../../../../utils/permissions.js";
-import { CippPolicyDeployDrawer } from "../../../../components/CippComponents/CippPolicyDeployDrawer.jsx";
-import { useSettings } from "../../../../hooks/use-settings.js";
-
-const assignmentModeOptions = [
-  { label: "Replace existing assignments", value: "replace" },
-  { label: "Append to existing assignments", value: "append" },
-];
-
-const assignmentFilterTypeOptions = [
-  { label: "Include - Apply policy to devices matching filter", value: "include" },
-  { label: "Exclude - Apply policy to devices NOT matching filter", value: "exclude" },
-];
+import { Layout as DashboardLayout } from '../../../../layouts/index.js'
+import { CippTablePage } from '../../../../components/CippComponents/CippTablePage.jsx'
+import { PermissionButton } from '../../../../utils/permissions.js'
+import { CippPolicyDeployDrawer } from '../../../../components/CippComponents/CippPolicyDeployDrawer.jsx'
+import { useSettings } from '../../../../hooks/use-settings.js'
+import { useCippIntunePolicyActions } from '../../../../components/CippComponents/CippIntunePolicyActions.jsx'
+import { Sync, Info, CloudDone, Bolt } from '@mui/icons-material'
+import { Button, SvgIcon, IconButton, Tooltip, Chip } from '@mui/material'
+import { Stack } from '@mui/system'
+import { useDialog } from '../../../../hooks/use-dialog'
+import { CippApiDialog } from '../../../../components/CippComponents/CippApiDialog'
+import { CippQueueTracker } from '../../../../components/CippTable/CippQueueTracker'
+import { useState, useEffect } from 'react'
 
 const Page = () => {
-  const pageTitle = "Configuration Policies";
-  const cardButtonPermissions = ["Endpoint.MEM.ReadWrite"];
-  const tenant = useSettings().currentTenant;
+  const pageTitle = 'Configuration Policies'
+  const cardButtonPermissions = ['Endpoint.MEM.ReadWrite']
+  const tenant = useSettings().currentTenant
+  const isAllTenants = tenant === 'AllTenants'
+  const syncDialog = useDialog()
+  const [syncQueueId, setSyncQueueId] = useState(null)
+  const [useReportDB, setUseReportDB] = useState(isAllTenants)
 
-  const actions = [
-    {
-      label: "Create template based on policy",
-      type: "POST",
-      url: "/api/AddIntuneTemplate",
-      data: {
-        ID: "id",
-        URLName: "URLName",
-      },
-      confirmText: "Are you sure you want to create a template based on this policy?",
-      icon: <Book />,
-      color: "info",
+  // Reset toggle whenever the tenant changes
+  useEffect(() => {
+    setUseReportDB(tenant === 'AllTenants')
+  }, [tenant])
+
+  const actions = useCippIntunePolicyActions(tenant, 'URLName', {
+    templateData: {
+      ID: 'id',
+      URLName: 'URLName',
     },
-    {
-      label: "Assign to All Users",
-      type: "POST",
-      url: "/api/ExecAssignPolicy",
-      data: {
-        AssignTo: "allLicensedUsers",
-        ID: "id",
-        type: "URLName",
-      },
-      fields: [
-        {
-          type: "radio",
-          name: "assignmentMode",
-          label: "Assignment mode",
-          options: assignmentModeOptions,
-          defaultValue: "replace",
-          helperText:
-            "Replace will overwrite existing assignments. Append keeps current assignments and adds/overwrites only for the selected groups.",
-        },
-        {
-          type: "autoComplete",
-          name: "assignmentFilter",
-          label: "Assignment Filter (Optional)",
-          multiple: false,
-          creatable: false,
-          api: {
-            url: "/api/ListAssignmentFilters",
-            queryKey: `ListAssignmentFilters-${tenant}`,
-            labelField: (filter) => filter.displayName,
-            valueField: "displayName",
-          },
-        },
-        {
-          type: "radio",
-          name: "assignmentFilterType",
-          label: "Assignment Filter Mode",
-          options: assignmentFilterTypeOptions,
-          defaultValue: "include",
-          helperText: "Choose whether to include or exclude devices matching the filter.",
-        },
-      ],
-      customDataformatter: (row, action, formData) => {
-        const tenantFilterValue = tenant === "AllTenants" && row?.Tenant ? row.Tenant : tenant;
-        return {
-          tenantFilter: tenantFilterValue,
-          ID: row?.id,
-          type: row?.URLName,
-          AssignTo: "allLicensedUsers",
-          assignmentMode: formData?.assignmentMode || "replace",
-          AssignmentFilterName: formData?.assignmentFilter?.value || null,
-          AssignmentFilterType: formData?.assignmentFilter?.value
-            ? formData?.assignmentFilterType || "include"
-            : null,
-        };
-      },
-      confirmText: 'Are you sure you want to assign "[displayName]" to all users?',
-      icon: <UserIcon />,
-      color: "info",
-    },
-    {
-      label: "Assign to All Devices",
-      type: "POST",
-      url: "/api/ExecAssignPolicy",
-      data: {
-        AssignTo: "AllDevices",
-        ID: "id",
-        type: "URLName",
-      },
-      fields: [
-        {
-          type: "radio",
-          name: "assignmentMode",
-          label: "Assignment mode",
-          options: assignmentModeOptions,
-          defaultValue: "replace",
-          helperText:
-            "Replace will overwrite existing assignments. Append keeps current assignments and adds/overwrites only for the selected groups.",
-        },
-        {
-          type: "autoComplete",
-          name: "assignmentFilter",
-          label: "Assignment Filter (Optional)",
-          multiple: false,
-          creatable: false,
-          api: {
-            url: "/api/ListAssignmentFilters",
-            queryKey: `ListAssignmentFilters-${tenant}`,
-            labelField: (filter) => filter.displayName,
-            valueField: "displayName",
-          },
-        },
-        {
-          type: "radio",
-          name: "assignmentFilterType",
-          label: "Assignment Filter Mode",
-          options: assignmentFilterTypeOptions,
-          defaultValue: "include",
-          helperText: "Choose whether to include or exclude devices matching the filter.",
-        },
-      ],
-      customDataformatter: (row, action, formData) => {
-        const tenantFilterValue = tenant === "AllTenants" && row?.Tenant ? row.Tenant : tenant;
-        return {
-          tenantFilter: tenantFilterValue,
-          ID: row?.id,
-          type: row?.URLName,
-          AssignTo: "AllDevices",
-          assignmentMode: formData?.assignmentMode || "replace",
-          AssignmentFilterName: formData?.assignmentFilter?.value || null,
-          AssignmentFilterType: formData?.assignmentFilter?.value
-            ? formData?.assignmentFilterType || "include"
-            : null,
-        };
-      },
-      confirmText: 'Are you sure you want to assign "[displayName]" to all devices?',
-      icon: <LaptopChromebook />,
-      color: "info",
-    },
-    {
-      label: "Assign Globally (All Users / All Devices)",
-      type: "POST",
-      url: "/api/ExecAssignPolicy",
-      data: {
-        AssignTo: "AllDevicesAndUsers",
-        ID: "id",
-        type: "URLName",
-      },
-      fields: [
-        {
-          type: "radio",
-          name: "assignmentMode",
-          label: "Assignment mode",
-          options: assignmentModeOptions,
-          defaultValue: "replace",
-          helperText:
-            "Replace will overwrite existing assignments. Append keeps current assignments and adds/overwrites only for the selected groups.",
-        },
-        {
-          type: "autoComplete",
-          name: "assignmentFilter",
-          label: "Assignment Filter (Optional)",
-          multiple: false,
-          creatable: false,
-          api: {
-            url: "/api/ListAssignmentFilters",
-            queryKey: `ListAssignmentFilters-${tenant}`,
-            labelField: (filter) => filter.displayName,
-            valueField: "displayName",
-          },
-        },
-        {
-          type: "radio",
-          name: "assignmentFilterType",
-          label: "Assignment Filter Mode",
-          options: assignmentFilterTypeOptions,
-          defaultValue: "include",
-          helperText: "Choose whether to include or exclude devices matching the filter.",
-        },
-      ],
-      customDataformatter: (row, action, formData) => {
-        const tenantFilterValue = tenant === "AllTenants" && row?.Tenant ? row.Tenant : tenant;
-        return {
-          tenantFilter: tenantFilterValue,
-          ID: row?.id,
-          type: row?.URLName,
-          AssignTo: "AllDevicesAndUsers",
-          assignmentMode: formData?.assignmentMode || "replace",
-          AssignmentFilterName: formData?.assignmentFilter?.value || null,
-          AssignmentFilterType: formData?.assignmentFilter?.value
-            ? formData?.assignmentFilterType || "include"
-            : null,
-        };
-      },
-      confirmText: 'Are you sure you want to assign "[displayName]" to all users and devices?',
-      icon: <GlobeAltIcon />,
-      color: "info",
-    },
-    {
-      label: "Assign to Custom Group",
-      type: "POST",
-      url: "/api/ExecAssignPolicy",
-      icon: <UserGroupIcon />,
-      color: "info",
-      confirmText: 'Select the target groups for "[displayName]".',
-      fields: [
-        {
-          type: "autoComplete",
-          name: "groupTargets",
-          label: "Group(s)",
-          multiple: true,
-          creatable: false,
-          allowResubmit: true,
-          validators: { required: "Please select at least one group" },
-          api: {
-            url: "/api/ListGraphRequest",
-            dataKey: "Results",
-            queryKey: `ListPolicyAssignmentGroups-${tenant}`,
-            labelField: (group) =>
-              group.id ? `${group.displayName} (${group.id})` : group.displayName,
-            valueField: "id",
-            addedField: {
-              description: "description",
-            },
-            data: {
-              Endpoint: "groups",
-              manualPagination: true,
-              $select: "id,displayName,description",
-              $orderby: "displayName",
-              $top: 999,
-              $count: true,
-            },
-          },
-        },
-        {
-          type: "radio",
-          name: "assignmentMode",
-          label: "Assignment mode",
-          options: assignmentModeOptions,
-          defaultValue: "replace",
-          helperText:
-            "Replace will overwrite existing assignments. Append keeps current assignments and adds/overwrites only for the selected groups.",
-        },
-        {
-          type: "autoComplete",
-          name: "assignmentFilter",
-          label: "Assignment Filter (Optional)",
-          multiple: false,
-          creatable: false,
-          api: {
-            url: "/api/ListAssignmentFilters",
-            queryKey: `ListAssignmentFilters-${tenant}`,
-            labelField: (filter) => filter.displayName,
-            valueField: "displayName",
-          },
-        },
-        {
-          type: "radio",
-          name: "assignmentFilterType",
-          label: "Assignment Filter Mode",
-          options: assignmentFilterTypeOptions,
-          defaultValue: "include",
-          helperText: "Choose whether to include or exclude devices matching the filter.",
-        },
-      ],
-      customDataformatter: (row, action, formData) => {
-        const selectedGroups = Array.isArray(formData?.groupTargets) ? formData.groupTargets : [];
-        const tenantFilterValue = tenant === "AllTenants" && row?.Tenant ? row.Tenant : tenant;
-        return {
-          tenantFilter: tenantFilterValue,
-          ID: row?.id,
-          type: row?.URLName,
-          GroupIds: selectedGroups.map((group) => group.value).filter(Boolean),
-          GroupNames: selectedGroups.map((group) => group.label).filter(Boolean),
-          assignmentMode: formData?.assignmentMode || "replace",
-          AssignmentFilterName: formData?.assignmentFilter?.value || null,
-          AssignmentFilterType: formData?.assignmentFilter?.value
-            ? formData?.assignmentFilterType || "include"
-            : null,
-        };
-      },
-    },
-    {
-      label: "Delete Policy",
-      type: "POST",
-      url: "/api/RemovePolicy",
-      data: {
-        ID: "id",
-        URLName: "URLName",
-      },
-      confirmText: "Are you sure you want to delete this policy?",
-      icon: <TrashIcon />,
-      color: "danger",
-    },
-  ];
+    deleteUrlName: 'URLName',
+  })
 
   const offCanvas = {
     extendedInfoFields: [
-      "createdDateTime",
-      "displayName",
-      "lastModifiedDateTime",
-      "PolicyTypeName",
+      'createdDateTime',
+      'displayName',
+      'lastModifiedDateTime',
+      'PolicyTypeName',
     ],
     actions: actions,
-  };
+  }
 
   const simpleColumns = [
-    "displayName",
-    "PolicyTypeName",
-    "PolicyAssignment",
-    "PolicyExclude",
-    "description",
-    "lastModifiedDateTime",
-  ];
+    ...(useReportDB ? ['Tenant', 'CacheTimestamp'] : []),
+    'displayName',
+    'PolicyTypeName',
+    'PolicyAssignment',
+    'PolicyExclude',
+    'description',
+    'lastModifiedDateTime',
+  ]
+
+  const pageActions = [
+    <Stack key="actions-stack" direction="row" spacing={1} alignItems="center">
+      {useReportDB && (
+        <>
+          <CippQueueTracker
+            queueId={syncQueueId}
+            queryKey={`ListIntunePolicy-${tenant}`}
+            title="Intune Policy Sync"
+          />
+          <Button
+            startIcon={
+              <SvgIcon fontSize="small">
+                <Sync />
+              </SvgIcon>
+            }
+            size="xs"
+            onClick={syncDialog.handleOpen}
+          >
+            Sync
+          </Button>
+        </>
+      )}
+      <Tooltip
+        title={
+          isAllTenants
+            ? 'AllTenants always uses cached data'
+            : useReportDB
+              ? 'Showing cached data from the Reporting Database — click to switch to live'
+              : 'Showing live data — click to switch to cache'
+        }
+      >
+        <span>
+          <Chip
+            icon={useReportDB ? <CloudDone /> : <Bolt />}
+            label={useReportDB ? 'Cached' : 'Live'}
+            color="primary"
+            size="small"
+            onClick={isAllTenants ? undefined : () => setUseReportDB((prev) => !prev)}
+            clickable={!isAllTenants}
+            disabled={isAllTenants}
+            variant="outlined"
+          />
+        </span>
+      </Tooltip>
+    </Stack>,
+  ]
 
   return (
-    <CippTablePage
-      title={pageTitle}
-      apiUrl="/api/ListIntunePolicy?type=ESP"
-      actions={actions}
-      offCanvas={offCanvas}
-      simpleColumns={simpleColumns}
-      cardButton={
-        <CippPolicyDeployDrawer
-          buttonText="Deploy Policy"
-          requiredPermissions={cardButtonPermissions}
-          PermissionButton={PermissionButton}
-        />
-      }
-    />
-  );
-};
+    <>
+      <CippTablePage
+        title={pageTitle}
+        apiUrl={`/api/ListIntunePolicy${useReportDB ? '?UseReportDB=true' : ''}`}
+        actions={actions}
+        offCanvas={offCanvas}
+        simpleColumns={simpleColumns}
+        queryKey={`ListIntunePolicy-${tenant}-${useReportDB}`}
+        cardButton={
+          <Stack direction="row" spacing={1} alignItems="center">
+            <CippPolicyDeployDrawer
+              buttonText="Deploy Policy"
+              requiredPermissions={cardButtonPermissions}
+              PermissionButton={PermissionButton}
+            />
+            {pageActions}
+          </Stack>
+        }
+      />
+      <CippApiDialog
+        createDialog={syncDialog}
+        title="Sync Intune Policy Report"
+        fields={[]}
+        api={{
+          type: 'GET',
+          url: '/api/ExecCIPPDBCache',
+          confirmText: `Run Intune policy cache sync for ${tenant}? This will update policy data immediately.`,
+          relatedQueryKeys: [`ListIntunePolicy-${tenant}-true`],
+          data: {
+            Name: 'IntunePolicies',
+          },
+          onSuccess: (result) => {
+            if (result?.Metadata?.QueueId) {
+              setSyncQueueId(result?.Metadata?.QueueId)
+            }
+          },
+        }}
+      />
+    </>
+  )
+}
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
-export default Page;
+Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>
+export default Page

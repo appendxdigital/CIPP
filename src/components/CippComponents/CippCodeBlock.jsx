@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import SyntaxHighlighter from "react-syntax-highlighter";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { CippCopyToClipBoard } from "./CippCopyToClipboard";
 import { styled } from "@mui/system"; // Correct import from @mui/system
 import { Editor } from "@monaco-editor/react";
@@ -31,6 +31,7 @@ export const CippCodeBlock = (props) => {
     wrapLongLines = true,
     type = "syntax",
     editorHeight = "500px",
+    readOnly = false,
     ...other
   } = props;
   const [codeCopied, setCodeCopied] = useState(false);
@@ -47,7 +48,7 @@ export const CippCodeBlock = (props) => {
       </div>
       {type === "editor" && (
         <Editor
-          defaultLanguage={language}
+          language={language}
           value={code}
           theme={currentTheme === "dark" ? "vs-dark" : "vs-light"}
           height={editorHeight}
@@ -55,7 +56,13 @@ export const CippCodeBlock = (props) => {
             wordWrap: true,
             lineNumbers: showLineNumbers ? "on" : "off",
             minimap: { enabled: showLineNumbers },
-            readOnly: true,
+            readOnly: readOnly,
+            quickSuggestions: {
+              other: true,
+              comments: true,
+              strings: true,
+            },
+            suggestOnTriggerCharacters: true,
           }}
           {...other}
         />
