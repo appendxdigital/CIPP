@@ -77,7 +77,14 @@
     "impactColour": "info",
     "addedDate": "2024-03-19",
     "powershellEquivalent": "New-MailContact",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.DeployContactTemplates",
@@ -102,16 +109,19 @@
       }
     ],
     "label": "Deploy Mail Contact Template",
-    "disabledFeatures": {
-      "report": false,
-      "warn": false,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": false, "warn": false, "remediate": false },
     "impact": "Low Impact",
     "impactColour": "info",
     "addedDate": "2025-05-31",
     "powershellEquivalent": "New-MailContact",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AuditLog",
@@ -131,7 +141,14 @@
     "impactColour": "info",
     "addedDate": "2021-11-16",
     "powershellEquivalent": "Enable-OrganizationCustomization",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.RestrictThirdPartyStorageServices",
@@ -146,7 +163,15 @@
     "impactColour": "warning",
     "addedDate": "2025-06-06",
     "powershellEquivalent": "New-MgServicePrincipal and Update-MgServicePrincipal",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.ProfilePhotos",
@@ -163,14 +188,8 @@
         "label": "Select value",
         "name": "standards.ProfilePhotos.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       }
     ],
@@ -179,7 +198,14 @@
     "impactColour": "info",
     "addedDate": "2025-01-19",
     "powershellEquivalent": "Set-OrganizationConfig -ProfilePhotoOptions EnablePhotos and Update-MgBetaAdminPeople",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.PhishProtection",
@@ -192,13 +218,10 @@
     "impact": "Low Impact",
     "impactColour": "info",
     "addedDate": "2024-01-22",
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false },
     "powershellEquivalent": "Portal only",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": ["AAD_PREMIUM", "AAD_PREMIUM_P2", "OFFICE_BUSINESS"]
   },
   {
     "name": "standards.Branding",
@@ -230,33 +253,20 @@
         "label": "Visual Template",
         "name": "standards.Branding.layoutTemplateType",
         "options": [
-          {
-            "label": "Full-screen background",
-            "value": "default"
-          },
-          {
-            "label": "Partial-screen background",
-            "value": "verticalSplit"
-          }
+          { "label": "Full-screen background", "value": "default" },
+          { "label": "Partial-screen background", "value": "verticalSplit" }
         ]
       },
-      {
-        "type": "switch",
-        "name": "standards.Branding.isHeaderShown",
-        "label": "Show header"
-      },
-      {
-        "type": "switch",
-        "name": "standards.Branding.isFooterShown",
-        "label": "Show footer"
-      }
+      { "type": "switch", "name": "standards.Branding.isHeaderShown", "label": "Show header" },
+      { "type": "switch", "name": "standards.Branding.isFooterShown", "label": "Show footer" }
     ],
     "label": "Set branding for the tenant",
     "impact": "Low Impact",
     "impactColour": "info",
     "addedDate": "2024-05-13",
     "powershellEquivalent": "Portal only",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["AAD_PREMIUM", "AAD_PREMIUM_P2", "OFFICE_BUSINESS"]
   },
   {
     "name": "standards.EnableCustomerLockbox",
@@ -271,7 +281,8 @@
     "impactColour": "info",
     "addedDate": "2024-01-08",
     "powershellEquivalent": "Set-OrganizationConfig -CustomerLockBoxEnabled $true",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": ["CustomerLockbox"]
   },
   {
     "name": "standards.EnablePronouns",
@@ -354,7 +365,14 @@
     "impactColour": "warning",
     "addedDate": "2021-11-16",
     "powershellEquivalent": "Set-TransportConfig -SmtpClientAuthenticationDisabled $true",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.ActivityBasedTimeout",
@@ -377,26 +395,11 @@
         "label": "Select value",
         "name": "standards.ActivityBasedTimeout.timeout",
         "options": [
-          {
-            "label": "1 Hour",
-            "value": "01:00:00"
-          },
-          {
-            "label": "3 Hours",
-            "value": "03:00:00"
-          },
-          {
-            "label": "6 Hours",
-            "value": "06:00:00"
-          },
-          {
-            "label": "12 Hours",
-            "value": "12:00:00"
-          },
-          {
-            "label": "24 Hours",
-            "value": "1.00:00:00"
-          }
+          { "label": "1 Hour", "value": "01:00:00" },
+          { "label": "3 Hours", "value": "03:00:00" },
+          { "label": "6 Hours", "value": "06:00:00" },
+          { "label": "12 Hours", "value": "12:00:00" },
+          { "label": "24 Hours", "value": "1.00:00:00" }
         ]
       }
     ],
@@ -423,18 +426,9 @@
         "name": "standards.AuthMethodsSettings.ReportSuspiciousActivity",
         "label": "Report Suspicious Activity Settings",
         "options": [
-          {
-            "label": "Microsoft managed",
-            "value": "default"
-          },
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Microsoft managed", "value": "default" },
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       },
       {
@@ -445,18 +439,9 @@
         "name": "standards.AuthMethodsSettings.SystemCredential",
         "label": "System Credential Preferences",
         "options": [
-          {
-            "label": "Microsoft managed",
-            "value": "default"
-          },
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Microsoft managed", "value": "default" },
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       }
     ],
@@ -466,6 +451,33 @@
     "addedDate": "2025-02-10",
     "powershellEquivalent": "Update-MgBetaPolicyAuthenticationMethodPolicy",
     "recommendedBy": []
+  },
+  {
+    "name": "standards.AdminSSPR",
+    "cat": "Entra (AAD) Standards",
+    "tag": ["EIDSCA.AP01", "EIDSCAAP01", "ZTNA21842"],
+    "helpText": "Controls whether administrators are allowed to use Self-Service Password Reset through the Microsoft Entra authorization policy.",
+    "docsDescription": "Configures the allowedToUseSSPR property on the Microsoft Entra authorization policy. Microsoft documents this property as controlling whether administrators of the tenant can use Self-Service Password Reset. Use this standard to explicitly enable or disable administrator SSPR based on your security policy.",
+    "executiveText": "Controls whether tenant administrators can reset their own passwords through Self-Service Password Reset. Disabling this capability forces privileged accounts through more controlled recovery processes and reduces the risk of self-service recovery being misused on administrative identities.",
+    "addedComponent": [
+      {
+        "type": "autoComplete",
+        "multiple": false,
+        "creatable": false,
+        "label": "Select value",
+        "name": "standards.AdminSSPR.state",
+        "options": [
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
+        ]
+      }
+    ],
+    "label": "Set administrator Self-Service Password Reset state",
+    "impact": "Low Impact",
+    "impactColour": "info",
+    "addedDate": "2026-04-21",
+    "powershellEquivalent": "Update-MgBetaPolicyAuthorizationPolicy",
+    "recommendedBy": ["CIPP"]
   },
   {
     "name": "standards.AuthMethodsPolicyMigration",
@@ -497,14 +509,8 @@
         "label": "App Approval Mode",
         "name": "standards.AppDeploy.mode",
         "options": [
-          {
-            "label": "Template",
-            "value": "template"
-          },
-          {
-            "label": "Copy Permissions",
-            "value": "copy"
-          }
+          { "label": "Template", "value": "template" },
+          { "label": "Copy Permissions", "value": "copy" }
         ]
       },
       {
@@ -518,9 +524,7 @@
           "labelField": "TemplateName",
           "valueField": "TemplateId",
           "queryKey": "StdAppApprovalTemplateList",
-          "addedField": {
-            "AppId": "AppId"
-          }
+          "addedField": { "AppId": "AppId" }
         },
         "condition": {
           "field": "standards.AppDeploy.mode",
@@ -622,18 +626,9 @@
         "label": "Select value",
         "name": "standards.PWcompanionAppAllowedState.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          },
-          {
-            "label": "Microsoft managed",
-            "value": "default"
-          }
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" },
+          { "label": "Microsoft managed", "value": "default" }
         ]
       }
     ],
@@ -733,14 +728,8 @@
         "label": "Select TAP Lifetime",
         "name": "standards.TAP.config",
         "options": [
-          {
-            "label": "Only Once",
-            "value": "true"
-          },
-          {
-            "label": "Multiple Logons",
-            "value": "false"
-          }
+          { "label": "Only Once", "value": "true" },
+          { "label": "Multiple Logons", "value": "false" }
         ]
       }
     ],
@@ -796,7 +785,8 @@
     "impactColour": "warning",
     "addedDate": "2025-06-28",
     "powershellEquivalent": "Get-MgBetaDirectorySetting, New-MgBetaDirectorySetting, Update-MgBetaDirectorySetting",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": ["AAD_PREMIUM", "AAD_PREMIUM_P2"]
   },
   {
     "name": "standards.ExternalMFATrusted",
@@ -812,14 +802,8 @@
         "label": "Select value",
         "name": "standards.ExternalMFATrusted.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "true"
-          },
-          {
-            "label": "Disabled",
-            "value": "false"
-          }
+          { "label": "Enabled", "value": "true" },
+          { "label": "Disabled", "value": "false" }
         ]
       }
     ],
@@ -896,14 +880,8 @@
         "label": "Select value",
         "name": "standards.NudgeMFA.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       },
       {
@@ -937,7 +915,15 @@
     "impactColour": "info",
     "addedDate": "2022-07-17",
     "powershellEquivalent": "Update-MgBetaDirectorySetting",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.DisableAppCreation",
@@ -976,14 +962,8 @@
         "label": "Select state",
         "name": "standards.BitLockerKeysForOwnedDevice.state",
         "options": [
-          {
-            "label": "Restrict",
-            "value": "restrict"
-          },
-          {
-            "label": "Allow",
-            "value": "allow"
-          }
+          { "label": "Restrict", "value": "restrict" },
+          { "label": "Allow", "value": "allow" }
         ]
       }
     ],
@@ -1034,6 +1014,11 @@
         "name": "standards.DisableSelfServiceLicenses.Exclusions",
         "label": "License Ids to exclude from this standard",
         "required": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DisableSelfServiceLicenses.DisableTrials",
+        "label": "Disable starting trials on behalf of your organization"
       }
     ],
     "label": "Disable Self Service Licensing",
@@ -1063,7 +1048,8 @@
     "impactColour": "warning",
     "addedDate": "2022-10-20",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": ["AAD_PREMIUM", "AAD_PREMIUM_P2"]
   },
   {
     "name": "standards.OauthConsent",
@@ -1131,22 +1117,13 @@
         "label": "Who can send invites?",
         "name": "standards.GuestInvite.allowInvitesFrom",
         "options": [
-          {
-            "label": "Everyone",
-            "value": "everyone"
-          },
+          { "label": "Everyone", "value": "everyone" },
           {
             "label": "Admins, Guest inviters and All Members",
             "value": "adminsGuestInvitersAndAllMembers"
           },
-          {
-            "label": "Admins and Guest inviters",
-            "value": "adminsAndGuestInviters"
-          },
-          {
-            "label": "None",
-            "value": "none"
-          }
+          { "label": "Admins and Guest inviters", "value": "adminsAndGuestInviters" },
+          { "label": "None", "value": "none" }
         ]
       }
     ],
@@ -1174,17 +1151,14 @@
         }
       }
     ],
-    "disabledFeatures": {
-      "report": false,
-      "warn": false,
-      "remediate": true
-    },
+    "disabledFeatures": { "report": false, "warn": false, "remediate": true },
     "label": "Cleanup stale Entra devices",
     "impact": "High Impact",
     "impactColour": "danger",
     "addedDate": "2025-01-19",
     "powershellEquivalent": "Remove-MgDevice, Update-MgDevice or Graph API",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.UndoOauth",
@@ -1329,11 +1303,7 @@
         "creatable": false,
         "name": "standards.UserPreferredLanguage.preferredLanguage",
         "label": "Preferred Language",
-        "api": {
-          "url": "/languageList.json",
-          "labelField": "tag",
-          "valueField": "tag"
-        }
+        "api": { "url": "/languageList.json", "labelField": "tag", "valueField": "tag" }
       }
     ],
     "label": "Preferred language for all users",
@@ -1341,6 +1311,58 @@
     "impactColour": "info",
     "addedDate": "2025-02-26",
     "powershellEquivalent": "Update-MgUser -UserId user@domain.com -BodyParameter @{preferredLanguage='en-US'}",
+    "recommendedBy": []
+  },
+  {
+    "name": "standards.AppManagementPolicy",
+    "cat": "Entra (AAD) Standards",
+    "tag": [],
+    "helpText": "Configures the default app management policy to control application and service principal credential restrictions such as password and key credential lifetimes.",
+    "docsDescription": "Configures the default app management policy to control application and service principal credential restrictions. This includes password addition restrictions, custom password addition, symmetric key addition, and credential lifetime limits for both applications and service principals.",
+    "executiveText": "Enforces credential restrictions on application registrations and service principals to limit how secrets and certificates are created and how long they remain valid. This reduces the risk of long-lived or unmanaged credentials being used to access your tenant.",
+    "addedComponent": [
+      {
+        "type": "autoComplete",
+        "multiple": false,
+        "creatable": false,
+        "required": false,
+        "name": "standards.AppManagementPolicy.passwordCredentialsPasswordAddition",
+        "label": "Disable Password Addition",
+        "options": [
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
+        ]
+      },
+      {
+        "type": "autoComplete",
+        "multiple": false,
+        "creatable": false,
+        "required": false,
+        "name": "standards.AppManagementPolicy.passwordCredentialsCustomPasswordAddition",
+        "label": "Disable Custom Password",
+        "options": [
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
+        ]
+      },
+      {
+        "type": "number",
+        "required": false,
+        "name": "standards.AppManagementPolicy.passwordCredentialsMaxLifetime",
+        "label": "Password Credentials Max Lifetime (Days)"
+      },
+      {
+        "type": "number",
+        "required": false,
+        "name": "standards.AppManagementPolicy.keyCredentialsMaxLifetime",
+        "label": "Key Credentials Max Lifetime (Days)"
+      }
+    ],
+    "label": "Set Default App Management Policy",
+    "impact": "Medium Impact",
+    "impactColour": "warning",
+    "addedDate": "2026-03-13",
+    "powershellEquivalent": "Graph API",
     "recommendedBy": []
   },
   {
@@ -1361,7 +1383,14 @@
     "impactColour": "info",
     "addedDate": "2023-05-03",
     "powershellEquivalent": "Set-HostedOutboundSpamFilterPolicy",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.MessageExpiration",
@@ -1375,7 +1404,14 @@
     "impactColour": "info",
     "addedDate": "2024-02-23",
     "powershellEquivalent": "Set-TransportConfig -MessageExpirationTimeout 12.00:00:00",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.GlobalQuarantineNotifications",
@@ -1390,18 +1426,9 @@
         "label": "Select value",
         "name": "standards.GlobalQuarantineNotifications.NotificationInterval",
         "options": [
-          {
-            "label": "4 hours",
-            "value": "04:00:00"
-          },
-          {
-            "label": "1 day/Daily",
-            "value": "1.00:00:00"
-          },
-          {
-            "label": "7 days/Weekly",
-            "value": "7.00:00:00"
-          }
+          { "label": "4 hours", "value": "04:00:00" },
+          { "label": "1 day/Daily", "value": "1.00:00:00" },
+          { "label": "7 days/Weekly", "value": "7.00:00:00" }
         ]
       }
     ],
@@ -1410,7 +1437,14 @@
     "impactColour": "info",
     "addedDate": "2024-05-03",
     "powershellEquivalent": "Set-QuarantinePolicy -EndUserSpamNotificationFrequency",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.DisableTNEF",
@@ -1425,7 +1459,14 @@
     "impactColour": "info",
     "addedDate": "2024-04-26",
     "powershellEquivalent": "Set-RemoteDomain -Identity 'Default' -TNEFEnabled $false",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.FocusedInbox",
@@ -1441,14 +1482,8 @@
         "label": "Select value",
         "name": "standards.FocusedInbox.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       }
     ],
@@ -1457,7 +1492,14 @@
     "impactColour": "info",
     "addedDate": "2024-04-26",
     "powershellEquivalent": "Set-OrganizationConfig -FocusedInboxOn $true or $false",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.CloudMessageRecall",
@@ -1473,14 +1515,8 @@
         "label": "Select value",
         "name": "standards.CloudMessageRecall.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "true"
-          },
-          {
-            "label": "Disabled",
-            "value": "false"
-          }
+          { "label": "Enabled", "value": "true" },
+          { "label": "Disabled", "value": "false" }
         ]
       }
     ],
@@ -1489,7 +1525,14 @@
     "impactColour": "info",
     "addedDate": "2024-05-31",
     "powershellEquivalent": "Set-OrganizationConfig -MessageRecallEnabled",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AutoExpandArchive",
@@ -1504,7 +1547,14 @@
     "impactColour": "info",
     "addedDate": "2021-11-16",
     "powershellEquivalent": "Set-OrganizationConfig -AutoExpandingArchive",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.TwoClickEmailProtection",
@@ -1521,14 +1571,8 @@
         "label": "Select value",
         "name": "standards.TwoClickEmailProtection.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       }
     ],
@@ -1537,7 +1581,14 @@
     "impactColour": "info",
     "addedDate": "2025-06-13",
     "powershellEquivalent": "Set-OrganizationConfig -TwoClickMailPreviewEnabled $true | $false",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.EnableOnlineArchiving",
@@ -1551,7 +1602,14 @@
     "impactColour": "info",
     "addedDate": "2024-01-20",
     "powershellEquivalent": "Enable-Mailbox -Archive $true",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.EnableLitigationHold",
@@ -1573,7 +1631,14 @@
     "impactColour": "info",
     "addedDate": "2024-06-25",
     "powershellEquivalent": "Set-Mailbox -LitigationHoldEnabled $true",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.SpoofWarn",
@@ -1589,14 +1654,8 @@
         "label": "Select value",
         "name": "standards.SpoofWarn.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       },
       {
@@ -1612,8 +1671,15 @@
     "impact": "Low Impact",
     "impactColour": "info",
     "addedDate": "2021-11-16",
-    "powershellEquivalent": "Set-ExternalInOutlook \u2013Enabled $true or $false",
-    "recommendedBy": ["CIS", "CIPP"]
+    "powershellEquivalent": "Set-ExternalInOutlook –Enabled $true or $false",
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.EnableMailTips",
@@ -1635,7 +1701,14 @@
     "impactColour": "info",
     "addedDate": "2024-01-14",
     "powershellEquivalent": "Set-OrganizationConfig",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.TeamsMeetingsByDefault",
@@ -1651,14 +1724,8 @@
         "label": "Select value",
         "name": "standards.TeamsMeetingsByDefault.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "true"
-          },
-          {
-            "label": "Disabled",
-            "value": "false"
-          }
+          { "label": "Enabled", "value": "true" },
+          { "label": "Disabled", "value": "false" }
         ]
       }
     ],
@@ -1667,7 +1734,14 @@
     "impactColour": "info",
     "addedDate": "2024-05-31",
     "powershellEquivalent": "Set-OrganizationConfig -OnlineMeetingsByDefaultEnabled",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.DisableViva",
@@ -1696,7 +1770,46 @@
     "impactColour": "info",
     "addedDate": "2023-03-14",
     "powershellEquivalent": "Rotate-DkimSigningConfig",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
+  },
+  {
+    "name": "standards.EnableExchangeCloudManagement",
+    "cat": "Exchange Standards",
+    "tag": [],
+    "helpText": "Configures cloud-based management of Exchange attributes for directory-synced users with remote mailboxes in Exchange Online. This allows you to enable or disable management of Exchange attributes directly in the cloud without requiring an on-premises Exchange server. More information can be found [here](https://learn.microsoft.com/da-dk/exchange/hybrid-deployment/enable-exchange-attributes-cloud-management).",
+    "docsDescription": "Configures the IsExchangeCloudManaged property for mailboxes, allowing Exchange attributes (aliases, mailbox flags, custom attributes, etc.) to be managed directly in Exchange Online or revert back to on-premises management. This feature helps organizations retire their last on-premises Exchange server in hybrid deployments while maintaining the ability to manage recipient attributes. Identity attributes (names, UPN) remain managed on-premises via Active Directory. More information can be found [here](https://learn.microsoft.com/da-dk/exchange/hybrid-deployment/enable-exchange-attributes-cloud-management).",
+    "executiveText": "Configures cloud-based management of Exchange mailbox attributes for hybrid organizations. When enabled, eliminates the dependency on on-premises Exchange servers for attribute management. This modernizes email administration, reduces infrastructure complexity, and allows direct management of mailbox properties through cloud portals and PowerShell. When disabled, returns management to on-premises Exchange servers.",
+    "addedComponent": [
+      {
+        "type": "autoComplete",
+        "multiple": false,
+        "name": "standards.EnableExchangeCloudManagement.state",
+        "label": "Cloud Management State",
+        "options": [
+          { "label": "Cloud Management", "value": true },
+          { "label": "On-Premises Management", "value": false }
+        ]
+      }
+    ],
+    "label": "Configure Exchange Cloud Management for Remote/On-Premises Mailboxes",
+    "impact": "Low Impact",
+    "impactColour": "info",
+    "addedDate": "2026-03-28",
+    "powershellEquivalent": "Set-Mailbox -Identity user@domain.com -IsExchangeCloudManaged $true or $false",
+    "recommendedBy": ["Microsoft", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV"
+    ]
   },
   {
     "name": "standards.AddDKIM",
@@ -1710,14 +1823,21 @@
     "impactColour": "info",
     "addedDate": "2023-03-14",
     "powershellEquivalent": "New-DkimSigningConfig and Set-DkimSigningConfig",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AddDMARCToMOERA",
     "cat": "Global Standards",
     "tag": ["CIS M365 5.0 (2.1.10)", "Security", "PhishingProtection"],
-    "helpText": "Note: requires 'Domain Name Administrator' GDAP role. This should be enabled even if the MOERA (onmicrosoft.com) domains is not used for sending. Enabling this prevents email spoofing. The default value is 'v=DMARC1; p=reject;' recommended because the domain is only used within M365 and reporting is not needed. Omitting pct tag default to 100%",
-    "docsDescription": "Note: requires 'Domain Name Administrator' GDAP role. Adds a DMARC record to MOERA (onmicrosoft.com) domains. This should be enabled even if the MOERA (onmicrosoft.com) domains is not used for sending. Enabling this prevents email spoofing. The default record is 'v=DMARC1; p=reject;' recommended because the domain is only used within M365 and reporting is not needed. Omitting pct tag default to 100%",
+    "helpText": "** Remediation is not available ** Note: requires 'Domain Name Administrator' GDAP role. This should be enabled even if the MOERA (onmicrosoft.com) domains is not used for sending. Enabling this prevents email spoofing. The default value is 'v=DMARC1; p=reject;' recommended because the domain is only used within M365 and reporting is not needed. Omitting pct tag default to 100%",
+    "docsDescription": "** Remediation is not available ** Note: requires 'Domain Name Administrator' GDAP role. Adds a DMARC record to MOERA (onmicrosoft.com) domains. This should be enabled even if the MOERA (onmicrosoft.com) domains is not used for sending. Enabling this prevents email spoofing. The default record is 'v=DMARC1; p=reject;' recommended because the domain is only used within M365 and reporting is not needed. Omitting pct tag default to 100%",
     "executiveText": "Implements advanced email security for Microsoft's default domain names (onmicrosoft.com) to prevent criminals from impersonating your organization. This blocks fraudulent emails that could damage your company's reputation and protects partners and customers from phishing attacks using your domain names.",
     "addedComponent": [
       {
@@ -1729,10 +1849,7 @@
         "label": "Value",
         "name": "standards.AddDMARCToMOERA.RecordValue",
         "options": [
-          {
-            "label": "v=DMARC1; p=reject; (recommended)",
-            "value": "v=DMARC1; p=reject;"
-          }
+          { "label": "v=DMARC1; p=reject; (recommended)", "value": "v=DMARC1; p=reject;" }
         ]
       }
     ],
@@ -1741,7 +1858,8 @@
     "impactColour": "info",
     "addedDate": "2025-06-16",
     "powershellEquivalent": "Portal only",
-    "recommendedBy": ["CIS", "Microsoft"]
+    "recommendedBy": ["CIS", "Microsoft"],
+    "disabledFeatures": { "remediate": true }
   },
   {
     "name": "standards.EnableMailboxAuditing",
@@ -1765,7 +1883,14 @@
     "impactColour": "info",
     "addedDate": "2024-01-08",
     "powershellEquivalent": "Set-OrganizationConfig -AuditDisabled $false",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AutoArchive",
@@ -1791,7 +1916,14 @@
     "impactColour": "info",
     "addedDate": "2025-12-11",
     "powershellEquivalent": "Set-OrganizationConfig -AutoArchivingThresholdPercentage 80-100",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AutoArchiveMailbox",
@@ -1808,14 +1940,8 @@
         "label": "Select value",
         "name": "standards.AutoArchiveMailbox.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       }
     ],
@@ -1824,7 +1950,14 @@
     "impactColour": "info",
     "addedDate": "2026-01-16",
     "powershellEquivalent": "Set-OrganizationConfig -AutoEnableArchiveMailbox $true|$false",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.SendReceiveLimitTenant",
@@ -1859,7 +1992,14 @@
     "impactColour": "info",
     "addedDate": "2023-11-16",
     "powershellEquivalent": "Set-MailboxPlan",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.calDefault",
@@ -1868,11 +2008,7 @@
     "helpText": "Sets the default sharing level for the default calendar, for all users",
     "docsDescription": "Sets the default sharing level for the default calendar for all users in the tenant. You can read about the different sharing levels [here.](https://learn.microsoft.com/en-us/powershell/module/exchange/set-mailboxfolderpermission?view=exchange-ps#-accessrights)",
     "executiveText": "Configures how much calendar information employees share by default with colleagues, balancing collaboration needs with privacy. This setting determines whether others can see meeting details, free/busy times, or just availability, helping optimize scheduling while protecting sensitive meeting information.",
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false },
     "addedComponent": [
       {
         "type": "autoComplete",
@@ -1904,10 +2040,7 @@
             "label": "Non Editing Author - The user has full read access and create items. Can can delete only own items.",
             "value": "NonEditingAuthor"
           },
-          {
-            "label": "Reviewer - The user can read all items in the folder.",
-            "value": "Reviewer"
-          },
+          { "label": "Reviewer - The user can read all items in the folder.", "value": "Reviewer" },
           {
             "label": "Contributor - The user can create items and folders.",
             "value": "Contributor"
@@ -1920,10 +2053,7 @@
             "label": "Limited Details - The user can view free/busy time within the calendar and the subject and location of appointments.",
             "value": "LimitedDetails"
           },
-          {
-            "label": "None - The user has no permissions on the folder.",
-            "value": "none"
-          }
+          { "label": "None - The user has no permissions on the folder.", "value": "none" }
         ]
       }
     ],
@@ -1932,7 +2062,14 @@
     "impactColour": "info",
     "addedDate": "2023-04-27",
     "powershellEquivalent": "Set-MailboxFolderPermission",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.EXOOutboundSpamLimits",
@@ -1979,14 +2116,8 @@
         "name": "standards.EXOOutboundSpamLimits.ActionWhenThresholdReached",
         "label": "Action When Threshold Reached",
         "options": [
-          {
-            "label": "Alert",
-            "value": "Alert"
-          },
-          {
-            "label": "Block User",
-            "value": "BlockUser"
-          },
+          { "label": "Alert", "value": "Alert" },
+          { "label": "Block User", "value": "BlockUser" },
           {
             "label": "Block user from sending mail for the rest of the day",
             "value": "BlockUserForToday"
@@ -1999,7 +2130,14 @@
     "impactColour": "info",
     "addedDate": "2025-05-13",
     "powershellEquivalent": "Set-HostedOutboundSpamFilterPolicy",
-    "recommendedBy": ["CIPP", "CIS"]
+    "recommendedBy": ["CIPP", "CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.DisableExternalCalendarSharing",
@@ -2014,7 +2152,14 @@
     "impactColour": "info",
     "addedDate": "2024-01-08",
     "powershellEquivalent": "Get-SharingPolicy | Set-SharingPolicy -Enabled $False",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AutoAddProxy",
@@ -2030,11 +2175,7 @@
     "addedDate": "2025-02-07",
     "powershellEquivalent": "Set-Mailbox -EmailAddresses @{add=$EmailAddress}",
     "recommendedBy": [],
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    }
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false }
   },
   {
     "name": "standards.DisableAdditionalStorageProviders",
@@ -2049,7 +2190,14 @@
     "impactColour": "info",
     "addedDate": "2024-01-17",
     "powershellEquivalent": "Get-OwaMailboxPolicy | Set-OwaMailboxPolicy -AdditionalStorageProvidersEnabled $False",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AntiSpamSafeList",
@@ -2070,7 +2218,14 @@
     "impactColour": "info",
     "addedDate": "2025-02-15",
     "powershellEquivalent": "Set-HostedConnectionFilterPolicy \"Default\" -EnableSafeList $true",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.ShortenMeetings",
@@ -2085,18 +2240,9 @@
         "label": "Select value",
         "name": "standards.ShortenMeetings.ShortenEventScopeDefault",
         "options": [
-          {
-            "label": "Disabled/None",
-            "value": "None"
-          },
-          {
-            "label": "End early",
-            "value": "EndEarly"
-          },
-          {
-            "label": "Start late",
-            "value": "StartLate"
-          }
+          { "label": "Disabled/None", "value": "None" },
+          { "label": "End early", "value": "EndEarly" },
+          { "label": "Start late", "value": "StartLate" }
         ]
       },
       {
@@ -2125,7 +2271,14 @@
     "impactColour": "warning",
     "addedDate": "2024-05-27",
     "powershellEquivalent": "Set-OrganizationConfig -ShortenEventScopeDefault -DefaultMinutesToReduceShortEventsBy -DefaultMinutesToReduceLongEventsBy",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.Bookings",
@@ -2141,14 +2294,8 @@
         "label": "Select value",
         "name": "standards.Bookings.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "true"
-          },
-          {
-            "label": "Disabled",
-            "value": "false"
-          }
+          { "label": "Enabled", "value": "true" },
+          { "label": "Disabled", "value": "false" }
         ]
       }
     ],
@@ -2157,7 +2304,14 @@
     "impactColour": "warning",
     "addedDate": "2024-05-31",
     "powershellEquivalent": "Set-OrganizationConfig -BookingsEnabled",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.EXODirectSend",
@@ -2174,14 +2328,8 @@
         "label": "Select value",
         "name": "standards.EXODirectSend.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       }
     ],
@@ -2211,7 +2359,14 @@
     "impactColour": "warning",
     "addedDate": "2024-02-05",
     "powershellEquivalent": "Get-ManagementRoleAssignment | Remove-ManagementRoleAssignment",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.SafeSendersDisable",
@@ -2220,17 +2375,20 @@
     "helpText": "Loops through all users and removes the Safe Senders list. This is to prevent SPF bypass attacks, as the Safe Senders list is not checked by SPF.",
     "executiveText": "Removes user-defined safe sender lists to prevent security bypasses where malicious emails could avoid spam filtering. This ensures all emails go through proper security screening, even if users have previously marked senders as 'safe', improving overall email security.",
     "addedComponent": [],
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false },
     "label": "Remove Safe Senders to prevent SPF bypass",
     "impact": "Medium Impact",
     "impactColour": "warning",
     "addedDate": "2023-10-26",
     "powershellEquivalent": "Set-MailboxJunkEmailConfiguration",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.DelegateSentItems",
@@ -2251,7 +2409,14 @@
     "impactColour": "warning",
     "addedDate": "2021-11-16",
     "powershellEquivalent": "Set-Mailbox",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.SendFromAlias",
@@ -2278,7 +2443,14 @@
     "impactColour": "warning",
     "addedDate": "2022-05-25",
     "powershellEquivalent": "Set-Mailbox",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.UserSubmissions",
@@ -2294,14 +2466,8 @@
         "label": "Select value",
         "name": "standards.UserSubmissions.state",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "enable"
-          },
-          {
-            "label": "Disabled",
-            "value": "disable"
-          }
+          { "label": "Enabled", "value": "enable" },
+          { "label": "Disabled", "value": "disable" }
         ]
       },
       {
@@ -2316,7 +2482,14 @@
     "impactColour": "warning",
     "addedDate": "2024-06-28",
     "powershellEquivalent": "New-ReportSubmissionPolicy or Set-ReportSubmissionPolicy and New-ReportSubmissionRule or Set-ReportSubmissionRule",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.DisableSharedMailbox",
@@ -2346,7 +2519,14 @@
     "impactColour": "warning",
     "addedDate": "2025-06-01",
     "powershellEquivalent": "Get-Mailbox & Update-MgUser",
-    "recommendedBy": ["Microsoft", "CIPP"]
+    "recommendedBy": ["Microsoft", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.EXODisableAutoForwarding",
@@ -2367,7 +2547,14 @@
     "impactColour": "danger",
     "addedDate": "2024-07-26",
     "powershellEquivalent": "Set-HostedOutboundSpamFilterPolicy -AutoForwardingMode 'Off'",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.RetentionPolicyTag",
@@ -2389,7 +2576,14 @@
     "impactColour": "danger",
     "addedDate": "2025-02-02",
     "powershellEquivalent": "Set-RetentionPolicyTag",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.QuarantineRequestAlert",
@@ -2410,7 +2604,14 @@
     "impactColour": "info",
     "addedDate": "2024-07-15",
     "powershellEquivalent": "New-ProtectionAlert and Set-ProtectionAlert",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.SharePointMassDeletionAlert",
@@ -2446,18 +2647,15 @@
     "impactColour": "info",
     "addedDate": "2025-04-07",
     "powershellEquivalent": "New-ProtectionAlert and Set-ProtectionAlert",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["RMS_S_PREMIUM2"]
   },
   {
     "name": "standards.SafeLinksTemplatePolicy",
     "label": "SafeLinks Policy Template",
     "cat": "Templates",
     "multiple": false,
-    "disabledFeatures": {
-      "report": false,
-      "warn": false,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": false, "warn": false, "remediate": false },
     "impact": "Medium Impact",
     "addedDate": "2025-04-29",
     "helpText": "Deploy and manage SafeLinks policy templates to protect against malicious URLs in emails and Office documents.",
@@ -2476,6 +2674,13 @@
           "queryKey": "ListSafeLinksPolicyTemplates"
         }
       }
+    ],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
     ]
   },
   {
@@ -2542,7 +2747,14 @@
     "impactColour": "info",
     "addedDate": "2024-03-25",
     "powershellEquivalent": "Set-SafeLinksPolicy or New-SafeLinksPolicy",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AntiPhishPolicy",
@@ -2630,14 +2842,8 @@
         "label": "If the message is detected as spoof by spoof intelligence",
         "name": "standards.AntiPhishPolicy.AuthenticationFailAction",
         "options": [
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          },
-          {
-            "label": "Move to Junk Folder",
-            "value": "MoveToJmf"
-          }
+          { "label": "Quarantine the message", "value": "Quarantine" },
+          { "label": "Move to Junk Folder", "value": "MoveToJmf" }
         ]
       },
       {
@@ -2647,14 +2853,8 @@
         "label": "Quarantine policy for Spoof",
         "name": "standards.AntiPhishPolicy.SpoofQuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -2667,18 +2867,9 @@
         "label": "If a message is detected as user impersonation",
         "name": "standards.AntiPhishPolicy.TargetedUserProtectionAction",
         "options": [
-          {
-            "label": "Move to Junk Folder",
-            "value": "MoveToJmf"
-          },
-          {
-            "label": "Delete the message before its delivered",
-            "value": "Delete"
-          },
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          }
+          { "label": "Move to Junk Folder", "value": "MoveToJmf" },
+          { "label": "Delete the message before its delivered", "value": "Delete" },
+          { "label": "Quarantine the message", "value": "Quarantine" }
         ]
       },
       {
@@ -2688,14 +2879,8 @@
         "label": "Quarantine policy for user impersonation",
         "name": "standards.AntiPhishPolicy.TargetedUserQuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -2708,18 +2893,9 @@
         "label": "If a message is detected as domain impersonation",
         "name": "standards.AntiPhishPolicy.TargetedDomainProtectionAction",
         "options": [
-          {
-            "label": "Move to Junk Folder",
-            "value": "MoveToJmf"
-          },
-          {
-            "label": "Delete the message before its delivered",
-            "value": "Delete"
-          },
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          }
+          { "label": "Move to Junk Folder", "value": "MoveToJmf" },
+          { "label": "Delete the message before its delivered", "value": "Delete" },
+          { "label": "Quarantine the message", "value": "Quarantine" }
         ]
       },
       {
@@ -2733,14 +2909,8 @@
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
           },
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          }
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" }
         ]
       },
       {
@@ -2749,18 +2919,9 @@
         "label": "If Mailbox Intelligence detects an impersonated user",
         "name": "standards.AntiPhishPolicy.MailboxIntelligenceProtectionAction",
         "options": [
-          {
-            "label": "Move to Junk Folder",
-            "value": "MoveToJmf"
-          },
-          {
-            "label": "Delete the message before its delivered",
-            "value": "Delete"
-          },
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          }
+          { "label": "Move to Junk Folder", "value": "MoveToJmf" },
+          { "label": "Delete the message before its delivered", "value": "Delete" },
+          { "label": "Quarantine the message", "value": "Quarantine" }
         ]
       },
       {
@@ -2770,14 +2931,8 @@
         "label": "Apply quarantine policy",
         "name": "standards.AntiPhishPolicy.MailboxIntelligenceQuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -2790,7 +2945,14 @@
     "impactColour": "info",
     "addedDate": "2024-03-25",
     "powershellEquivalent": "Set-AntiPhishPolicy or New-AntiPhishPolicy",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.SafeAttachmentPolicy",
@@ -2819,18 +2981,9 @@
         "label": "Safe Attachment Action",
         "name": "standards.SafeAttachmentPolicy.SafeAttachmentAction",
         "options": [
-          {
-            "label": "Allow",
-            "value": "Allow"
-          },
-          {
-            "label": "Block",
-            "value": "Block"
-          },
-          {
-            "label": "DynamicDelivery",
-            "value": "DynamicDelivery"
-          }
+          { "label": "Allow", "value": "Allow" },
+          { "label": "Block", "value": "Block" },
+          { "label": "DynamicDelivery", "value": "DynamicDelivery" }
         ]
       },
       {
@@ -2840,25 +2993,15 @@
         "label": "QuarantineTag",
         "name": "standards.SafeAttachmentPolicy.QuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
           }
         ]
       },
-      {
-        "type": "switch",
-        "label": "Redirect",
-        "name": "standards.SafeAttachmentPolicy.Redirect"
-      },
+      { "type": "switch", "label": "Redirect", "name": "standards.SafeAttachmentPolicy.Redirect" },
       {
         "type": "textField",
         "name": "standards.SafeAttachmentPolicy.RedirectAddress",
@@ -2876,7 +3019,14 @@
     "impactColour": "info",
     "addedDate": "2024-03-25",
     "powershellEquivalent": "Set-SafeAttachmentPolicy or New-SafeAttachmentPolicy",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.AtpPolicyForO365",
@@ -2897,7 +3047,15 @@
     "impactColour": "info",
     "addedDate": "2024-03-25",
     "powershellEquivalent": "Set-AtpPolicyForO365",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.PhishingSimulations",
@@ -2942,7 +3100,14 @@
     "impactColour": "info",
     "addedDate": "2025-03-27",
     "powershellEquivalent": "New-TenantAllowBlockListItems, New-PhishSimOverridePolicy and New-ExoPhishSimOverrideRule",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.MalwareFilterPolicy",
@@ -2979,14 +3144,8 @@
         "label": "FileTypeAction",
         "name": "standards.MalwareFilterPolicy.FileTypeAction",
         "options": [
-          {
-            "label": "Reject",
-            "value": "Reject"
-          },
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          }
+          { "label": "Reject", "value": "Reject" },
+          { "label": "Quarantine the message", "value": "Quarantine" }
         ]
       },
       {
@@ -3002,14 +3161,8 @@
         "label": "QuarantineTag",
         "name": "standards.MalwareFilterPolicy.QuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -3056,7 +3209,14 @@
     "impactColour": "info",
     "addedDate": "2024-03-25",
     "powershellEquivalent": "Set-MalwareFilterPolicy or New-MalwareFilterPolicy",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.PhishSimSpoofIntelligence",
@@ -3085,7 +3245,14 @@
     "impactColour": "info",
     "addedDate": "2025-03-28",
     "powershellEquivalent": "New-TenantAllowBlockListSpoofItems",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.SpamFilterPolicy",
@@ -3137,14 +3304,8 @@
         "label": "Spam Action",
         "name": "standards.SpamFilterPolicy.SpamAction",
         "options": [
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          },
-          {
-            "label": "Move message to Junk Email folder",
-            "value": "MoveToJmf"
-          }
+          { "label": "Quarantine the message", "value": "Quarantine" },
+          { "label": "Move message to Junk Email folder", "value": "MoveToJmf" }
         ]
       },
       {
@@ -3155,14 +3316,8 @@
         "label": "Spam Quarantine Tag",
         "name": "standards.SpamFilterPolicy.SpamQuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -3177,14 +3332,8 @@
         "label": "High Confidence Spam Action",
         "name": "standards.SpamFilterPolicy.HighConfidenceSpamAction",
         "options": [
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          },
-          {
-            "label": "Move message to Junk Email folder",
-            "value": "MoveToJmf"
-          }
+          { "label": "Quarantine the message", "value": "Quarantine" },
+          { "label": "Move message to Junk Email folder", "value": "MoveToJmf" }
         ]
       },
       {
@@ -3195,14 +3344,8 @@
         "label": "High Confidence Spam Quarantine Tag",
         "name": "standards.SpamFilterPolicy.HighConfidenceSpamQuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -3217,14 +3360,8 @@
         "label": "Bulk Spam Action",
         "name": "standards.SpamFilterPolicy.BulkSpamAction",
         "options": [
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          },
-          {
-            "label": "Move message to Junk Email folder",
-            "value": "MoveToJmf"
-          }
+          { "label": "Quarantine the message", "value": "Quarantine" },
+          { "label": "Move message to Junk Email folder", "value": "MoveToJmf" }
         ]
       },
       {
@@ -3235,14 +3372,8 @@
         "label": "Bulk Quarantine Tag",
         "name": "standards.SpamFilterPolicy.BulkQuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -3257,14 +3388,8 @@
         "label": "Phish Spam Action",
         "name": "standards.SpamFilterPolicy.PhishSpamAction",
         "options": [
-          {
-            "label": "Quarantine the message",
-            "value": "Quarantine"
-          },
-          {
-            "label": "Move message to Junk Email folder",
-            "value": "MoveToJmf"
-          }
+          { "label": "Quarantine the message", "value": "Quarantine" },
+          { "label": "Move message to Junk Email folder", "value": "MoveToJmf" }
         ]
       },
       {
@@ -3275,14 +3400,8 @@
         "label": "Phish Quarantine Tag",
         "name": "standards.SpamFilterPolicy.PhishQuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -3297,14 +3416,8 @@
         "label": "High Confidence Phish Quarantine Tag",
         "name": "standards.SpamFilterPolicy.HighConfidencePhishQuarantineTag",
         "options": [
-          {
-            "label": "AdminOnlyAccessPolicy",
-            "value": "AdminOnlyAccessPolicy"
-          },
-          {
-            "label": "DefaultFullAccessPolicy",
-            "value": "DefaultFullAccessPolicy"
-          },
+          { "label": "AdminOnlyAccessPolicy", "value": "AdminOnlyAccessPolicy" },
+          { "label": "DefaultFullAccessPolicy", "value": "DefaultFullAccessPolicy" },
           {
             "label": "DefaultFullAccessWithNotificationPolicy",
             "value": "DefaultFullAccessWithNotificationPolicy"
@@ -3411,16 +3524,19 @@
     "impactColour": "warning",
     "addedDate": "2024-07-15",
     "powershellEquivalent": "New-HostedContentFilterPolicy or Set-HostedContentFilterPolicy",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.QuarantineTemplate",
     "cat": "Defender Standards",
-    "disabledFeatures": {
-      "report": false,
-      "warn": false,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": false, "warn": false, "remediate": false },
     "tag": [],
     "helpText": "This standard creates a Custom Quarantine Policies that can be used in Anti-Spam and all MDO365 policies. Quarantine Policies can be used to specify recipients permissions, enable end-user spam notifications, and specify the release action preference",
     "executiveText": "Creates standardized quarantine policies that define how employees can interact with quarantined emails, including permissions to release, delete, or preview suspicious messages. This ensures consistent security handling across the organization while providing appropriate user access to manage quarantined content.",
@@ -3498,7 +3614,14 @@
     "impactColour": "info",
     "addedDate": "2025-05-16",
     "powershellEquivalent": "Set-QuarantinePolicy or New-QuarantinePolicy",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.IntuneWindowsDiagnostic",
@@ -3526,7 +3649,37 @@
     "impactColour": "info",
     "addedDate": "2026-01-27",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
+  },
+  {
+    "name": "standards.WindowsBackupRestore",
+    "cat": "Intune Standards",
+    "tag": [],
+    "helpText": "Configures the Windows Backup and Restore enrollment setting in Intune. When enabled, users see a restore page during Windows Autopilot/OOBE that allows them to restore their apps and settings from a previous device backup. **Before you can restore a backup, a policy to enable it on devices must be set up in Settings Catalog.**",
+    "docsDescription": "Configures the Windows Backup and Restore (WBfO) device enrollment setting in Intune. This feature allows users to restore apps and settings from a previous device backup during Windows setup. Enabling this shows a restore page during enrollment (OOBE) so users can migrate their workspace configuration to a new device. More information can be found in [Microsoft's documentation.](https://learn.microsoft.com/en-us/intune/intune-service/enrollment/windows-backup-restore)",
+    "executiveText": "Controls the Windows Backup and Restore for Organizations feature in Intune. When enabled, employees setting up new devices can restore their apps and settings from a previous backup during Windows enrollment. This streamlines device provisioning, reduces setup time for new or replacement devices, and improves the employee experience during device transitions.",
+    "addedComponent": [
+      {
+        "type": "autoComplete",
+        "multiple": false,
+        "creatable": false,
+        "label": "Select value",
+        "name": "standards.WindowsBackupRestore.state",
+        "options": [
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" },
+          { "label": "Not Configured", "value": "notConfigured" }
+        ]
+      }
+    ],
+    "label": "Set Windows Backup and Restore state",
+    "impact": "Low Impact",
+    "impactColour": "info",
+    "addedDate": "2026-02-26",
+    "powershellEquivalent": "Graph API",
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.intuneDeviceRetirementDays",
@@ -3546,7 +3699,8 @@
     "impactColour": "info",
     "addedDate": "2023-05-19",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.intuneBrandingProfile",
@@ -3620,7 +3774,8 @@
     "impactColour": "info",
     "addedDate": "2024-06-20",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.IntuneComplianceSettings",
@@ -3637,14 +3792,8 @@
         "name": "standards.IntuneComplianceSettings.secureByDefault",
         "label": "Mark devices with no compliance policy as",
         "options": [
-          {
-            "label": "Compliant",
-            "value": "false"
-          },
-          {
-            "label": "Non-Compliant",
-            "value": "true"
-          }
+          { "label": "Compliant", "value": "false" },
+          { "label": "Non-Compliant", "value": "true" }
         ]
       },
       {
@@ -3663,7 +3812,8 @@
     "impactColour": "info",
     "addedDate": "2024-11-12",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.MDMScope",
@@ -3678,18 +3828,9 @@
         "label": "MDM User Scope?",
         "type": "radio",
         "options": [
-          {
-            "label": "All",
-            "value": "all"
-          },
-          {
-            "label": "None",
-            "value": "none"
-          },
-          {
-            "label": "Custom Group",
-            "value": "selected"
-          }
+          { "label": "All", "value": "all" },
+          { "label": "None", "value": "none" },
+          { "label": "Custom Group", "value": "selected" }
         ]
       },
       {
@@ -3704,7 +3845,8 @@
     "impactColour": "info",
     "addedDate": "2025-02-18",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.DefaultPlatformRestrictions",
@@ -3779,7 +3921,8 @@
     "impactColour": "info",
     "addedDate": "2025-04-01",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.MDMEnrollmentDuringRegistration",
@@ -3800,7 +3943,8 @@
     "impactColour": "warning",
     "addedDate": "2025-12-15",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.EnrollmentWindowsHelloForBusinessConfiguration",
@@ -3815,18 +3959,9 @@
         "label": "Configure Windows Hello for Business",
         "multiple": false,
         "options": [
-          {
-            "label": "Not configured",
-            "value": "notConfigured"
-          },
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Not configured", "value": "notConfigured" },
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       },
       {
@@ -3861,18 +3996,9 @@
         "label": "Lowercase letters in PIN",
         "multiple": false,
         "options": [
-          {
-            "label": "Not allowed",
-            "value": "disallowed"
-          },
-          {
-            "label": "Allowed",
-            "value": "allowed"
-          },
-          {
-            "label": "Required",
-            "value": "required"
-          }
+          { "label": "Not allowed", "value": "disallowed" },
+          { "label": "Allowed", "value": "allowed" },
+          { "label": "Required", "value": "required" }
         ]
       },
       {
@@ -3881,18 +4007,9 @@
         "label": "Uppercase letters in PIN",
         "multiple": false,
         "options": [
-          {
-            "label": "Not allowed",
-            "value": "disallowed"
-          },
-          {
-            "label": "Allowed",
-            "value": "allowed"
-          },
-          {
-            "label": "Required",
-            "value": "required"
-          }
+          { "label": "Not allowed", "value": "disallowed" },
+          { "label": "Allowed", "value": "allowed" },
+          { "label": "Required", "value": "required" }
         ]
       },
       {
@@ -3901,18 +4018,9 @@
         "label": "Special characters in PIN",
         "multiple": false,
         "options": [
-          {
-            "label": "Not allowed",
-            "value": "disallowed"
-          },
-          {
-            "label": "Allowed",
-            "value": "allowed"
-          },
-          {
-            "label": "Required",
-            "value": "required"
-          }
+          { "label": "Not allowed", "value": "disallowed" },
+          { "label": "Allowed", "value": "allowed" },
+          { "label": "Required", "value": "required" }
         ]
       },
       {
@@ -3939,18 +4047,9 @@
         "label": "Use enhanced anti-spoofing when available",
         "multiple": false,
         "options": [
-          {
-            "label": "Not configured",
-            "value": "notConfigured"
-          },
-          {
-            "label": "Enabled",
-            "value": "enabled"
-          },
-          {
-            "label": "Disabled",
-            "value": "disabled"
-          }
+          { "label": "Not configured", "value": "notConfigured" },
+          { "label": "Enabled", "value": "enabled" },
+          { "label": "Disabled", "value": "disabled" }
         ]
       },
       {
@@ -3965,7 +4064,8 @@
     "impactColour": "info",
     "addedDate": "2025-09-25",
     "powershellEquivalent": "Graph API",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.intuneDeviceReg",
@@ -3986,7 +4086,8 @@
     "impactColour": "warning",
     "addedDate": "2023-03-27",
     "powershellEquivalent": "Update-MgBetaPolicyDeviceRegistrationPolicy",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.intuneDeviceRegLocalAdmins",
@@ -4011,6 +4112,28 @@
     ],
     "label": "Configure local administrator rights for users joining devices",
     "impact": "Medium Impact",
+    "impactColour": "warning",
+    "addedDate": "2026-02-23",
+    "powershellEquivalent": "Update-MgBetaPolicyDeviceRegistrationPolicy",
+    "recommendedBy": []
+  },
+  {
+    "name": "standards.intuneRestrictUserDeviceRegistration",
+    "cat": "Entra (AAD) Standards",
+    "tag": [],
+    "helpText": "Controls whether users can register devices with Entra.",
+    "docsDescription": "Configures whether users can register devices with Entra. When disabled, users are unable to register devices with Entra.",
+    "executiveText": "Controls whether employees can register their devices for corporate access. Disabling user device registration prevents unauthorized or unmanaged devices from connecting to company resources, enhancing overall security posture.",
+    "addedComponent": [
+      {
+        "type": "switch",
+        "name": "standards.intuneRestrictUserDeviceRegistration.disableUserDeviceRegistration",
+        "label": "Disable users from registering devices",
+        "defaultValue": true
+      }
+    ],
+    "label": "Configure user restriction for Entra device registration",
+    "impact": "High Impact",
     "impactColour": "warning",
     "addedDate": "2026-02-23",
     "powershellEquivalent": "Update-MgBetaPolicyDeviceRegistrationPolicy",
@@ -4043,54 +4166,18 @@
         "name": "standards.DeletedUserRentention.Days",
         "label": "Retention time (Default 30 days)",
         "options": [
-          {
-            "label": "30 days",
-            "value": "30"
-          },
-          {
-            "label": "90 days",
-            "value": "90"
-          },
-          {
-            "label": "1 year",
-            "value": "365"
-          },
-          {
-            "label": "2 years",
-            "value": "730"
-          },
-          {
-            "label": "3 years",
-            "value": "1095"
-          },
-          {
-            "label": "4 years",
-            "value": "1460"
-          },
-          {
-            "label": "5 years",
-            "value": "1825"
-          },
-          {
-            "label": "6 years",
-            "value": "2190"
-          },
-          {
-            "label": "7 years",
-            "value": "2555"
-          },
-          {
-            "label": "8 years",
-            "value": "2920"
-          },
-          {
-            "label": "9 years",
-            "value": "3285"
-          },
-          {
-            "label": "10 years",
-            "value": "3650"
-          }
+          { "label": "30 days", "value": "30" },
+          { "label": "90 days", "value": "90" },
+          { "label": "1 year", "value": "365" },
+          { "label": "2 years", "value": "730" },
+          { "label": "3 years", "value": "1095" },
+          { "label": "4 years", "value": "1460" },
+          { "label": "5 years", "value": "1825" },
+          { "label": "6 years", "value": "2190" },
+          { "label": "7 years", "value": "2555" },
+          { "label": "8 years", "value": "2920" },
+          { "label": "9 years", "value": "3285" },
+          { "label": "10 years", "value": "3650" }
         ]
       }
     ],
@@ -4099,7 +4186,15 @@
     "impactColour": "info",
     "addedDate": "2022-06-15",
     "powershellEquivalent": "Update-MgBetaAdminSharePointSetting",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.SPFileRequests",
@@ -4130,7 +4225,15 @@
     "impactColour": "warning",
     "addedDate": "2025-07-30",
     "powershellEquivalent": "Set-SPOTenant -CoreRequestFilesLinkEnabled $true -OneDriveRequestFilesLinkEnabled $true -CoreRequestFilesLinkExpirationInDays 30 -OneDriveRequestFilesLinkExpirationInDays 30",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.TenantDefaultTimezone",
@@ -4150,7 +4253,15 @@
     "impactColour": "info",
     "addedDate": "2024-04-20",
     "powershellEquivalent": "Update-MgBetaAdminSharePointSetting",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.SPAzureB2B",
@@ -4164,7 +4275,15 @@
     "impactColour": "info",
     "addedDate": "2024-07-09",
     "powershellEquivalent": "Set-SPOTenant -EnableAzureADB2BIntegration $true",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.SPDisallowInfectedFiles",
@@ -4178,7 +4297,15 @@
     "impactColour": "info",
     "addedDate": "2024-07-09",
     "powershellEquivalent": "Set-SPOTenant -DisallowInfectedFileDownload $true",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.SPDisableLegacyWorkflows",
@@ -4192,7 +4319,15 @@
     "impactColour": "info",
     "addedDate": "2024-07-15",
     "powershellEquivalent": "Set-SPOTenant -DisableWorkflow2010 $true -DisableWorkflow2013 $true -DisableBackToClassic $true",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.SPDirectSharing",
@@ -4206,7 +4341,15 @@
     "impactColour": "warning",
     "addedDate": "2024-07-09",
     "powershellEquivalent": "Set-SPOTenant -DefaultSharingLinkType Direct",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.SPExternalUserExpiration",
@@ -4231,7 +4374,15 @@
     "impactColour": "warning",
     "addedDate": "2024-07-09",
     "powershellEquivalent": "Set-SPOTenant -ExternalUserExpireInDays 30 -ExternalUserExpirationRequired $True",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.SPEmailAttestation",
@@ -4256,7 +4407,15 @@
     "impactColour": "warning",
     "addedDate": "2024-07-09",
     "powershellEquivalent": "Set-SPOTenant -EmailAttestationRequired $true -EmailAttestationReAuthDays 15",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.DefaultSharingLink",
@@ -4280,14 +4439,8 @@
         "label": "Default Sharing Link Type",
         "name": "standards.DefaultSharingLink.SharingLinkType",
         "options": [
-          {
-            "label": "Direct - Only the people the user specifies",
-            "value": "Direct"
-          },
-          {
-            "label": "Internal - Only people in your organization",
-            "value": "Internal"
-          }
+          { "label": "Direct - Only the people the user specifies", "value": "Direct" },
+          { "label": "Internal - Only people in your organization", "value": "Internal" }
         ]
       }
     ],
@@ -4296,7 +4449,15 @@
     "impactColour": "info",
     "addedDate": "2025-06-13",
     "powershellEquivalent": "Set-SPOTenant -DefaultSharingLinkType [Direct|Internal] -DefaultLinkPermission View",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.DisableAddShortcutsToOneDrive",
@@ -4312,14 +4473,8 @@
         "label": "Add Shortcuts To OneDrive button state",
         "name": "standards.DisableAddShortcutsToOneDrive.state",
         "options": [
-          {
-            "label": "Disabled",
-            "value": "true"
-          },
-          {
-            "label": "Enabled",
-            "value": "false"
-          }
+          { "label": "Disabled", "value": "true" },
+          { "label": "Enabled", "value": "false" }
         ]
       }
     ],
@@ -4328,7 +4483,15 @@
     "impactColour": "warning",
     "addedDate": "2023-07-25",
     "powershellEquivalent": "Set-SPOTenant -DisableAddShortcutsToOneDrive $true or $false",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.SPSyncButtonState",
@@ -4344,14 +4507,8 @@
         "label": "SharePoint Sync Button state",
         "name": "standards.SPSyncButtonState.state",
         "options": [
-          {
-            "label": "Disabled",
-            "value": "true"
-          },
-          {
-            "label": "Enabled",
-            "value": "false"
-          }
+          { "label": "Disabled", "value": "true" },
+          { "label": "Enabled", "value": "false" }
         ]
       }
     ],
@@ -4360,7 +4517,15 @@
     "impactColour": "warning",
     "addedDate": "2024-07-26",
     "powershellEquivalent": "Set-SPOTenant -HideSyncButtonOnTeamSite $true or $false",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.DisableSharePointLegacyAuth",
@@ -4383,7 +4548,15 @@
     "impactColour": "warning",
     "addedDate": "2024-02-05",
     "powershellEquivalent": "Set-SPOTenant -LegacyAuthProtocolsEnabled $false",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.sharingCapability",
@@ -4428,7 +4601,15 @@
     "impactColour": "danger",
     "addedDate": "2022-06-15",
     "powershellEquivalent": "Update-MgBetaAdminSharePointSetting",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.DisableReshare",
@@ -4449,7 +4630,15 @@
     "impactColour": "danger",
     "addedDate": "2022-06-15",
     "powershellEquivalent": "Update-MgBetaAdminSharePointSetting",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.DisableUserSiteCreate",
@@ -4464,7 +4653,15 @@
     "impactColour": "danger",
     "addedDate": "2022-06-15",
     "powershellEquivalent": "Update-MgAdminSharePointSetting",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.ExcludedfileExt",
@@ -4484,7 +4681,15 @@
     "impactColour": "danger",
     "addedDate": "2022-06-15",
     "powershellEquivalent": "Update-MgAdminSharePointSetting",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.disableMacSync",
@@ -4498,7 +4703,15 @@
     "impactColour": "danger",
     "addedDate": "2022-06-15",
     "powershellEquivalent": "Update-MgAdminSharePointSetting",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.unmanagedSync",
@@ -4515,14 +4728,8 @@
         "name": "standards.unmanagedSync.state",
         "label": "State",
         "options": [
-          {
-            "label": "Allow limited, web-only access",
-            "value": "1"
-          },
-          {
-            "label": "Block access",
-            "value": "2"
-          }
+          { "label": "Allow limited, web-only access", "value": "1" },
+          { "label": "Block access", "value": "2" }
         ],
         "required": false
       }
@@ -4532,7 +4739,8 @@
     "impactColour": "danger",
     "addedDate": "2025-06-13",
     "powershellEquivalent": "Set-SPOTenant -ConditionalAccessPolicy AllowFullAccess | AllowLimitedAccess | BlockAccess",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.sharingDomainRestriction",
@@ -4553,18 +4761,9 @@
         "name": "standards.sharingDomainRestriction.Mode",
         "label": "Limit external sharing by domains",
         "options": [
-          {
-            "label": "Off",
-            "value": "none"
-          },
-          {
-            "label": "Restrict sharing to specific domains",
-            "value": "allowList"
-          },
-          {
-            "label": "Block sharing to specific domains",
-            "value": "blockList"
-          }
+          { "label": "Off", "value": "none" },
+          { "label": "Restrict sharing to specific domains", "value": "allowList" },
+          { "label": "Block sharing to specific domains", "value": "blockList" }
         ]
       },
       {
@@ -4579,7 +4778,15 @@
     "impactColour": "danger",
     "addedDate": "2024-06-20",
     "powershellEquivalent": "Update-MgAdminSharePointSetting",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "SHAREPOINTWAC",
+      "SHAREPOINTSTANDARD",
+      "SHAREPOINTENTERPRISE",
+      "SHAREPOINTENTERPRISE_EDU",
+      "ONEDRIVE_BASIC",
+      "ONEDRIVE_ENTERPRISE"
+    ]
   },
   {
     "name": "standards.TeamsGlobalMeetingPolicy",
@@ -4603,28 +4810,24 @@
         "name": "standards.TeamsGlobalMeetingPolicy.DesignatedPresenterRoleMode",
         "label": "Default value of the `Who can present?`",
         "options": [
-          {
-            "label": "Everyone",
-            "value": "EveryoneUserOverride"
-          },
-          {
-            "label": "People in my organization",
-            "value": "EveryoneInCompanyUserOverride"
-          },
+          { "label": "Everyone", "value": "EveryoneUserOverride" },
+          { "label": "People in my organization", "value": "EveryoneInCompanyUserOverride" },
           {
             "label": "People in my organization and trusted organizations",
             "value": "EveryoneInSameAndFederatedCompanyUserOverride"
           },
-          {
-            "label": "Only organizer",
-            "value": "OrganizerOnlyUserOverride"
-          }
+          { "label": "Only organizer", "value": "OrganizerOnlyUserOverride" }
         ]
       },
       {
         "type": "switch",
         "name": "standards.TeamsGlobalMeetingPolicy.AllowAnonymousUsersToJoinMeeting",
         "label": "Allow anonymous users to join meeting"
+      },
+      {
+        "type": "switch",
+        "name": "standards.TeamsGlobalMeetingPolicy.AllowAnonymousUsersToStartMeeting",
+        "label": "Allow anonymous users to start meeting"
       },
       {
         "type": "autoComplete",
@@ -4635,19 +4838,23 @@
         "label": "Who can bypass the lobby?",
         "helperText": "If left blank, the current value will not be changed.",
         "options": [
-          {
-            "label": "Only organizers and co-organizers",
-            "value": "OrganizerOnly"
-          },
+          { "label": "Only organizers and co-organizers", "value": "OrganizerOnly" },
           {
             "label": "People in organization excluding guests",
             "value": "EveryoneInCompanyExcludingGuests"
           },
           {
-            "label": "People who were invited",
-            "value": "InvitedUsers"
-          }
+            "label": "People in same or federated organizations",
+            "value": "EveryoneInSameAndFederatedCompany"
+          },
+          { "label": "People who were invited", "value": "InvitedUsers" },
+          { "label": "Everyone", "value": "Everyone" }
         ]
+      },
+      {
+        "type": "switch",
+        "name": "standards.TeamsGlobalMeetingPolicy.AllowPSTNUsersToBypassLobby",
+        "label": "Allow dial-in users to bypass lobby"
       },
       {
         "type": "autoComplete",
@@ -4657,18 +4864,9 @@
         "name": "standards.TeamsGlobalMeetingPolicy.MeetingChatEnabledType",
         "label": "Meeting chat policy",
         "options": [
-          {
-            "label": "On for everyone",
-            "value": "Enabled"
-          },
-          {
-            "label": "On for everyone but anonymous users",
-            "value": "EnabledExceptAnonymous"
-          },
-          {
-            "label": "Off for everyone",
-            "value": "Disabled"
-          }
+          { "label": "On for everyone", "value": "Enabled" },
+          { "label": "On for everyone but anonymous users", "value": "EnabledExceptAnonymous" },
+          { "label": "Off for everyone", "value": "Disabled" }
         ]
       },
       {
@@ -4687,7 +4885,8 @@
     "impactColour": "info",
     "addedDate": "2024-11-12",
     "powershellEquivalent": "Set-CsTeamsMeetingPolicy -AllowAnonymousUsersToJoinMeeting $false -AllowAnonymousUsersToStartMeeting $false -AutoAdmittedUsers $AutoAdmittedUsers -AllowPSTNUsersToBypassLobby $false -MeetingChatEnabledType EnabledExceptAnonymous -DesignatedPresenterRoleMode $DesignatedPresenterRoleMode -AllowExternalParticipantGiveRequestControl $false -AllowParticipantGiveRequestControl $false",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsChatProtection",
@@ -4715,7 +4914,8 @@
     "impactColour": "info",
     "addedDate": "2025-10-02",
     "powershellEquivalent": "Set-CsTeamsMessagingConfiguration -FileTypeCheck 'Enabled' -UrlReputationCheck 'Enabled' -ReportIncorrectSecurityDetections 'Enabled'",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsExternalChatWithAnyone",
@@ -4730,14 +4930,8 @@
         "name": "standards.TeamsExternalChatWithAnyone.UseB2BInvitesToAddExternalUsers",
         "label": "Allow chatting with anyone via email",
         "options": [
-          {
-            "label": "Enabled",
-            "value": "true"
-          },
-          {
-            "label": "Disabled",
-            "value": "false"
-          }
+          { "label": "Enabled", "value": "true" },
+          { "label": "Disabled", "value": "false" }
         ],
         "defaultValue": "Disabled"
       }
@@ -4747,7 +4941,8 @@
     "impactColour": "info",
     "addedDate": "2025-11-03",
     "powershellEquivalent": "Set-CsTeamsMessagingPolicy -Identity Global -UseB2BInvitesToAddExternalUsers $false/$true",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsEmailIntegration",
@@ -4768,7 +4963,8 @@
     "addedDate": "2024-07-30",
     "powershellEquivalent": "Set-CsTeamsClientConfiguration -AllowEmailIntoChannel $false",
     "recommendedBy": ["CIS"],
-    "tag": ["CIS M365 5.0 (8.1.2)"]
+    "tag": ["CIS M365 5.0 (8.1.2)"],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsGuestAccess",
@@ -4789,7 +4985,8 @@
     "impactColour": "info",
     "addedDate": "2025-06-03",
     "powershellEquivalent": "Set-CsTeamsClientConfiguration -AllowGuestUser $true",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsMeetingVerification",
@@ -4806,10 +5003,7 @@
         "label": "CAPTCHA Verification Setting",
         "name": "standards.TeamsMeetingVerification.CaptchaVerificationForMeetingJoin",
         "options": [
-          {
-            "label": "Not Required",
-            "value": "NotRequired"
-          },
+          { "label": "Not Required", "value": "NotRequired" },
           {
             "label": "Anonymous Users and Untrusted Organizations",
             "value": "AnonymousUsersAndUntrustedOrganizations"
@@ -4822,7 +5016,8 @@
     "impactColour": "info",
     "addedDate": "2025-06-14",
     "powershellEquivalent": "Set-CsTeamsMeetingPolicy -CaptchaVerificationForMeetingJoin",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsExternalFileSharing",
@@ -4862,7 +5057,8 @@
     "impactColour": "info",
     "addedDate": "2024-07-28",
     "powershellEquivalent": "Set-CsTeamsClientConfiguration -AllowGoogleDrive $false -AllowShareFile $false -AllowBox $false -AllowDropBox $false -AllowEgnyte $false",
-    "recommendedBy": ["CIS"]
+    "recommendedBy": ["CIS"],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsEnrollUser",
@@ -4880,14 +5076,8 @@
         "name": "standards.TeamsEnrollUser.EnrollUserOverride",
         "label": "Voice and Face Enrollment",
         "options": [
-          {
-            "label": "Disabled",
-            "value": "Disabled"
-          },
-          {
-            "label": "Enabled",
-            "value": "Enabled"
-          }
+          { "label": "Disabled", "value": "Disabled" },
+          { "label": "Enabled", "value": "Enabled" }
         ]
       }
     ],
@@ -4896,7 +5086,8 @@
     "impactColour": "info",
     "addedDate": "2024-11-12",
     "powershellEquivalent": "Set-CsTeamsMeetingPolicy -Identity Global -EnrollUserOverride $false",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsExternalAccessPolicy",
@@ -4922,7 +5113,8 @@
     "impactColour": "warning",
     "addedDate": "2024-07-30",
     "powershellEquivalent": "Set-CsExternalAccessPolicy",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsFederationConfiguration",
@@ -4945,29 +5137,22 @@
         "name": "standards.TeamsFederationConfiguration.DomainControl",
         "label": "Communication Mode",
         "options": [
-          {
-            "label": "Allow all external domains",
-            "value": "AllowAllExternal"
-          },
-          {
-            "label": "Block all external domains",
-            "value": "BlockAllExternal"
-          },
-          {
-            "label": "Allow specific external domains",
-            "value": "AllowSpecificExternal"
-          },
-          {
-            "label": "Block specific external domains",
-            "value": "BlockSpecificExternal"
-          }
+          { "label": "Allow all external domains", "value": "AllowAllExternal" },
+          { "label": "Block all external domains", "value": "BlockAllExternal" },
+          { "label": "Allow specific external domains", "value": "AllowSpecificExternal" },
+          { "label": "Block specific external domains", "value": "BlockSpecificExternal" }
         ]
       },
       {
         "type": "textField",
         "name": "standards.TeamsFederationConfiguration.DomainList",
         "label": "Domains, Comma separated",
-        "required": false
+        "required": false,
+        "condition": {
+          "field": "standards.TeamsFederationConfiguration.DomainControl.value",
+          "compareType": "isOneOf",
+          "compareValue": ["AllowSpecificExternal", "BlockSpecificExternal"]
+        }
       }
     ],
     "label": "Federation Configuration for Microsoft Teams",
@@ -4975,7 +5160,8 @@
     "impactColour": "warning",
     "addedDate": "2024-07-31",
     "powershellEquivalent": "Set-CsTenantFederationConfiguration",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsMeetingRecordingExpiration",
@@ -5002,7 +5188,8 @@
     "impactColour": "warning",
     "addedDate": "2025-04-17",
     "powershellEquivalent": "Set-CsTeamsMeetingPolicy -Identity Global -MeetingRecordingExpirationDays <days>",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.TeamsMessagingPolicy",
@@ -5044,18 +5231,9 @@
         "name": "standards.TeamsMessagingPolicy.ReadReceiptsEnabledType",
         "label": "Read Receipts Enabled Type",
         "options": [
-          {
-            "label": "User controlled",
-            "value": "UserPreference"
-          },
-          {
-            "label": "Turned on for everyone",
-            "value": "Everyone"
-          },
-          {
-            "label": "Turned off for everyone",
-            "value": "None"
-          }
+          { "label": "User controlled", "value": "UserPreference" },
+          { "label": "Turned on for everyone", "value": "Everyone" },
+          { "label": "Turned off for everyone", "value": "None" }
         ]
       },
       {
@@ -5088,17 +5266,14 @@
     "impactColour": "warning",
     "addedDate": "2025-01-10",
     "powershellEquivalent": "Set-CsTeamsMessagingPolicy",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["MCOSTANDARD", "MCOEV", "MCOIMP", "TEAMS1", "Teams_Room_Standard"]
   },
   {
     "name": "standards.AutopilotStatusPage",
     "cat": "Device Management Standards",
     "tag": [],
-    "disabledFeatures": {
-      "report": false,
-      "warn": false,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": false, "warn": false, "remediate": false },
     "helpText": "Deploy the Autopilot Status Page, which shows progress during device setup through Autopilot.",
     "docsDescription": "This standard allows configuration of the Autopilot Status Page, providing users with a visual representation of the progress during device setup. It includes options like timeout, logging, and retry settings.",
     "executiveText": "Provides employees with a visual progress indicator during automated device setup, improving the user experience when receiving new computers. This reduces IT support calls and helps ensure successful device deployment by guiding users through the setup process.",
@@ -5166,17 +5341,14 @@
     "impact": "Low Impact",
     "addedDate": "2023-12-30",
     "impactColour": "info",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.AutopilotProfile",
     "cat": "Device Management Standards",
     "tag": [],
-    "disabledFeatures": {
-      "report": false,
-      "warn": false,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": false, "warn": false, "remediate": false },
     "helpText": "Assign the appropriate Autopilot profile to streamline device deployment.",
     "docsDescription": "This standard allows the deployment of Autopilot profiles to devices, including settings such as unique name templates, language options, and local admin privileges.",
     "addedComponent": [
@@ -5203,11 +5375,7 @@
         "required": false,
         "name": "standards.AutopilotProfile.Languages",
         "label": "Languages",
-        "api": {
-          "url": "/languageList.json",
-          "labelField": "languageTag",
-          "valueField": "tag"
-        }
+        "api": { "url": "/languageList.json", "labelField": "languageTag", "valueField": "tag" }
       },
       {
         "type": "switch",
@@ -5268,18 +5436,15 @@
     "impact": "Low Impact",
     "impactColour": "info",
     "addedDate": "2023-12-30",
-    "recommendedBy": []
+    "recommendedBy": [],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.IntuneTemplate",
     "cat": "Templates",
     "label": "Intune Template",
     "multiple": true,
-    "disabledFeatures": {
-      "report": false,
-      "warn": false,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": false, "warn": false, "remediate": false },
     "impact": "High Impact",
     "addedDate": "2023-12-30",
     "helpText": "Deploy and manage Intune templates across devices.",
@@ -5298,11 +5463,7 @@
           "labelField": "Displayname",
           "valueField": "GUID",
           "showRefresh": true,
-          "templateView": {
-            "title": "Intune Template",
-            "property": "RAWJson",
-            "type": "intune"
-          }
+          "templateView": { "title": "Intune Template", "property": "RAWJson", "type": "intune" }
         }
       },
       {
@@ -5324,26 +5485,11 @@
         "label": "Who should this template be assigned to?",
         "type": "radio",
         "options": [
-          {
-            "label": "Do not assign",
-            "value": "On"
-          },
-          {
-            "label": "Assign to all users",
-            "value": "allLicensedUsers"
-          },
-          {
-            "label": "Assign to all devices",
-            "value": "AllDevices"
-          },
-          {
-            "label": "Assign to all users and devices",
-            "value": "AllDevicesAndUsers"
-          },
-          {
-            "label": "Assign to Custom Group",
-            "value": "customGroup"
-          }
+          { "label": "Do not assign", "value": "On" },
+          { "label": "Assign to all users", "value": "allLicensedUsers" },
+          { "label": "Assign to all devices", "value": "AllDevices" },
+          { "label": "Assign to all users and devices", "value": "AllDevicesAndUsers" },
+          { "label": "Assign to Custom Group", "value": "customGroup" }
         ]
       },
       {
@@ -5352,6 +5498,7 @@
         "name": "customGroup",
         "label": "Enter the custom group name if you selected 'Assign to Custom Group'. Wildcards are allowed."
       },
+      { "type": "switch", "name": "verifyAssignments", "label": "Verify policy assignments" },
       {
         "name": "excludeGroup",
         "label": "Exclude Groups",
@@ -5373,14 +5520,8 @@
         "required": false,
         "helpText": "Choose whether to include or exclude devices matching the filter. Only applies if you specified a filter name above. Defaults to Include if not specified.",
         "options": [
-          {
-            "label": "Include - Assign to devices matching the filter",
-            "value": "include"
-          },
-          {
-            "label": "Exclude - Assign to devices NOT matching the filter",
-            "value": "exclude"
-          }
+          { "label": "Include - Assign to devices matching the filter", "value": "include" },
+          { "label": "Exclude - Assign to devices NOT matching the filter", "value": "exclude" }
         ]
       }
     ]
@@ -5390,11 +5531,7 @@
     "cat": "Templates",
     "label": "Reusable Settings Template",
     "multiple": true,
-    "disabledFeatures": {
-      "report": false,
-      "warn": false,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": false, "warn": false, "remediate": false },
     "impact": "High Impact",
     "impactColour": "info",
     "addedDate": "2026-01-02",
@@ -5414,11 +5551,7 @@
           "labelField": "displayName",
           "valueField": "GUID",
           "showRefresh": true,
-          "templateView": {
-            "title": "Reusable Settings",
-            "property": "RawJSON",
-            "type": "intune"
-          }
+          "templateView": { "title": "Reusable Settings", "property": "RawJSON", "type": "intune" }
         }
       }
     ],
@@ -5429,11 +5562,7 @@
     "name": "standards.TransportRuleTemplate",
     "label": "Transport Rule Template",
     "cat": "Templates",
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false },
     "impact": "Medium Impact",
     "addedDate": "2023-12-30",
     "helpText": "Deploy transport rules to manage email flow.",
@@ -5444,7 +5573,7 @@
         "name": "transportRuleTemplate",
         "label": "Select Transport Rule Template",
         "api": {
-          "url": "/api/ListTransportRulesTemplates",
+          "url": "/api/ListTransportRulesTemplates?noJson=true",
           "labelField": "name",
           "valueField": "GUID",
           "queryKey": "ListTransportRulesTemplates"
@@ -5456,6 +5585,13 @@
         "name": "overwrite",
         "defaultValue": true
       }
+    ],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
     ]
   },
   {
@@ -5463,11 +5599,7 @@
     "label": "Conditional Access Template",
     "cat": "Templates",
     "multiple": true,
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false },
     "impact": "High Impact",
     "addedDate": "2023-12-30",
     "helpText": "Manage conditional access policies for better security.",
@@ -5484,9 +5616,7 @@
           "valueField": "GUID",
           "queryKey": "ListCATemplates",
           "showRefresh": true,
-          "templateView": {
-            "title": "Conditional Access Policy"
-          }
+          "templateView": { "title": "Conditional Access Policy" }
         }
       },
       {
@@ -5494,22 +5624,10 @@
         "label": "What state should we deploy this template in?",
         "type": "radio",
         "options": [
-          {
-            "value": "donotchange",
-            "label": "Do not change state"
-          },
-          {
-            "value": "Enabled",
-            "label": "Set to enabled"
-          },
-          {
-            "value": "Disabled",
-            "label": "Set to disabled"
-          },
-          {
-            "value": "enabledForReportingButNotEnforced",
-            "label": "Set to report only"
-          }
+          { "value": "donotchange", "label": "Do not change state" },
+          { "value": "Enabled", "label": "Set to enabled" },
+          { "value": "Disabled", "label": "Set to disabled" },
+          { "value": "enabledForReportingButNotEnforced", "label": "Set to report only" }
         ]
       },
       {
@@ -5517,22 +5635,15 @@
         "name": "DisableSD",
         "label": "Disable Security Defaults when deploying policy"
       },
-      {
-        "type": "switch",
-        "name": "CreateGroups",
-        "label": "Create groups if they do not exist"
-      }
-    ]
+      { "type": "switch", "name": "CreateGroups", "label": "Create groups if they do not exist" }
+    ],
+    "requiredCapabilities": ["AAD_PREMIUM", "AAD_PREMIUM_P2"]
   },
   {
     "name": "standards.ExchangeConnectorTemplate",
     "label": "Exchange Connector Template",
     "cat": "Templates",
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false },
     "impact": "Medium Impact",
     "addedDate": "2023-12-30",
     "helpText": "Deploy and manage Exchange connectors.",
@@ -5549,6 +5660,13 @@
           "queryKey": "ListExConnectorTemplates"
         }
       }
+    ],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
     ]
   },
   {
@@ -5556,11 +5674,7 @@
     "label": "Group Template",
     "multi": true,
     "cat": "Templates",
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false },
     "impact": "Medium Impact",
     "addedDate": "2023-12-30",
     "helpText": "Deploy and manage group templates.",
@@ -5578,18 +5692,15 @@
           "queryKey": "ListGroupTemplates"
         }
       }
-    ]
+    ],
+    "requiredCapabilities": ["EXCHANGE_S_STANDARD", "EXCHANGE_S_ENTERPRISE", "EXCHANGE_LITE"]
   },
   {
     "name": "standards.AssignmentFilterTemplate",
     "label": "Assignment Filter Template",
     "multi": true,
     "cat": "Templates",
-    "disabledFeatures": {
-      "report": true,
-      "warn": true,
-      "remediate": false
-    },
+    "disabledFeatures": { "report": true, "warn": true, "remediate": false },
     "impact": "Medium Impact",
     "addedDate": "2025-10-04",
     "helpText": "Deploy and manage assignment filter templates.",
@@ -5607,6 +5718,40 @@
           "queryKey": "ListAssignmentFilterTemplates"
         }
       }
+    ],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
+  },
+  {
+    "name": "standards.TenantAllowBlockListTemplate",
+    "label": "Tenant Allow/Block List Template",
+    "cat": "Exchange Standards",
+    "disabledFeatures": { "report": false, "warn": false, "remediate": false },
+    "impact": "Medium Impact",
+    "addedDate": "2026-04-02",
+    "helpText": "Deploy tenant allow/block list entries from a saved template.",
+    "executiveText": "Deploys standardized tenant allow/block list entries across tenants. These templates ensure consistent email filtering rules are applied, managing which senders, URLs, file hashes, and IP addresses are allowed or blocked across the organization.",
+    "addedComponent": [
+      {
+        "type": "autoComplete",
+        "name": "TenantAllowBlockListTemplate",
+        "required": false,
+        "multiple": true,
+        "label": "Select Tenant Allow/Block List Template",
+        "api": {
+          "url": "/api/ListTenantAllowBlockListTemplates",
+          "labelField": "templateName",
+          "valueField": "GUID",
+          "queryKey": "ListTenantAllowBlockListTemplates",
+          "showRefresh": true
+        }
+      }
+    ],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
     ]
   },
   {
@@ -5633,7 +5778,14 @@
     "impactColour": "info",
     "addedDate": "2025-05-28",
     "powershellEquivalent": "Set-Mailbox -RecipientLimits",
-    "recommendedBy": ["CIPP"]
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.DisableExchangeOnlinePowerShell",
@@ -5647,7 +5799,14 @@
     "impactColour": "warning",
     "addedDate": "2025-06-19",
     "powershellEquivalent": "Set-User -Identity $user -RemotePowerShellEnabled $false",
-    "recommendedBy": ["CIS", "CIPP"]
+    "recommendedBy": ["CIS", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.OWAAttachmentRestrictions",
@@ -5662,10 +5821,7 @@
         "name": "standards.OWAAttachmentRestrictions.ConditionalAccessPolicy",
         "label": "Attachment Restriction Policy",
         "options": [
-          {
-            "label": "Read Only (View/Edit via Office Online, no download)",
-            "value": "ReadOnly"
-          },
+          { "label": "Read Only (View/Edit via Office Online, no download)", "value": "ReadOnly" },
           {
             "label": "Read Only Plus Attachments Blocked (Cannot see attachments)",
             "value": "ReadOnlyPlusAttachmentsBlocked"
@@ -5679,7 +5835,14 @@
     "impactColour": "warning",
     "addedDate": "2025-08-22",
     "powershellEquivalent": "Set-OwaMailboxPolicy -Identity \"OwaMailboxPolicy-Default\" -ConditionalAccessPolicy ReadOnlyPlusAttachmentsBlocked",
-    "recommendedBy": ["Microsoft Zero Trust", "CIPP"]
+    "recommendedBy": ["Microsoft Zero Trust", "CIPP"],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   },
   {
     "name": "standards.LegacyEmailReportAddins",
@@ -5699,21 +5862,33 @@
     "name": "standards.DeployCheckChromeExtension",
     "cat": "Intune Standards",
     "tag": [],
-    "helpText": "Deploys the Check Chrome extension via Intune OMA-URI custom policies for both Chrome and Edge browsers with configurable settings. Chrome ID: benimdeioplgkhanklclahllklceahbe, Edge ID: knepjpocdagponkonnbggpcnhnaikajg",
-    "docsDescription": "Creates Intune OMA-URI custom policies that automatically install and configure the Check Chrome extension on managed devices for both Google Chrome and Microsoft Edge browsers. This ensures the extension is deployed consistently across all corporate devices with customizable settings.",
-    "executiveText": "Automatically deploys the Check browser extension across all company devices with configurable security and branding settings, ensuring consistent security monitoring and compliance capabilities. This extension provides enhanced security features and monitoring tools that help protect against threats while maintaining user productivity.",
+    "helpText": "Deploys the Check by CyberDrain browser extension via a Win32 script app in Intune for both Chrome and Edge browsers with configurable settings. Chrome ID: benimdeioplgkhanklclahllklceahbe, Edge ID: knepjpocdagponkonnbggpcnhnaikajg",
+    "docsDescription": "Creates an Intune Win32 script application that writes registry keys to install and configure the Check by CyberDrain browser extension on managed devices for both Google Chrome and Microsoft Edge browsers. Uses a PowerShell detection script to enforce configuration drift — when settings change in CIPP the app is automatically redeployed.",
+    "executiveText": "Automatically deploys the Check by CyberDrain browser extension across all company devices with configurable security and branding settings, ensuring consistent security monitoring and compliance capabilities. This extension provides enhanced security features and monitoring tools that help protect against threats while maintaining user productivity.",
     "addedComponent": [
+      {
+        "type": "switch",
+        "name": "standards.DeployCheckChromeExtension.showNotifications",
+        "label": "Show notifications",
+        "defaultValue": true
+      },
       {
         "type": "switch",
         "name": "standards.DeployCheckChromeExtension.enableValidPageBadge",
         "label": "Enable valid page badge",
-        "defaultValue": true
+        "defaultValue": false
       },
       {
         "type": "switch",
         "name": "standards.DeployCheckChromeExtension.enablePageBlocking",
         "label": "Enable page blocking",
         "defaultValue": true
+      },
+      {
+        "type": "switch",
+        "name": "standards.DeployCheckChromeExtension.forceToolbarPin",
+        "label": "Force pin extension to toolbar",
+        "defaultValue": false
       },
       {
         "type": "switch",
@@ -5726,13 +5901,14 @@
         "name": "standards.DeployCheckChromeExtension.customRulesUrl",
         "label": "Custom Rules URL",
         "placeholder": "https://YOUR-CIPP-SERVER-URL/rules.json",
+        "helperText": "Enter the URL for custom rules if you have them. This should point to a JSON file with the same structure as the rules.json used for CIPP reporting.",
         "required": false
       },
       {
         "type": "number",
         "name": "standards.DeployCheckChromeExtension.updateInterval",
         "label": "Update interval (hours)",
-        "defaultValue": 12
+        "defaultValue": 24
       },
       {
         "type": "switch",
@@ -5741,10 +5917,56 @@
         "defaultValue": false
       },
       {
+        "type": "switch",
+        "name": "standards.DeployCheckChromeExtension.enableGenericWebhook",
+        "label": "Enable generic webhook",
+        "defaultValue": false
+      },
+      {
+        "type": "textField",
+        "name": "standards.DeployCheckChromeExtension.webhookUrl",
+        "label": "Webhook URL",
+        "placeholder": "https://webhook.example.com/endpoint",
+        "required": false
+      },
+      {
+        "type": "autoComplete",
+        "multiple": true,
+        "creatable": true,
+        "required": false,
+        "name": "standards.DeployCheckChromeExtension.webhookEvents",
+        "label": "Webhook Events",
+        "placeholder": "e.g. pageBlocked, pageAllowed"
+      },
+      {
+        "type": "autoComplete",
+        "multiple": true,
+        "creatable": true,
+        "required": false,
+        "freeSolo": true,
+        "name": "standards.DeployCheckChromeExtension.urlAllowlist",
+        "label": "URL Allowlist",
+        "placeholder": "e.g. https://example.com/*",
+        "helperText": "Enter URLs to allowlist in the extension. Press enter to add each URL. Wildcards are allowed. This should be used for sites that are being blocked by the extension but are known to be safe."
+      },
+      {
+        "type": "switch",
+        "name": "standards.DeployCheckChromeExtension.domainSquattingEnabled",
+        "label": "Enable domain squatting detection",
+        "defaultValue": true
+      },
+      {
         "type": "textField",
         "name": "standards.DeployCheckChromeExtension.companyName",
         "label": "Company Name",
         "placeholder": "YOUR-COMPANY",
+        "required": false
+      },
+      {
+        "type": "textField",
+        "name": "standards.DeployCheckChromeExtension.companyURL",
+        "label": "Company URL",
+        "placeholder": "https://yourcompany.com",
         "required": false
       },
       {
@@ -5763,9 +5985,30 @@
       },
       {
         "type": "textField",
+        "name": "standards.DeployCheckChromeExtension.supportUrl",
+        "label": "Support URL",
+        "placeholder": "https://support.yourcompany.com",
+        "required": false
+      },
+      {
+        "type": "textField",
+        "name": "standards.DeployCheckChromeExtension.privacyPolicyUrl",
+        "label": "Privacy Policy URL",
+        "placeholder": "https://yourcompany.com/privacy",
+        "required": false
+      },
+      {
+        "type": "textField",
+        "name": "standards.DeployCheckChromeExtension.aboutUrl",
+        "label": "About URL",
+        "placeholder": "https://yourcompany.com/about",
+        "required": false
+      },
+      {
+        "type": "textField",
         "name": "standards.DeployCheckChromeExtension.primaryColor",
         "label": "Primary Color",
-        "placeholder": "#0044CC",
+        "placeholder": "#F77F00",
         "required": false
       },
       {
@@ -5777,29 +6020,14 @@
       },
       {
         "name": "AssignTo",
-        "label": "Who should this policy be assigned to?",
+        "label": "Who should this app be assigned to?",
         "type": "radio",
         "options": [
-          {
-            "label": "Do not assign",
-            "value": "On"
-          },
-          {
-            "label": "Assign to all users",
-            "value": "allLicensedUsers"
-          },
-          {
-            "label": "Assign to all devices",
-            "value": "AllDevices"
-          },
-          {
-            "label": "Assign to all users and devices",
-            "value": "AllDevicesAndUsers"
-          },
-          {
-            "label": "Assign to Custom Group",
-            "value": "customGroup"
-          }
+          { "label": "Do not assign", "value": "On" },
+          { "label": "Assign to all users", "value": "allLicensedUsers" },
+          { "label": "Assign to all devices", "value": "AllDevices" },
+          { "label": "Assign to all users and devices", "value": "AllDevicesAndUsers" },
+          { "label": "Assign to Custom Group", "value": "customGroup" }
         ]
       },
       {
@@ -5809,12 +6037,13 @@
         "label": "Enter the custom group name if you selected 'Assign to Custom Group'. Wildcards are allowed."
       }
     ],
-    "label": "Deploy Check Chrome Extension",
+    "label": "Deploy Check by CyberDrain Browser Extension",
     "impact": "Low Impact",
     "impactColour": "info",
     "addedDate": "2025-09-18",
-    "powershellEquivalent": "New-GraphPostRequest -uri 'https://graph.microsoft.com/beta/deviceManagement/configurationPolicies'",
-    "recommendedBy": ["CIPP"]
+    "powershellEquivalent": "Add-CIPPW32ScriptApplication",
+    "recommendedBy": ["CIPP"],
+    "requiredCapabilities": ["INTUNE_A", "MDM_Services", "EMS", "SCCM", "MICROSOFTINTUNEPLAN1"]
   },
   {
     "name": "standards.SecureScoreRemediation",
@@ -5829,11 +6058,7 @@
         "required": false,
         "name": "standards.SecureScoreRemediation.Default",
         "label": "Controls to set to Default",
-        "api": {
-          "url": "/secureScore.json",
-          "labelField": "title",
-          "valueField": "id"
-        }
+        "api": { "url": "/secureScore.json", "labelField": "title", "valueField": "id" }
       },
       {
         "type": "autoComplete",
@@ -5842,11 +6067,7 @@
         "required": false,
         "name": "standards.SecureScoreRemediation.Ignored",
         "label": "Controls to set to Ignored",
-        "api": {
-          "url": "/secureScore.json",
-          "labelField": "title",
-          "valueField": "id"
-        }
+        "api": { "url": "/secureScore.json", "labelField": "title", "valueField": "id" }
       },
       {
         "type": "autoComplete",
@@ -5855,11 +6076,7 @@
         "required": false,
         "name": "standards.SecureScoreRemediation.ThirdParty",
         "label": "Controls to set to Third-Party",
-        "api": {
-          "url": "/secureScore.json",
-          "labelField": "title",
-          "valueField": "id"
-        }
+        "api": { "url": "/secureScore.json", "labelField": "title", "valueField": "id" }
       },
       {
         "type": "autoComplete",
@@ -5868,11 +6085,7 @@
         "creatable": true,
         "name": "standards.SecureScoreRemediation.Reviewed",
         "label": "Controls to set to Reviewed",
-        "api": {
-          "url": "/secureScore.json",
-          "labelField": "title",
-          "valueField": "id"
-        }
+        "api": { "url": "/secureScore.json", "labelField": "title", "valueField": "id" }
       }
     ],
     "label": "Update Secure Score Control Profiles",
@@ -5880,5 +6093,216 @@
     "impactColour": "info",
     "addedDate": "2025-11-19",
     "powershellEquivalent": "New-GraphPostRequest to /beta/security/secureScoreControlProfiles/{id}"
+  },
+  {
+    "name": "standards.ColleagueImpersonationAlert",
+    "cat": "Exchange Standards",
+    "tag": ["Exchange", "Security", "Transport Rules"],
+    "helpText": "Creates/updates 5x Exchange Online transport rules (A-E, F-J, K-O, P-T, U-Z) that prepend an HTML disclaimer banner to inbound emails where the sender display name matches a mailbox in the organisation. Accepted tenant domains are always exempt automatically. Inactive users are removed and enabled users are added. Any manually configured sender or domain exemptions already present on existing rules are preserved.",
+    "docsDescription": "Creates five Exchange Online transport rules grouped by the first letter of user display names (A-E, F-J, K-O, P-T, U-Z). Each rule fires when an external sender's From header matches a display name in that group, prepends a configurable HTML warning banner, and skips emails from accepted organisational domains. Any manually configured sender or domain exemptions on existing rules are preserved when the standard runs. The disclaimer HTML is fully customisable via the standard settings.",
+    "executiveText": "Protects staff from display-name impersonation attacks by injecting a visible warning banner on emails that appear to come from a colleague but originate externally. Rules are maintained automatically across all letter groups and updated whenever the standard runs.",
+    "addedComponent": [
+      {
+        "type": "textField",
+        "name": "standards.ColleagueImpersonationAlert.disclaimerHtml",
+        "label": "Disclaimer HTML – Paste the full HTML for the warning banner",
+        "required": true
+      },
+      {
+        "type": "autoComplete",
+        "name": "standards.ColleagueImpersonationAlert.excludedMailboxes",
+        "label": "Exclude mailboxes by keywords for example any Displayname starting with (Leaver)",
+        "multiple": true,
+        "creatable": true,
+        "required": false
+      },
+      {
+        "type": "autoComplete",
+        "name": "standards.ColleagueImpersonationAlert.additionalExemptSenders",
+        "label": "Additional exempt sender addresses",
+        "multiple": true,
+        "creatable": true,
+        "required": false
+      }
+    ],
+    "label": "Colleague Impersonation Alert Transport Rules",
+    "impact": "Medium Impact",
+    "impactColour": "warning",
+    "addedDate": "2026-03-22",
+    "powershellEquivalent": "New-TransportRule / Set-TransportRule",
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
+  },
+  {
+    "name": "standards.DefenderCompliancePolicy",
+    "cat": "Defender Standards",
+    "tag": ["defender_mde_connector", "defender_intune_compliance"],
+    "helpText": "Configures the Microsoft Defender for Endpoint connector with Intune, enabling compliance evaluation for mobile and desktop platforms (Android, iOS, macOS, Windows). Controls which platforms connect to MDE and whether devices are blocked when partner data is missing.",
+    "docsDescription": "Configures the Microsoft Defender for Endpoint mobile threat defense connector with Intune. This enables compliance evaluation across platforms (Android, iOS/iPadOS, macOS, Windows) and controls settings like blocking unsupported OS versions, requiring partner data for compliance, and enabling mobile application management. The connector must be enabled before platform-specific compliance policies can evaluate device risk from MDE.",
+    "executiveText": "Establishes the critical link between Microsoft Defender for Endpoint and Intune, enabling security risk data from MDE to be used in device compliance policies. This ensures that only devices meeting your organization's security standards can access corporate resources, providing a foundational layer of Zero Trust security across all platforms.",
+    "addedComponent": [
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.ConnectAndroid",
+        "label": "Connect Android devices to MDE",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.ConnectAndroidCompliance",
+        "label": "Connect Android 6.0.0+ (App-based MAM)",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.androidDeviceBlockedOnMissingPartnerData",
+        "label": "Block Android if partner data unavailable",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.ConnectIos",
+        "label": "Connect iOS/iPadOS devices to MDE",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.ConnectIosCompliance",
+        "label": "Connect iOS 13.0+ (App-based MAM)",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.appSync",
+        "label": "Enable App Sync for iOS",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.iosDeviceBlockedOnMissingPartnerData",
+        "label": "Block iOS if partner data unavailable",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.allowPartnerToCollectIosCertificateMetadata",
+        "label": "Collect certificate metadata from iOS",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.allowPartnerToCollectIosPersonalCertificateMetadata",
+        "label": "Collect personal certificate metadata from iOS",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.ConnectMac",
+        "label": "Connect macOS devices to MDE",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.macDeviceBlockedOnMissingPartnerData",
+        "label": "Block macOS if partner data unavailable",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.ConnectWindows",
+        "label": "Connect Windows 10.0.15063+ to MDE",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.windowsMobileApplicationManagementEnabled",
+        "label": "Connect Windows (MAM)",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.windowsDeviceBlockedOnMissingPartnerData",
+        "label": "Block Windows if partner data unavailable",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.BlockunsupportedOS",
+        "label": "Block unsupported OS versions",
+        "defaultValue": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.DefenderCompliancePolicy.AllowMEMEnforceCompliance",
+        "label": "Allow MEM enforcement of compliance",
+        "defaultValue": false
+      }
+    ],
+    "label": "Defender for Endpoint - Intune Compliance Connector",
+    "impact": "High Impact",
+    "impactColour": "danger",
+    "addedDate": "2026-04-02",
+    "powershellEquivalent": "Graph API - deviceManagement/mobileThreatDefenseConnectors",
+    "recommendedBy": []
+  },
+  {
+    "name": "standards.GlobalQuarantineSettings",
+    "cat": "Exchange Standards",
+    "tag": [],
+    "helpText": "Configures the Global Quarantine Policy settings including sender name, custom subject, disclaimer, from address, and org branding.",
+    "docsDescription": "Configures the Global Quarantine Policy branding and notification settings for the tenant. This includes the quarantine notification sender display name, custom subject line, disclaimer text, the from address used for notifications, and whether to use org branding. Notification frequency is managed separately by the GlobalQuarantineNotifications standard.",
+    "executiveText": "Ensures quarantine notification emails are branded and configured consistently, so end users receive clear, professional alerts about quarantined messages and know how to request release.",
+    "addedComponent": [
+      {
+        "type": "textField",
+        "name": "standards.GlobalQuarantineSettings.SenderName",
+        "label": "Sender Display Name (e.g. Contoso-Office365Alerts)",
+        "helperText": "Will be overridden if an active sender address with an existing display name is used.",
+        "required": false
+      },
+      {
+        "type": "textField",
+        "name": "standards.GlobalQuarantineSettings.CustomSubject",
+        "label": "Subject",
+        "required": false
+      },
+      {
+        "type": "textField",
+        "name": "standards.GlobalQuarantineSettings.CustomDisclaimer",
+        "label": "Disclaimer (max 200 characters)",
+        "required": false
+      },
+      {
+        "type": "textField",
+        "name": "standards.GlobalQuarantineSettings.FromAddress",
+        "label": "Specify Sender Address (must be an internal mailbox)",
+        "required": false
+      },
+      {
+        "type": "switch",
+        "name": "standards.GlobalQuarantineSettings.OrganizationBrandingEnabled",
+        "label": "Use Organization Branding (logo)",
+        "helperText": "Requires branding to be configured in the Microsoft 365 admin centre."
+      }
+    ],
+    "label": "Configure Global Quarantine Notification Settings",
+    "impact": "Low Impact",
+    "impactColour": "info",
+    "addedDate": "2026-04-02",
+    "powershellEquivalent": "Set-QuarantinePolicy (GlobalQuarantinePolicy)",
+    "recommendedBy": [],
+    "requiredCapabilities": [
+      "EXCHANGE_S_STANDARD",
+      "EXCHANGE_S_ENTERPRISE",
+      "EXCHANGE_S_STANDARD_GOV",
+      "EXCHANGE_S_ENTERPRISE_GOV",
+      "EXCHANGE_LITE"
+    ]
   }
 ]

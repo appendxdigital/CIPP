@@ -1,10 +1,22 @@
 import M365LicensesDefault from "../data/M365Licenses.json";
 import M365LicensesAdditional from "../data/M365Licenses-additional.json";
+import { getCachedLicense } from "./cipp-license-cache";
+import licenseBackfillManager from "./cipp-license-backfill-manager";
+
+// Create a Map for O(1) lookups of GUID to Product_Display_Name
+const licenseByGuid = new Map();
+[...M365LicensesDefault, ...M365LicensesAdditional].forEach((entry) => {
+  if (entry.GUID) {
+    const key = entry.GUID.toLowerCase();
+    if (!licenseByGuid.has(key)) {
+      licenseByGuid.set(key, entry.Product_Display_Name);
+    }
+  }
+});
 
 export const getCippLicenseTranslation = (licenseArray) => {
-  //combine M365LicensesDefault and M365LicensesAdditional to one array
-  const M365Licenses = [...M365LicensesDefault, ...M365LicensesAdditional];
   let licenses = [];
+  let missingSkuIds = [];
 
   if (Array.isArray(licenseArray) && typeof licenseArray[0] === "string") {
     return licenseArray;
@@ -20,21 +32,45 @@ export const getCippLicenseTranslation = (licenseArray) => {
 
   licenseArray?.forEach((licenseAssignment) => {
     let found = false;
-    for (let x = 0; x < M365Licenses.length; x++) {
-      if (licenseAssignment.skuId === M365Licenses[x].GUID) {
-        licenses.push(
-          M365Licenses[x].Product_Display_Name
-            ? M365Licenses[x].Product_Display_Name
-            : licenseAssignment.skuPartNumber
-        );
+
+    // First, check static JSON map (O(1) lookup)
+    const skuLower = licenseAssignment.skuId?.toLowerCase();
+    const displayName = skuLower ? licenseByGuid.get(skuLower) : undefined;
+    if (displayName) {
+      licenses.push(displayName);
+      found = true;
+    } else if (skuLower && licenseByGuid.has(skuLower)) {
+      // Entry exists but Product_Display_Name is falsy — fall back to skuPartNumber
+      licenses.push(licenseAssignment.skuPartNumber || licenseAssignment.skuId);
+      found = true;
+    }
+
+    // Second, check dynamic cache
+    if (!found && licenseAssignment.skuId) {
+      const cachedName = getCachedLicense(licenseAssignment.skuId);
+      if (cachedName) {
+        licenses.push(cachedName);
         found = true;
-        break;
       }
     }
+
+    // Finally, fall back to skuPartNumber, then skuId, then "Unknown License"
     if (!found) {
-      licenses.push(licenseAssignment.skuPartNumber);
+      const fallbackName =
+        licenseAssignment.skuPartNumber || licenseAssignment.skuId || "Unknown License";
+      licenses.push(fallbackName);
+
+      // Queue this skuId for backfill if we have it
+      if (licenseAssignment.skuId) {
+        missingSkuIds.push(licenseAssignment.skuId);
+      }
     }
   });
+
+  // Trigger backfill for missing licenses
+  if (missingSkuIds.length > 0) {
+    licenseBackfillManager.addMissingSkuIds(missingSkuIds);
+  }
 
   if (!licenses || licenses.length === 0) {
     return ["No Licenses Assigned"];
