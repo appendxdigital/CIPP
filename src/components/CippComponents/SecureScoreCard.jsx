@@ -1,5 +1,6 @@
-import { Box, Card, CardHeader, CardContent, Typography, Divider, Skeleton } from "@mui/material";
-import { Security as SecurityIcon } from "@mui/icons-material";
+import { Box, Card, CardHeader, CardContent, Typography, Divider, Skeleton } from '@mui/material'
+import { Security as SecurityIcon } from '@mui/icons-material'
+import { useRouter } from 'next/router'
 import {
   LineChart,
   Line,
@@ -8,14 +9,26 @@ import {
   YAxis,
   ResponsiveContainer,
   Tooltip as RechartsTooltip,
-} from "recharts";
+  ReferenceLine,
+} from 'recharts'
 
 export const SecureScoreCard = ({ data, isLoading }) => {
+  const router = useRouter()
   return (
     <Card sx={{ flex: 1, height: '100%' }}>
       <CardHeader
         title={
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            onClick={() => router.push('/tenant/administration/securescore')}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              cursor: 'pointer',
+              width: 'fit-content',
+              '&:hover': { textDecoration: 'underline' },
+            }}
+          >
             <SecurityIcon sx={{ fontSize: 24 }} />
             <Typography variant="h6">Secure Score</Typography>
           </Box>
@@ -26,7 +39,7 @@ export const SecureScoreCard = ({ data, isLoading }) => {
         {isLoading ? (
           <>
             <Box sx={{ height: 250 }}>
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2, p: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2 }}>
                 <Skeleton variant="rectangular" width="100%" height={200} />
               </Box>
             </Box>
@@ -39,10 +52,10 @@ export const SecureScoreCard = ({ data, isLoading }) => {
             <Box sx={{ height: 250 }}>
               <Box
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
                 }}
               >
                 <Typography variant="body2" color="text.secondary">
@@ -59,16 +72,19 @@ export const SecureScoreCard = ({ data, isLoading }) => {
             <Box sx={{ height: 250 }}>
               <ResponsiveContainer width="100%" height="100%">
                 {(() => {
-                  const sortedData = [...data].sort((a, b) => new Date(a.createdDateTime) - new Date(b.createdDateTime));
+                  const sortedData = [...data].sort(
+                    (a, b) => new Date(a.createdDateTime) - new Date(b.createdDateTime)
+                  )
+                  const maxScore = Math.max(...sortedData.map((s) => s.maxScore))
                   const chartData = sortedData.map((score) => ({
-                    date: new Date(score.createdDateTime).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
+                    date: new Date(score.createdDateTime).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
                     }),
                     score: score.currentScore,
                     percentage: Math.round((score.currentScore / score.maxScore) * 100),
-                  }));
-                  const ticks = chartData.map((d) => d.date);
+                  }))
+                  const ticks = chartData.map((d) => d.date)
                   return (
                     <LineChart
                       data={chartData}
@@ -85,25 +101,36 @@ export const SecureScoreCard = ({ data, isLoading }) => {
                       <YAxis
                         tick={{ fontSize: 12 }}
                         tickMargin={8}
-                        domain={[0, "dataMax + 20"]}
+                        domain={[0, maxScore]}
                         tickFormatter={(value) => Math.round(value)}
+                      />
+                      <ReferenceLine
+                        y={maxScore}
+                        stroke="#94a3b8"
+                        strokeDasharray="0"
+                        label={{
+                          value: `Max: ${Math.round(maxScore)}`,
+                          position: 'insideTopRight',
+                          fontSize: 11,
+                          fill: '#64748b',
+                        }}
                       />
                       <RechartsTooltip
                         contentStyle={{
-                          backgroundColor: "rgba(255,255,255,0.85)",
-                          color: "inherit",
-                          border: "1px solid #bbb",
-                          borderRadius: "4px",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                          backdropFilter: "blur(2px)",
+                          backgroundColor: 'rgba(255,255,255,0.85)',
+                          color: 'inherit',
+                          border: '1px solid #bbb',
+                          borderRadius: '4px',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                          backdropFilter: 'blur(2px)',
                         }}
                         labelStyle={{
-                          color: "#000000",
+                          color: '#000000',
                         }}
                         formatter={(value, name) => {
-                          if (name === "score") return [value.toFixed(2), "Score"];
-                          if (name === "percentage") return [value + "%", "Percentage"];
-                          return value;
+                          if (name === 'score') return [value.toFixed(2), 'Score']
+                          if (name === 'percentage') return [value + '%', 'Percentage']
+                          return value
                         }}
                       />
                       <Line
@@ -111,11 +138,11 @@ export const SecureScoreCard = ({ data, isLoading }) => {
                         dataKey="score"
                         stroke="#22c55e"
                         strokeWidth={2}
-                        dot={{ fill: "#22c55e", r: 4 }}
+                        dot={{ fill: '#22c55e', r: 4 }}
                         activeDot={{ r: 6 }}
                       />
                     </LineChart>
-                  );
+                  )
                 })()}
               </ResponsiveContainer>
             </Box>
@@ -128,7 +155,7 @@ export const SecureScoreCard = ({ data, isLoading }) => {
       <Divider />
       <CardContent sx={{ pt: 2 }}>
         {isLoading ? (
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
             <Box sx={{ flex: 1 }}>
               <Skeleton width={80} height={60} />
             </Box>
@@ -146,7 +173,7 @@ export const SecureScoreCard = ({ data, isLoading }) => {
             Enable secure score monitoring in your tenant
           </Typography>
         ) : (
-          <Box sx={{ display: "flex", gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
             <Box sx={{ flex: 1 }}>
               <Typography variant="caption" color="text.secondary">
                 Latest %
@@ -180,5 +207,5 @@ export const SecureScoreCard = ({ data, isLoading }) => {
         )}
       </CardContent>
     </Card>
-  );
-};
+  )
+}

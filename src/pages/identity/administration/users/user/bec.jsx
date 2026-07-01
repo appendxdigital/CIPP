@@ -147,6 +147,14 @@ const Page = () => {
     return "No mailbox permission changes found.";
   };
 
+  const getSentMessagesMessage = () => {
+    if (!becPollingCall.data) return null;
+    if (becPollingCall.data.SentMessages && becPollingCall.data.SentMessages.length > 0) {
+      return "Sent messages have been found. Please review the list below for any suspicious activity.";
+    }
+    return "No sent messages found in the specified time range.";
+  };
+
   const subtitle = userRequest.isSuccess
     ? [
         {
@@ -459,12 +467,56 @@ const Page = () => {
                     )}
                 </CippButtonCard>
 
+                {/* Check 5: Sent Messages */}
                 <CippButtonCard
                   variant="outlined"
                   isFetching={false}
                   title={
                     <Stack direction="row" justifyContent={"space-between"}>
-                      <Box>Check 5: MFA Devices</Box>
+                      <Box>Check 5: Sent Messages</Box>
+                      <Stack direction="row" spacing={2}>
+                        {becPollingCall.data &&
+                        becPollingCall.data.SentMessages &&
+                        becPollingCall.data.SentMessages.length > 0 ? (
+                          <SvgIcon color="success">
+                            <CheckCircle />
+                          </SvgIcon>
+                        ) : (
+                          <SvgIcon color="disabled">
+                            <CheckCircle />
+                          </SvgIcon>
+                        )}
+                      </Stack>
+                    </Stack>
+                  }
+                >
+                  <Typography variant="body2" gutterBottom>
+                    {getSentMessagesMessage()}
+                  </Typography>
+                  {/* Display sent messages */}
+                  {becPollingCall.data &&
+                    becPollingCall.data.SentMessages &&
+                    becPollingCall.data.SentMessages.length > 0 && (
+                      <Box mt={2}>
+                        <PropertyList>
+                          {becPollingCall.data.SentMessages.map((message, index) => (
+                            <PropertyListItem
+                              key={index}
+                              label={`${message?.Subject} to ${message?.RecipientAddress}`}
+                              value={`Status: ${message?.Status} | Sent: ${message?.Received} | From IP: ${message?.FromIP}`}
+                            />
+                          ))}
+                        </PropertyList>
+                      </Box>
+                    )}
+                </CippButtonCard>
+
+                <CippButtonCard
+                  variant="outlined"
+                  isFetching={false}
+                  title={
+                    <Stack direction="row" justifyContent={"space-between"}>
+                      <Box>Check 6: MFA Devices</Box>
                       <Stack direction="row" spacing={2}>
                         {becPollingCall.data &&
                         becPollingCall.data.MFADevices &&
@@ -508,7 +560,7 @@ const Page = () => {
                   isFetching={false}
                   title={
                     <Stack direction="row" justifyContent={"space-between"}>
-                      <Box>Check 6: Password Changes</Box>
+                      <Box>Check 7: Password Changes</Box>
                       <Stack direction="row" spacing={2}>
                         {becPollingCall.data &&
                         becPollingCall.data.ChangedPasswords &&
@@ -546,7 +598,7 @@ const Page = () => {
                     )}
                 </CippButtonCard>
 
-                {/* Check 6: Report Data */}
+                {/* Check 8: Report Data */}
                 <CippButtonCard
                   variant="outlined"
                   isFetching={false}

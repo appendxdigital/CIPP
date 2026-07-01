@@ -144,7 +144,7 @@
         ],
         "multiple": false,
         "condition": {
-          "field": "Sherweb.migrationMethods",
+          "field": "Sherweb.migrationMethods.value",
           "compareType": "is",
           "compareValue": "buyAndCancel"
         }
@@ -181,7 +181,7 @@
         "placeholder": "Enter your Pax8 Client ID",
         "required": true,
         "condition": {
-          "field": "Sherweb.migrateFrom",
+          "field": "Sherweb.migrateFrom.value",
           "compareType": "is",
           "compareValue": "Pax8"
         }
@@ -193,7 +193,7 @@
         "placeholder": "Enter your Pax Client Secret",
         "required": true,
         "condition": {
-          "field": "Sherweb.migrateFrom",
+          "field": "Sherweb.migrateFrom.value",
           "compareType": "is",
           "compareValue": "Pax8"
         }
@@ -284,18 +284,6 @@
         "label": "Enable Integration"
       },
       {
-        "type": "switch",
-        "name": "HaloPSA.ConsolidateTickets",
-        "label": "Consolidate Tickets",
-        "placeholder": "Consolidate tickets for the same alert into one ticket.",
-        "condition": {
-          "field": "HaloPSA.Enabled",
-          "compareType": "is",
-          "compareValue": true,
-          "action": "disable"
-        }
-      },
-      {
         "type": "textField",
         "name": "HaloPSA.ResourceURL",
         "label": "HaloPSA Resource Server URL",
@@ -365,6 +353,8 @@
         "name": "HaloPSA.TicketType",
         "label": "HaloPSA Ticket Type",
         "placeholder": "Select your HaloPSA Ticket Type, leave blank for default",
+        "helperText": "The ticket type used for CIPP alert tickets. Sets the workflow and the Outcomes available below. Save after changing so the Outcome list refreshes.",
+        "fullRow": true,
         "multiple": false,
         "api": {
           "url": "/api/ExecExtensionMapping",
@@ -385,10 +375,24 @@
         }
       },
       {
+        "type": "switch",
+        "name": "HaloPSA.ConsolidateTickets",
+        "label": "Consolidate Tickets",
+        "helperText": "Adds repeat alerts (same title) as a note on the existing open ticket instead of raising a new one. Turns on the Outcome dropdown below, which needs a valid private note action.",
+        "condition": {
+          "field": "HaloPSA.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
         "type": "autoComplete",
         "name": "HaloPSA.Outcome",
         "label": "HaloPSA Outcome",
         "placeholder": "Select your HaloPSA Outcome, leave blank for default",
+        "helperText": "The action applied when a duplicate alert is added to an existing ticket. Use a private note action your HaloPSA API user can run. Set the Ticket Type first and save - the list only shows outcomes from that type's workflow.",
+        "fullRow": true,
         "multiple": false,
         "api": {
           "url": "/api/ExecExtensionMapping",
@@ -403,6 +407,18 @@
         },
         "condition": {
           "field": "HaloPSA.ConsolidateTickets",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "hide"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "HaloPSA.LinkTicketsToUsers",
+        "label": "Link Tickets to affected Users",
+        "helperText": "Raises one ticket per affected user and links it to the matching HaloPSA contact (by Azure Object ID, then email/login). No match falls back to the client's General User, with the UPN in the ticket body.",
+        "condition": {
+          "field": "HaloPSA.Enabled",
           "compareType": "is",
           "compareValue": true,
           "action": "disable"
@@ -503,6 +519,29 @@
           "compareType": "is",
           "compareValue": true,
           "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "NinjaOne.CveSyncEnabled",
+        "label": "Enable Automated CVE Sync",
+        "condition": {
+          "field": "NinjaOne.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "textField",
+        "name": "NinjaOne.CveSyncPrefix",
+        "label": "CVE Sync Scan Group Prefix",
+        "placeholder": "CIPP-",
+        "helperText": "Scan groups will be named: [Prefix][tenant-domain] (e.g., CIPP-contoso.com)",
+        "condition": {
+          "field": "NinjaOne.CveSyncEnabled",
+          "compareType": "is",
+          "compareValue": true
         }
       }
     ],
@@ -615,6 +654,50 @@
         }
       },
       {
+        "type": "switch",
+        "name": "Hudu.HideEmptyRoles",
+        "label": "Hide Empty Roles in Magic Dash",
+        "condition": {
+          "field": "Hudu.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "Hudu.IncludeParterCenterLink",
+        "label": "Include link to Partner Center Service management page (partner.microsoft.com)",
+        "condition": {
+          "field": "Hudu.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "Hudu.IncludeDefenderLink",
+        "label": "Include link to Defender Portal (security.microsoft.com)",
+        "condition": {
+          "field": "Hudu.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "Hudu.IncludeComplianceLink",
+        "label": "Include link to Compliance Portal (compliance.microsoft.com)",
+        "condition": {
+          "field": "Hudu.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
         "_comment": "I have added this switch as a logic check for the Hudu integration script to check against when CIPP first connects to the Hudu Instance via Connect-HuduAPI.ps1",
         "type": "switch",
         "name": "Hudu.CFEnabled",
@@ -710,8 +793,8 @@
         "placeholder": "Enter your email address for PWPush. (Email & API Key auth)",
         "condition": {
           "field": "PWPush.UseBearerAuth",
-          "compareType": "is",
-          "compareValue": false
+          "compareType": "isNot",
+          "compareValue": true
         }
       },
       {
@@ -759,9 +842,21 @@
         }
       },
       {
+        "type": "password",
+        "name": "PWPush.DefaultPassphrase",
+        "label": "Default Passphrase",
+        "placeholder": "Enter a default passphrase required to view pushed passwords. (optional)",
+        "condition": {
+          "field": "PWPush.Enabled",
+          "compareType": "is",
+          "compareValue": true,
+          "action": "disable"
+        }
+      },
+      {
         "type": "switch",
         "name": "PWPush.RetrievalStep",
-        "label": "Click to retrieve password (recommended)",
+        "label": "Click to retrieve password (recommended if passphrase is not set)",
         "condition": {
           "field": "PWPush.Enabled",
           "compareType": "is",
@@ -778,6 +873,16 @@
           "compareType": "is",
           "compareValue": true,
           "action": "disable"
+        }
+      },
+      {
+        "type": "switch",
+        "name": "PWPush.CFEnabled",
+        "label": "Behind a CF-ZTNA Tunnel",
+        "condition": {
+          "field": "CFZTNA.Enabled",
+          "compareType": "is",
+          "compareValue": true
         }
       }
     ],
@@ -915,6 +1020,36 @@
         }
       }
     ],
+    "mappingRequired": false
+  },
+  {
+    "name": "ConnectWise PSA",
+    "id": "ConnectWisePSA",
+    "type": "ConnectWisePSA",
+    "cat": "Ticketing",
+    "logo": "/assets/integrations/connectwise.png",
+    "comingSoon": true,
+    "description": "Enable the ConnectWise PSA integration to send alerts to your ticketing system.",
+    "mappingRequired": false
+  },
+  {
+    "name": "Autotask PSA",
+    "id": "AutotaskPSA",
+    "type": "AutotaskPSA",
+    "cat": "Ticketing",
+    "logo": "/assets/integrations/autotask.png",
+    "comingSoon": true,
+    "description": "Enable the Autotask PSA integration to send alerts to your ticketing system.",
+    "mappingRequired": false
+  },
+  {
+    "name": "Kaseya BMS",
+    "id": "KaseyaBMS",
+    "type": "KaseyaBMS",
+    "cat": "Ticketing",
+    "logo": "/assets/integrations/kaseya.svg",
+    "comingSoon": true,
+    "description": "Enable the Kaseya BMS integration to send alerts to your ticketing system.",
     "mappingRequired": false
   }
 ]

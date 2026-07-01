@@ -4,7 +4,8 @@ import { CippApiDialog } from "../../../../components/CippComponents/CippApiDial
 import { useSettings } from "../../../../hooks/use-settings";
 import { useDialog } from "../../../../hooks/use-dialog.js";
 import { EyeIcon } from "@heroicons/react/24/outline";
-import { Box, Button } from "@mui/material";
+import { Button } from "@mui/material";
+import { Stack } from "@mui/system";
 import {
   Sync,
   RestartAlt,
@@ -242,19 +243,20 @@ const Page = () => {
       confirmText:
         "Are you sure you want to update the Windows Defender signatures for [deviceName]?",
     },
-    {
-      label: "Generate logs and ship to MEM",
-      type: "POST",
-      icon: <Archive />,
-      url: "/api/ExecDeviceAction",
-      data: {
-        GUID: "id",
-        Action: "createDeviceLogCollectionRequest",
-      },
-      condition: (row) => row.operatingSystem === "Windows",
-      confirmText:
-        "Are you sure you want to generate logs for device [deviceName] and ship these to MEM?",
-    },
+    // This endpoint currently does not work, Graph just returns an error. Leaving this here for now in case it is fixed in the future.
+    // {
+    //   label: "Generate logs and ship to MEM",
+    //   type: "POST",
+    //   icon: <Archive />,
+    //   url: "/api/ExecDeviceAction",
+    //   data: {
+    //     GUID: "id",
+    //     Action: "createDeviceLogCollectionRequest",
+    //   },
+    //   condition: (row) => row.operatingSystem === "Windows",
+    //   confirmText:
+    //     "Are you sure you want to generate logs for device [deviceName] and ship these to MEM?",
+    // },
     {
       label: "Fresh Start (Remove user data)",
       type: "POST",
@@ -412,11 +414,11 @@ const Page = () => {
         offCanvas={offCanvas}
         simpleColumns={simpleColumns}
         cardButton={
-          <Box sx={{ display: "flex", gap: 1 }}>
+          <Stack direction="row" spacing={1} alignItems="center">
             <Button onClick={depSyncDialog.handleOpen} startIcon={<Sync />}>
               Sync DEP
             </Button>
-          </Box>
+          </Stack>
         }
       />
       <CippApiDialog
