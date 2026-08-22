@@ -2,6 +2,7 @@ import { Layout as DashboardLayout } from "../../../../../layouts/index.js";
 import { useRouter } from "next/router";
 import { ApiGetCall } from "../../../../../api/ApiCall";
 import { HeaderedTabbedLayout } from "../../../../../layouts/HeaderedTabbedLayout";
+import { CippGdapRelationshipSwitcher } from "../../../../../components/CippComponents/CippGdapRelationshipSwitcher";
 import tabOptions from "./tabOptions.json";
 import { CippTimeAgo } from "../../../../../components/CippComponents/CippTimeAgo";
 import { CippDataTable } from "../../../../../components/CippTable/CippDataTable";
@@ -12,7 +13,7 @@ const Page = () => {
   const { id } = router.query;
 
   const relationshipRequest = ApiGetCall({
-    url: `/api/ListGraphRequest?Endpoint=tenantRelationships/delegatedAdminRelationships/${id}`,
+    url: `/api/ListGDAPRelationships?id=${id}`,
     queryKey: `ListRelationships-${id}`,
   });
 
@@ -45,6 +46,7 @@ const Page = () => {
     <HeaderedTabbedLayout
       tabOptions={tabOptions}
       title={title}
+      titleControl={<CippGdapRelationshipSwitcher title={title} currentRelationshipId={id} />}
       subtitle={subtitle}
       isFetching={relationshipRequest.isLoading}
       backUrl="/tenant/gdap-management/relationships"

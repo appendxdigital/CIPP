@@ -2,6 +2,7 @@ import {
   Alert,
   Box,
   Button,
+  Card,
   CardContent,
   Skeleton,
   Stack,
@@ -13,7 +14,7 @@ import CippIntegrationSettings from "../../../components/CippIntegrations/CippIn
 import { Layout as DashboardLayout } from "../../../layouts/index.js";
 import { useForm } from "react-hook-form";
 import { useSettings } from "../../../hooks/use-settings";
-import { ApiGetCall } from "../../../api/ApiCall";
+import { ApiGetCall, ApiPostCall } from "../../../api/ApiCall";
 import { useRouter } from "next/router";
 import extensions from "../../../data/Extensions.json";
 import { useEffect } from "react";
@@ -26,6 +27,7 @@ import CippIntegrationTenantMapping from "../../../components/CippIntegrations/C
 import CippIntegrationFieldMapping from "../../../components/CippIntegrations/CippIntegrationFieldMapping";
 import { CippCardTabPanel } from "../../../components/CippComponents/CippCardTabPanel";
 import CippApiClientManagement from "../../../components/CippIntegrations/CippApiClientManagement";
+import CippApiDocumentation from "../../../components/CippIntegrations/CippApiDocumentation";
 
 function tabProps(index) {
   return {
@@ -73,6 +75,24 @@ const Page = () => {
   const [syncQuery, setSyncQuery] = useState({ url: "", waiting: false, queryKey: "" });
   const actionSyncResults = ApiGetCall({
     ...syncQuery,
+  });
+
+  const [haloTestTicketQuery, setHaloTestTicketQuery] = useState({ url: "", waiting: false, queryKey: "" });
+  const actionHaloTestTicketResults = ApiGetCall({
+    ...haloTestTicketQuery,
+  });
+  const handleHaloTestTicket = () => {
+    if (haloTestTicketQuery.waiting) {
+      actionHaloTestTicketResults.refetch();
+    }
+    setHaloTestTicketQuery({
+      url: "/api/ExecHaloPSATestTicket",
+      waiting: true,
+      queryKey: `ExecHaloPSATestTicket-${router.query.id}`,
+    });
+  };
+  const clearHIBPKey = ApiPostCall({
+    relatedQueryKeys: ["Integrations"],
   });
   const handleIntegrationSync = () => {
     setSyncQuery({
@@ -191,6 +211,41 @@ const Page = () => {
                   </Button>
                 </Box>
               )}
+              {extension?.id === "HaloPSA" && (
+                <Box>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleHaloTestTicket()}
+                    disabled={
+                      actionHaloTestTicketResults?.isLoading ||
+                      integrations?.data?.HaloPSA?.Enabled !== true
+                    }
+                  >
+                    <SvgIcon fontSize="small" style={{ marginRight: "8" }}>
+                      <BeakerIcon />
+                    </SvgIcon>
+                    Create Test Ticket
+                  </Button>
+                </Box>
+              )}
+              {extension?.id === "HIBP" && (
+                <Box>
+                  <Button
+                    variant="outlined"
+                    color="warning"
+                    onClick={() =>
+                      clearHIBPKey.mutate({
+                        url: "/api/ExecExtensionClearHIBPKey",
+                        data: {},
+                      })
+                    }
+                    disabled={clearHIBPKey.isPending}
+                  >
+                    Clear API Key
+                  </Button>
+                </Box>
+              )}
               {extension?.links && (
                 <>
                   {extension.links.map((link, index) => (
@@ -208,6 +263,8 @@ const Page = () => {
             </Stack>
             <CippApiResults apiObject={actionTestResults} />
             <CippApiResults apiObject={actionSyncResults} />
+            <CippApiResults apiObject={actionHaloTestTicketResults} />
+            <CippApiResults apiObject={clearHIBPKey} />
           </CardContent>
           <Box sx={{ width: "100%" }}>
             <Box sx={{ borderBottom: 1, borderColor: "divider", px: "24px", m: "auto" }}>
@@ -235,6 +292,12 @@ const Page = () => {
                     }
                   />
                 )}
+                {/* An explicit value is required: MUI falls back to the child index when a
+                    Tab has none, and the Tenant Mapping / Field Mapping tabs are absent for
+                    cippapi, so this would otherwise be tab 1 while its panel waits on 3. */}
+                {extension?.id === "cippapi" && (
+                  <Tab label="API Documentation" value={3} {...tabProps(3)} />
+                )}
               </Tabs>
             </Box>
             <CippCardTabPanel value={value} index={0}>
@@ -253,6 +316,11 @@ const Page = () => {
             {extension?.fieldMapping && (
               <CippCardTabPanel value={value} index={2}>
                 <CippIntegrationFieldMapping />
+              </CippCardTabPanel>
+            )}
+            {extension?.id === "cippapi" && (
+              <CippCardTabPanel value={value} index={3}>
+                <CippApiDocumentation />
               </CippCardTabPanel>
             )}
           </Box>

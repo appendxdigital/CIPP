@@ -43,6 +43,9 @@ const useChartOptions = (labels, chartType) => {
     },
 
     xaxis: {
+      // Categories drive the bar/line axis labels and the tooltip title. Without this, a bar
+      // chart's tooltip falls back to the auto series name ("series-1") instead of the label.
+      categories: labels,
       labels: {
         show: true,
         rotate: 0,
@@ -57,6 +60,11 @@ const useChartOptions = (labels, chartType) => {
       show: false,
     },
     plotOptions: {
+      // distributed colors each bar (data point) from the colors array so a single-series bar
+      // chart keeps the per-item colors, and the tooltip shows the category name per bar.
+      bar: {
+        distributed: true,
+      },
       pie: {
         expandOnClick: false,
       },
@@ -92,6 +100,7 @@ export const CippChartCard = ({
   chartType = "donut",
   title,
   actions,
+  headerAction,
   onClick,
   totalLabel = "Total",
   customTotal,
@@ -100,20 +109,21 @@ export const CippChartCard = ({
   const [barSeries, setBarSeries] = useState([]);
   const chartOptions = useChartOptions(labels, chartType);
   chartSeries = chartSeries.filter((item) => item !== null);
-  const calculatedTotal = chartSeries.reduce((acc, value) => acc + value, 0);
+  // Round to 2 decimals - summing fractional series values accumulates floating-point
+  // artifacts (e.g. 175.73000000000002). Integer series are unaffected.
+  const calculatedTotal = Math.round(chartSeries.reduce((acc, value) => acc + value, 0) * 100) / 100;
   const total = customTotal !== undefined ? customTotal : calculatedTotal;
   useEffect(() => {
     if (chartType === "bar") {
-      setBarSeries(
-        labels.map((label, index) => ({
-          data: [{ x: label, y: chartSeries[index] }],
-        }))
-      );
+      // Single named series with the labels supplied via xaxis.categories. This keeps the tooltip
+      // title tied to the category (e.g. the site name) instead of an auto "series-1" name.
+      setBarSeries([{ name: totalLabel, data: chartSeries }]);
     }
-  }, [chartType, chartSeries.length, labels]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chartType, chartSeries.join(","), labels.join(","), totalLabel]);
 
   return (
-    <Card 
+    <Card
       style={{ width: "100%", height: "100%" }}
       onClick={onClick}
       sx={{
@@ -127,7 +137,9 @@ export const CippChartCard = ({
     >
       <CardHeader
         action={
-          actions ? (
+          headerAction ? (
+            headerAction
+          ) : actions ? (
             <ActionsMenu
               color="inherit"
               actions={actions}
@@ -142,9 +154,23 @@ export const CippChartCard = ({
       <Divider />
       <CardContent>
         {
-          //if the chartType is not defined, or if the data is fetching, or if the data is empty, show a skeleton
-          chartType === undefined || isFetching || chartSeries.length === 0 ? (
+          //if the chartType is not defined or the data is fetching, show a skeleton; an empty
+          //series after loading is real data ("nothing to chart"), not a loading state
+          chartType === undefined || isFetching ? (
             <Skeleton variant="rounded" sx={{ height: 280 }} />
+          ) : chartSeries.length === 0 ? (
+            <Box
+              sx={{
+                height: 280,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Typography color="text.secondary" variant="body2">
+                No data to display
+              </Typography>
+            </Box>
           ) : (
             <Chart
               height={280}
@@ -185,20 +211,35 @@ export const CippChartCard = ({
                       spacing={1}
                       sx={{ py: 1 }}
                     >
-                      <Stack alignItems="center" direction="row" spacing={1} sx={{ flexGrow: 1 }}>
+                      {/* minWidth: 0 both here and on the label: labels are API free text
+                          (recipient addresses, SharePoint URLs), and flexbox's min-width:
+                          auto otherwise refuses to shrink them, pushing rows out of the card */}
+                      <Stack
+                        alignItems="center"
+                        direction="row"
+                        spacing={1}
+                        sx={{ flexGrow: 1, minWidth: 0 }}
+                      >
                         <Box
                           sx={{
-                            backgroundColor: chartOptions.colors[index],
+                            // Match ApexCharts' color cycling so the dot lines up with its bar/slice.
+                            backgroundColor:
+                              chartOptions.colors[index % chartOptions.colors.length],
                             borderRadius: "50%",
                             height: 8,
                             width: 8,
+                            flexShrink: 0,
                           }}
                         />
-                        <Typography color="text.secondary" variant="body2">
+                        <Typography
+                          color="text.secondary"
+                          variant="body2"
+                          sx={{ minWidth: 0, overflowWrap: "anywhere" }}
+                        >
                           {labels[index]}
                         </Typography>
                       </Stack>
-                      <Typography color="text.secondary" variant="body2">
+                      <Typography color="text.secondary" variant="body2" sx={{ flexShrink: 0 }}>
                         {item}
                       </Typography>
                     </Stack>

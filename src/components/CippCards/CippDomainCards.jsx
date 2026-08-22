@@ -152,7 +152,7 @@ function DomainResultCard({ title, data, isFetching, info, type }) {
       ? {
           children: (
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12 }}>
+              <Grid size={{ xs: 12, md: 8 }}>
                 {info}
               </Grid>
             </Grid>
@@ -470,6 +470,13 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
     waiting: !!domain,
   });
 
+  const { data: autoDiscoverData, isFetching: autoDiscoverLoading } = ApiGetCall({
+    url: "/api/ListDomainHealth",
+    queryKey: `autodiscover-${domain}`,
+    data: { Domain: domain, Action: "ReadAutoDiscover" },
+    waiting: !!domain,
+  });
+
   const { data: httpsData, isFetching: httpsLoading } = ApiGetCall({
     url: "/api/ListDomainHealth",
     queryKey: `https-${domain}-${subdomains}`,
@@ -496,7 +503,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
             }
           >
             <Grid container spacing={2}>
-              <Grid size={{ xs: 8 }}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Controller
                   name="domain"
                   control={control}
@@ -505,7 +512,7 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                   )}
                 />
               </Grid>
-              <Grid size={{ xs: 4 }}>
+              <Grid size={{ xs: 12 }}>
                 <Button type="submit" variant="contained" startIcon={<SearchIcon />}>
                   Check
                 </Button>
@@ -679,6 +686,26 @@ export const CippDomainCards = ({ domain: propDomain = "", fullwidth = false }) 
                       passes={mtastsData?.ValidationPasses}
                       warns={mtastsData?.ValidationWarns}
                       fails={mtastsData?.ValidationFails}
+                    />
+                  </div>
+                }
+              />
+            </Grid>
+            <Grid size={{ md: gridItemSize, xs: 12 }}>
+              <DomainResultCard
+                title="AutoDiscover"
+                data={autoDiscoverData}
+                isFetching={autoDiscoverLoading}
+                info={
+                  <div>
+                    <p>
+                      AutoDiscover ({autoDiscoverData?.RecordType || "None"}):
+                    </p>
+                    <CippCodeBlock code={autoDiscoverData?.Record || "No record found"} />
+                    <ResultList
+                      passes={autoDiscoverData?.ValidationPasses}
+                      warns={autoDiscoverData?.ValidationWarns}
+                      fails={autoDiscoverData?.ValidationFails}
                     />
                   </div>
                 }

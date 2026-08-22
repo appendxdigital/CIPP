@@ -34,9 +34,10 @@ export const CippQueueTracker = ({ queueId, queryKey, title, onQueueComplete }) 
     data: { QueueId: effectiveQueueId },
     queryKey: `CippQueue-${effectiveQueueId || "unknown"}`,
     waiting: shouldShowQueue && !!effectiveQueueId && !isQueueCompleted,
-    refetchInterval: (data) => {
-      // Check if the current data shows completion
-      const currentData = data?.[0];
+    refetchInterval: (query) => {
+      // TanStack Query v5 hands this callback the Query object, not the data - the response
+      // has to be read off query.state or the completion check below never matches.
+      const currentData = query?.state?.data?.[0];
       const isCurrentCompleted =
         currentData?.Status === "Completed" ||
         currentData?.Status === "Failed" ||
@@ -257,7 +258,7 @@ export const CippQueueTracker = ({ queueId, queryKey, title, onQueueComplete }) 
                 />
               </Box>
 
-              <Stack direction="row" spacing={4} sx={{ flexWrap: "wrap" }}>
+              <Stack useFlexGap direction="row" columnGap={4} rowGap={1} sx={{ flexWrap: "wrap" }}>
                 <Typography variant="body2">
                   <strong>Total Tasks:</strong> {(persistentQueueData || queueData).TotalTasks || 0}
                 </Typography>
@@ -363,13 +364,23 @@ export const CippQueueTracker = ({ queueId, queryKey, title, onQueueComplete }) 
                               direction="row"
                               justifyContent="space-between"
                               alignItems="center"
+                              spacing={1}
                             >
-                              <Typography variant="body2" fontWeight="medium">
+                              {/* Task names are tenant domains — one unbreakable token — so
+                                  without minWidth: 0 the row's min-content width exceeds a
+                                  phone-width card and shoves the status pill off its edge. */}
+                              <Typography
+                                variant="body2"
+                                fontWeight="medium"
+                                sx={{ minWidth: 0, overflowWrap: "anywhere" }}
+                              >
                                 {task.Name}
                               </Typography>
                               <Typography
                                 variant="caption"
                                 sx={(theme) => ({
+                                  flexShrink: 0,
+                                  whiteSpace: "nowrap",
                                   px: 1.5,
                                   py: 0.5,
                                   borderRadius: 2,

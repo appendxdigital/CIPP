@@ -13,6 +13,7 @@ import cippDefaults from "../../../../data/CIPPDefaultGDAPRoles";
 import { ApiGetCall } from "../../../../api/ApiCall";
 import { Settings, SyncAlt } from "@mui/icons-material";
 import { CippDataTable } from "../../../../components/CippTable/CippDataTable";
+import { CippExpandableAlert } from "../../../../components/CippComponents/CippExpandableAlert";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 const Page = () => {
@@ -205,7 +206,7 @@ const Page = () => {
               compareValue="62e90394-69f5-4237-9190-012177145e10"
             >
               <Alert severity="warning">
-                The Company Administrator role is a highly privileged role that should be used with
+                The Global Administrator role is a highly privileged role that should be used with
                 caution. GDAP Relationships with this role will not be eligible for auto-extend.
               </Alert>
             </CippFormCondition>
@@ -217,7 +218,7 @@ const Page = () => {
             compareType="is"
             compareValue={true}
           >
-            <Alert severity="warning">
+            <CippExpandableAlert severity="warning">
               <Typography variant="subtitle">
                 In Advanced Mode, you can manually map existing groups to GDAP roles. This
                 functionality is designed to help map existing groups to GDAP roles that do not
@@ -244,7 +245,7 @@ const Page = () => {
                   on GDAP Role Guidance.
                 </li>
               </ul>
-            </Alert>
+            </CippExpandableAlert>
             <Grid container spacing={2} alignItems="center">
               <Grid size={{ md: 5, xs: 12 }}>
                 <CippFormComponent

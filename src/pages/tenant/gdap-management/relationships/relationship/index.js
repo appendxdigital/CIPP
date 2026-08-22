@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { ApiGetCall } from "../../../../../api/ApiCall";
 import CippFormSkeleton from "../../../../../components/CippFormPages/CippFormSkeleton";
 import { HeaderedTabbedLayout } from "../../../../../layouts/HeaderedTabbedLayout";
+import { CippGdapRelationshipSwitcher } from "../../../../../components/CippComponents/CippGdapRelationshipSwitcher";
 import tabOptions from "./tabOptions.json";
 import { Box, Grid, Stack } from "@mui/system";
 import { CippTimeAgo } from "../../../../../components/CippComponents/CippTimeAgo";
@@ -24,7 +25,7 @@ const Page = () => {
   const [relationshipData, setRelationshipData] = useState({});
 
   const relationshipRequest = ApiGetCall({
-    url: `/api/ListGraphRequest?Endpoint=tenantRelationships/delegatedAdminRelationships/${id}`,
+    url: `/api/ListGDAPRelationships?id=${id}`,
     queryKey: `ListRelationships-${id}`,
   });
 
@@ -135,6 +136,7 @@ const Page = () => {
     <HeaderedTabbedLayout
       tabOptions={tabOptions}
       title={title}
+      titleControl={<CippGdapRelationshipSwitcher title={title} currentRelationshipId={id} />}
       subtitle={subtitle}
       isFetching={relationshipRequest.isLoading}
       actions={CippGdapActions()}
@@ -177,7 +179,7 @@ const Page = () => {
               <Alert severity="warning">
                 This relationship does not have all the CIPP recommended roles. See the{" "}
                 <Link
-                  href="https://docs.cipp.app/setup/gdap/recommended-roles"
+                  href="https://docs.cipp.app/setup/maintaining-cipp/recommended-roles"
                   target="_blank"
                   rel="noreferrer"
                 >

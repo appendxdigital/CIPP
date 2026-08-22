@@ -37,7 +37,7 @@ import {
 import { useWatch } from "react-hook-form";
 import { CippCardTabPanel } from "./CippCardTabPanel";
 import { CippApiResults } from "./CippApiResults";
-import _ from "lodash";
+import { isEqual } from "lodash";
 import { CippCodeBlock } from "./CippCodeBlock";
 import { CippOffCanvas } from "./CippOffCanvas";
 import { FileDropzone } from "../file-dropzone";
@@ -388,7 +388,7 @@ const CippAppPermissionBuilder = ({
           });
           setExpanded("00000003-0000-0000-c000-000000000000"); // Automatically expand Microsoft Graph
         }
-      } else if (!_.isEqual(currentPermissions, initialPermissions)) {
+      } else if (!isEqual(currentPermissions, initialPermissions)) {
         setSelectedApp([]); // Avoid redundant updates
         setNewPermissions(currentPermissions);
         setInitialPermissions(currentPermissions);
@@ -398,7 +398,7 @@ const CippAppPermissionBuilder = ({
           initialAppIds.includes(sp.appId),
         )?.sort((a, b) => a.displayName.localeCompare(b.displayName));
 
-        if (!_.isEqual(selectedApp, newApps)) {
+        if (!isEqual(selectedApp, newApps)) {
           setSelectedApp(newApps); // Prevent unnecessary updates
         }
 
@@ -462,10 +462,11 @@ const CippAppPermissionBuilder = ({
         if (appTable !== undefined && appTable?.length === 0) {
           setAppTable(
             spPermissions?.applicationPermissions
-              ?.sort((a, b) => a.value.localeCompare(b.value))
+              ?.sort((a, b) => (a.value ?? "").localeCompare(b.value ?? ""))
               ?.map((perm) => ({
                 id: perm.id,
                 value: perm.value,
+                required: perm.required ?? false,
                 description: spInfo?.Results?.appRoles.find((role) => role.id === perm.id)
                   ?.description,
               })),
@@ -474,10 +475,11 @@ const CippAppPermissionBuilder = ({
         if (delegatedTable !== undefined && delegatedTable.length === 0) {
           setDelegatedTable(
             spPermissions?.delegatedPermissions
-              ?.sort((a, b) => a.value.localeCompare(b.value))
+              ?.sort((a, b) => (a.value ?? "").localeCompare(b.value ?? ""))
               ?.map((perm) => ({
                 id: perm.id,
                 value: perm.value,
+                required: perm.required ?? false,
                 description:
                   spInfo?.Results?.publishedPermissionScopes.find((scope) => scope.id === perm.id)
                     ?.userConsentDescription ?? "Manually added",
@@ -625,6 +627,7 @@ const CippAppPermissionBuilder = ({
                         label: "Delete Permission",
                         icon: <Delete />,
                         noConfirm: true,
+                        condition: (row) => !row.required,
                         customFunction: (row) => handleRemoveRow("applicationPermissions", row),
                       },
                     ]}
@@ -690,6 +693,7 @@ const CippAppPermissionBuilder = ({
                     label: "Delete Permission",
                     icon: <Delete />,
                     noConfirm: true,
+                    condition: (row) => !row.required,
                     customFunction: (row) => handleRemoveRow("delegatedPermissions", row),
                   },
                 ]}
@@ -788,7 +792,7 @@ const CippAppPermissionBuilder = ({
                       </div>
                     </Tooltip>
 
-                    <Tooltip title="Reset to Default">
+                    <Tooltip title="Reset to Current Defaults (discard unsaved changes)">
                       <Button
                         onClick={() => {
                           confirmReset();
@@ -929,79 +933,74 @@ const CippAppPermissionBuilder = ({
                 </Grid>
               )}
 
-              {newPermissions?.MissingPermissions &&
-                newPermissions?.Type === "Table" &&
-                Object.keys(newPermissions?.MissingPermissions).length > 0 && (
-                  <Grid container sx={{ width: "100%", mt: 3 }}>
-                    <Grid size={{ xl: 8, xs: 12 }}>
-                      <Alert
-                        color="warning"
-                        icon={<WarningAmberOutlined />}
-                        action={
-                          <Tooltip title="Add Missing Permissions">
-                            <IconButton
-                              onClick={() => {
-                                var updatedPermissions = JSON.parse(JSON.stringify(newPermissions));
-                                Object.keys(newPermissions?.MissingPermissions).map((perm) => {
-                                  Object.keys(newPermissions?.MissingPermissions[perm]).map(
-                                    (type) => {
-                                      if (!updatedPermissions.Permissions[perm][type]) {
-                                        updatedPermissions.Permissions[perm][type] = [];
-                                      }
-                                      newPermissions?.MissingPermissions[perm][type].map((p) => {
-                                        updatedPermissions.Permissions[perm][type].push(p);
-                                      });
-                                    },
-                                  );
-                                });
-                                updatedPermissions.MissingPermissions = {};
-                                setNewPermissions(updatedPermissions);
-                              }}
-                            >
-                              <SvgIcon fontSize="small">
-                                <WrenchIcon />
-                              </SvgIcon>
-                            </IconButton>
-                          </Tooltip>
-                        }
-                      >
-                        <b>New Permissions Available</b>
-                        {Object.keys(newPermissions?.MissingPermissions).map((perm) => {
-                          // translate appid to display name
-                          var sp = servicePrincipals?.Results?.find((sp) => sp.appId === perm);
-                          return (
-                            <Typography
-                              variant="body2"
-                              textColor="secondary"
-                              key={`missing-${perm}`}
-                            >
-                              {sp?.displayName}:{" "}
-                              {Object.keys(newPermissions?.MissingPermissions[perm]).map((type) => {
-                                return (
-                                  <>
-                                    {newPermissions?.MissingPermissions[perm][type].length > 0 && (
-                                      <React.Fragment key={`missing-${perm}-${type}`}>
-                                        {type == "applicationPermissions"
-                                          ? "Application"
-                                          : "Delegated"}{" "}
-                                        -{" "}
-                                        {newPermissions?.MissingPermissions[perm][type]
-                                          .map((p) => {
-                                            return p.value;
-                                          })
-                                          .join(", ")}
-                                      </React.Fragment>
-                                    )}
-                                  </>
-                                );
-                              })}
-                            </Typography>
-                          );
-                        })}
-                      </Alert>
+              {newPermissions?.PartnerAppDiff &&
+                Object.keys(newPermissions?.PartnerAppDiff).length > 0 &&
+                (() => {
+                  const diff = newPermissions.PartnerAppDiff;
+                  const appIds = Object.keys(diff);
+                  const hasMissing = appIds.some(
+                    (perm) =>
+                      (diff[perm].missingApplicationPermissions?.length ?? 0) > 0 ||
+                      (diff[perm].missingDelegatedPermissions?.length ?? 0) > 0,
+                  );
+                  const hasExtra = appIds.some(
+                    (perm) =>
+                      (diff[perm].extraApplicationPermissions?.length ?? 0) > 0 ||
+                      (diff[perm].extraDelegatedPermissions?.length ?? 0) > 0,
+                  );
+                  const renderList = (perm, appKey, delKey) => {
+                    const sp = servicePrincipals?.Results?.find((sp) => sp.appId === perm);
+                    const app = diff[perm][appKey] ?? [];
+                    const del = diff[perm][delKey] ?? [];
+                    if (app.length === 0 && del.length === 0) return null;
+                    return (
+                      <Typography variant="body2" key={`${appKey}-${perm}`}>
+                        {sp?.displayName ?? perm}:{" "}
+                        {app.length > 0 && <>Application - {app.map((p) => p.value).join(", ")} </>}
+                        {del.length > 0 && <>Delegated - {del.map((p) => p.value).join(", ")}</>}
+                      </Typography>
+                    );
+                  };
+                  return (
+                    <Grid container sx={{ width: "100%", mt: 3 }} spacing={2}>
+                      {hasMissing && (
+                        <Grid size={{ xl: 8, xs: 12 }}>
+                          <Alert color="warning" icon={<WarningAmberOutlined />}>
+                            <b>
+                              Permissions missing from the {appDisplayName} app registration (run
+                              Repair Permissions to add, then a CPV refresh to apply to tenants)
+                            </b>
+                            {appIds.map((perm) =>
+                              renderList(
+                                perm,
+                                "missingApplicationPermissions",
+                                "missingDelegatedPermissions",
+                              ),
+                            )}
+                          </Alert>
+                        </Grid>
+                      )}
+                      {hasExtra && (
+                        <Grid size={{ xl: 8, xs: 12 }}>
+                          <Alert color="info" icon={<WarningAmberOutlined />}>
+                            <b>
+                              Extra permissions present on the {appDisplayName} app registration that
+                              are not part of the CIPP defaults or your additional permissions
+                              (review and remove manually if not required)
+                            </b>
+                            {appIds.map((perm) =>
+                              renderList(
+                                perm,
+                                "extraApplicationPermissions",
+                                "extraDelegatedPermissions",
+                              ),
+                            )}
+                          </Alert>
+                        </Grid>
+                      )}
                     </Grid>
-                  </Grid>
-                )}
+                  );
+                })()}
 
               <Box sx={{ mt: 3 }}>
                 {selectedApp &&
@@ -1014,23 +1013,55 @@ const CippAppPermissionBuilder = ({
                       onChange={handleChange(sp.appId)}
                       slotProps={{ transition: { unmountOnExit: true } }}
                     >
-                      <AccordionSummary expandIcon={<ExpandMore />}>
+                      <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        // Flex children default to min-width:auto, so without this the
+                        // 36-character app-id chip refuses to shrink and pushes the whole
+                        // summary — display name first — off the left edge of a phone.
+                        sx={{ "& .MuiAccordionSummary-content": { minWidth: 0 } }}
+                      >
                         <Stack
-                          direction="row"
-                          spacing={2}
+                          direction={{ xs: "column", md: "row" }}
+                          spacing={{ xs: 1, md: 2 }}
                           justifyContent="space-between"
-                          alignItems="center"
-                          sx={{ width: "100%", mr: 1 }}
+                          alignItems={{ xs: "flex-start", md: "center" }}
+                          useFlexGap
+                          sx={{ width: "100%", mr: 1, minWidth: 0 }}
                         >
-                          <Typography variant="h6">{sp.displayName}</Typography>
-                          <Stack direction="row" spacing={2} alignItems="center">
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              minWidth: 0,
+                              maxWidth: "100%",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: { xs: "nowrap", md: "normal" },
+                            }}
+                          >
+                            {sp.displayName}
+                          </Typography>
+                          <Stack
+                            direction="row"
+                            spacing={{ xs: 1, md: 2 }}
+                            alignItems="center"
+                            useFlexGap
+                            sx={{
+                              flexWrap: { xs: "wrap", md: "nowrap" },
+                              minWidth: 0,
+                              maxWidth: "100%",
+                            }}
+                          >
                             <Tooltip title="Copy Application ID to clipboard">
                               <Chip
                                 label={sp.appId}
                                 variant="outlined"
                                 size="small"
                                 color="info"
-                                sx={{ mr: "0.25rem", fontFamily: "monospace" }}
+                                sx={{
+                                  mr: "0.25rem",
+                                  fontFamily: "monospace",
+                                  maxWidth: "100%",
+                                }}
                                 icon={
                                   <SvgIcon>
                                     <Apps />
@@ -1048,7 +1079,7 @@ const CippAppPermissionBuilder = ({
                                 variant="outlined"
                                 size="small"
                                 label={getPermissionCounts(sp.appId)}
-                                sx={{ width: "100px" }}
+                                sx={{ width: "100px", flexShrink: 0 }}
                                 icon={
                                   <SvgIcon fontSize="small">
                                     <ShieldCheckIcon />

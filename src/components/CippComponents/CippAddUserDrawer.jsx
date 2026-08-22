@@ -15,10 +15,15 @@ export const CippAddUserDrawer = ({
   PermissionButton = Button,
 }) => {
   const [drawerVisible, setDrawerVisible] = useState(false);
+  // Bumped after each successful create. The form fields only auto-populate on mount
+  // (domain selector's auto-select of the default domain, template auto-apply), so an
+  // in-place reset leaves the required primDomain empty with no visible error and the
+  // Create button stays disabled. Remounting restores the same state as a fresh open.
+  const [formResetKey, setFormResetKey] = useState(0);
   const userSettingsDefaults = useSettings();
 
   const formControl = useForm({
-    mode: "onBlur",
+    mode: "onChange",
     defaultValues: {
       tenantFilter: userSettingsDefaults.currentTenant,
       usageLocation: userSettingsDefaults.usageLocation,
@@ -52,22 +57,37 @@ export const CippAddUserDrawer = ({
       }
       newFields.tenantFilter = userSettingsDefaults.currentTenant;
 
+      // Preserve the currently selected template when copying properties
+      const currentTemplate = formControl.getValues("userTemplate");
+      if (currentTemplate) {
+        newFields.userTemplate = currentTemplate;
+      }
+
       formControl.reset(newFields);
     }
   }, [formValues]);
 
   useEffect(() => {
     if (createUser.isSuccess) {
-      formControl.reset({
+      const resetValues = {
         tenantFilter: userSettingsDefaults.currentTenant,
         usageLocation: userSettingsDefaults.usageLocation,
-      });
+      };
+
+      // Preserve the default template if it exists
+      const currentTemplate = formControl.getValues("userTemplate");
+      if (currentTemplate?.addedFields?.defaultForTenant) {
+        resetValues.userTemplate = currentTemplate;
+      }
+
+      formControl.reset(resetValues);
+      setFormResetKey((key) => key + 1);
     }
   }, [createUser.isSuccess]);
 
-  const handleSubmit = () => {
-    formControl.trigger();
-    if (!isValid) {
+  const handleSubmit = async () => {
+    const isFormValid = await formControl.trigger();
+    if (!isFormValid) {
       return;
     }
     const values = formControl.getValues();
@@ -84,17 +104,40 @@ export const CippAddUserDrawer = ({
 
   const handleCloseDrawer = () => {
     setDrawerVisible(false);
-    formControl.reset({
+    const resetValues = {
       tenantFilter: userSettingsDefaults.currentTenant,
       usageLocation: userSettingsDefaults.usageLocation,
-    });
+    };
+
+    // Preserve the default template if it exists
+    const currentTemplate = formControl.getValues("userTemplate");
+    if (currentTemplate?.addedFields?.defaultForTenant) {
+      resetValues.userTemplate = currentTemplate;
+    }
+
+    formControl.reset(resetValues);
+  };
+
+  const handleOpenDrawer = () => {
+    const resetValues = {
+      tenantFilter: userSettingsDefaults.currentTenant,
+      usageLocation: userSettingsDefaults.usageLocation,
+    };
+
+    const currentTemplate = formControl.getValues("userTemplate");
+    if (currentTemplate?.addedFields?.defaultForTenant) {
+      resetValues.userTemplate = currentTemplate;
+    }
+
+    formControl.reset(resetValues);
+    setDrawerVisible(true);
   };
 
   return (
     <>
       <PermissionButton
         requiredPermissions={requiredPermissions}
-        onClick={() => setDrawerVisible(true)}
+        onClick={handleOpenDrawer}
         startIcon={<PersonAdd />}
       >
         {buttonText}
@@ -117,8 +160,8 @@ export const CippAddUserDrawer = ({
                 {createUser.isPending
                   ? "Creating User..."
                   : createUser.isSuccess
-                  ? "Create Another User"
-                  : "Create User"}
+                    ? "Create Another User"
+                    : "Create User"}
               </Button>
               <Button variant="outlined" onClick={handleCloseDrawer}>
                 Close
@@ -129,6 +172,7 @@ export const CippAddUserDrawer = ({
       >
         <Box sx={{ my: 2 }}>
           <CippAddEditUser
+            key={formResetKey}
             formControl={formControl}
             userSettingsDefaults={userSettingsDefaults}
             formType="add"

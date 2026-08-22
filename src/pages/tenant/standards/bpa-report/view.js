@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import CippButtonCard from "../../../../components/CippCards/CippButtonCard";
 import { CippDataTable } from "../../../../components/CippTable/CippDataTable";
 import { CippImageCard } from "../../../../components/CippCards/CippImageCard";
-import _ from "lodash";
+import { get } from "lodash";
 const Page = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -52,8 +52,8 @@ const Page = () => {
             const tenantData = bpaData?.data?.Data?.find((data) => data.GUID === tenantId);
             const cards = frontendFields.map((field) => {
               //instead of this, use lodash to get the data for blockData
-              const blockData = _.get(tenantData, field.value)
-                ? _.get(tenantData, field.value)
+              const blockData = get(tenantData, field.value)
+                ? get(tenantData, field.value)
                 : undefined;
               return {
                 name: field.name,
@@ -133,7 +133,7 @@ const Page = () => {
               </Button>
             </Stack>
             <Grid container spacing={2}>
-              <Grid size={{ md: 4, sm: 6, xs: 10 }}>
+              <Grid size={{ md: 4, sm: 6, xs: 12 }}>
                 <Typography variant="h4" gutterBottom>
                   {pageTitle}
                 </Typography>
@@ -144,7 +144,7 @@ const Page = () => {
 
           <Grid container spacing={2}>
             {currentTenant === "AllTenants" && layoutMode !== "Table" ? (
-              <Grid size={{ md: 4, sm: 6, xs: 10 }}>
+              <Grid size={{ md: 4, sm: 6, xs: 12 }}>
                 <CippImageCard
                   title="Not supported"
                   imageUrl="/assets/illustrations/undraw_website_ij0l.svg"
@@ -157,7 +157,7 @@ const Page = () => {
               <>
                 {blockCards.map((block, index) => (
                   <Grid
-                    size={{ md: layoutMode === "Table" ? 12 : 4, sm: layoutMode === "Table" ? 12 : 6, xs: 10 }}
+                    size={{ md: layoutMode === "Table" ? 12 : 4, sm: layoutMode === "Table" ? 12 : 6, xs: 12 }}
                     key={block.name}
                   >
                     <CippButtonCard

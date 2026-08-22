@@ -5,6 +5,7 @@ import ChevronRightIcon from '@heroicons/react/24/outline/ChevronRightIcon';
 import ChevronDownIcon from '@heroicons/react/24/outline/ChevronDownIcon';
 import { Box, ButtonBase, Collapse, SvgIcon } from '@mui/material';
 import ArrowTopRightOnSquareIcon from '@heroicons/react/24/outline/ArrowTopRightOnSquareIcon';
+import LanguageIcon from '@mui/icons-material/Language';
 
 export const MobileNavItem = (props) => {
   const {
@@ -16,9 +17,15 @@ export const MobileNavItem = (props) => {
     icon,
     openImmediately = false,
     path,
+    scope,
     title
   } = props;
+
+  const isGlobal = scope === "global";
   const [open, setOpen] = useState(openImmediately);
+
+  // same step as side-nav-item, nesting reads the same in both navs
+  const indent = depth > 0 ? depth * 1.5 : 1;
 
   const handleToggle = useCallback(() => {
     setOpen((prevOpen) => !prevOpen);
@@ -39,7 +46,7 @@ export const MobileNavItem = (props) => {
             fontSize: 14,
             fontWeight: 500,
             justifyContent: 'flex-start',
-            px: '6px',
+            px: `${indent * 6}px`,
             py: '12px',
             textAlign: 'left',
             whiteSpace: 'nowrap',
@@ -115,7 +122,7 @@ export const MobileNavItem = (props) => {
           fontSize: 14,
           fontWeight: 500,
           justifyContent: 'flex-start',
-          px: '6px',
+          px: `${indent * 6}px`,
           py: '12px',
           textAlign: 'left',
           whiteSpace: 'nowrap',
@@ -150,6 +157,22 @@ export const MobileNavItem = (props) => {
         >
           {title}
         </Box>
+        {isGlobal && (
+          <Box
+            component="span"
+            title="Global - not tied to selected tenant"
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              flexShrink: 0,
+              ml: 0.5,
+            }}
+          >
+            <SvgIcon sx={{ color: "neutral.400", fontSize: 14 }}>
+              <LanguageIcon />
+            </SvgIcon>
+          </Box>
+        )}
         {external && (
           <SvgIcon sx={{ fontSize: 18 }}>
             <ArrowTopRightOnSquareIcon />
@@ -169,5 +192,6 @@ MobileNavItem.propTypes = {
   icon: PropTypes.node,
   openImmediately: PropTypes.bool,
   path: PropTypes.string,
+  scope: PropTypes.string,
   title: PropTypes.string.isRequired
 };

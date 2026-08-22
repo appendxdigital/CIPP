@@ -275,6 +275,7 @@ export const CippMailboxRestoreDrawer = ({
                       ItemCount: "ItemCount",
                     },
                     url: "/api/ListMailboxes",
+                    data: { UseReportDB: true },
                     showRefresh: true,
                   }}
                   validators={{
@@ -354,7 +355,7 @@ export const CippMailboxRestoreDrawer = ({
                 <Typography variant="h6">Optional Settings</Typography>
               </Grid>
 
-              <Grid size={{ xs: 6, md: 6 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <CippFormComponent
                   type="number"
                   label="Bad Item Limit"
@@ -363,7 +364,7 @@ export const CippMailboxRestoreDrawer = ({
                 />
               </Grid>
 
-              <Grid size={{ xs: 6, md: 6 }}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <CippFormComponent
                   type="number"
                   label="Large Item Limit"

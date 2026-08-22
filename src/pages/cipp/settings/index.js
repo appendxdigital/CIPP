@@ -9,13 +9,12 @@ import CippPasswordSettings from "../../../components/CippSettings/CippPasswordS
 import CippDnsSettings from "../../../components/CippSettings/CippDnsSettings";
 import CippCacheSettings from "../../../components/CippSettings/CippCacheSettings";
 import CippBackupSettings from "../../../components/CippSettings/CippBackupSettings";
-import CippBrandingSettings from "../../../components/CippSettings/CippBrandingSettings";
 import CippBackupRetentionSettings from "../../../components/CippSettings/CippBackupRetentionSettings";
 import CippLogRetentionSettings from "../../../components/CippSettings/CippLogRetentionSettings";
 import CippJitAdminSettings from "../../../components/CippSettings/CippJitAdminSettings";
 const Page = () => {
   return (
-    <Container sx={{ pt: 3 }} maxWidth="xl">
+    <Container sx={{ pt: { xs: 0, md: 3 }, px: { xs: 1.5, md: 3 } }} maxWidth="xl">
       <Grid container spacing={2}>
         <Grid size={{ lg: 4, md: 6, sm: 12, xs: 12 }}>
           <CippVersionProperties />
@@ -37,9 +36,6 @@ const Page = () => {
         </Grid>
         <Grid size={{ lg: 4, md: 6, sm: 12, xs: 12 }}>
           <CippLogRetentionSettings />
-        </Grid>
-        <Grid size={{ lg: 4, md: 6, sm: 12, xs: 12 }}>
-          <CippBrandingSettings />
         </Grid>
         <Grid size={{ lg: 4, md: 6, sm: 12, xs: 12 }}>
           <CippJitAdminSettings />

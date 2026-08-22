@@ -1,6 +1,7 @@
-import { Button, Stack, SvgIcon, Menu, MenuItem, ListItemText, Alert } from "@mui/material";
-import { useState } from "react";
+import { Button, Stack, SvgIcon, Menu, MenuItem, ListItemText, Alert, Tooltip } from "@mui/material";
+import { useState, useEffect, useMemo } from "react";
 import isEqual from "lodash/isEqual";
+import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import { ApiGetCall, ApiGetCallWithPagination, ApiPostCall } from "../../api/ApiCall";
 import { CippDataTable } from "../CippTable/CippDataTable";
@@ -13,14 +14,16 @@ import {
 } from "@heroicons/react/24/outline";
 import { CippApiResults } from "../CippComponents/CippApiResults";
 import { CippApiDialog } from "../CippComponents/CippApiDialog";
-import { Create, Key, Save, Sync } from "@mui/icons-material";
+import { Create, InfoOutlined, Key, Save, Sync } from "@mui/icons-material";
 import { CippPropertyListCard } from "../CippCards/CippPropertyListCard";
 import { CippCopyToClipBoard } from "../CippComponents/CippCopyToClipboard";
 import { Box } from "@mui/system";
 
 const CippApiClientManagement = () => {
+  const router = useRouter();
   const [openAddClientDialog, setOpenAddClientDialog] = useState(false);
   const [openAddExistingAppDialog, setOpenAddExistingAppDialog] = useState(false);
+  const [addClientRetryPayload, setAddClientRetryPayload] = useState(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
   const formControl = useForm({
@@ -44,6 +47,46 @@ const CippApiClientManagement = () => {
     queryKey: "ApiClients",
   });
 
+  const hasUnsavedChanges = useMemo(() => {
+    if (!azureConfig.isSuccess || !apiClients.isSuccess) return false;
+    return !isEqual(
+      (apiClients.data?.pages?.[0]?.Results || [])
+        .filter((c) => c.Enabled)
+        .map((c) => c.ClientId)
+        .sort(),
+      (azureConfig.data?.Results?.ClientIDs || []).sort()
+    );
+  }, [azureConfig.isSuccess, azureConfig.data, apiClients.isSuccess, apiClients.data]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+
+    const handleRouteChange = (url) => {
+      if (
+        hasUnsavedChanges &&
+        !window.confirm(
+          "You have unsaved API client changes. Are you sure you want to leave this page?"
+        )
+      ) {
+        router.events.emit("routeChangeError");
+        throw "Route change aborted due to unsaved changes.";
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    router.events.on("routeChangeStart", handleRouteChange);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      router.events.off("routeChangeStart", handleRouteChange);
+    };
+  }, [hasUnsavedChanges, router.events]);
+
   const handleMenuOpen = (event) => {
     setMenuAnchorEl(event.currentTarget);
   };
@@ -53,11 +96,45 @@ const CippApiClientManagement = () => {
   };
 
   const handleSaveToAzure = () => {
+    handleMenuClose();
+    if (
+      !window.confirm(
+        "Saving to Azure will restart the CIPP instance. Changes may take up to 60 seconds to reflect. Do you want to continue?"
+      )
+    ) {
+      return;
+    }
     postCall.mutate({
       url: `/api/ExecApiClient?action=SaveToAzure`,
       data: {},
     });
-    handleMenuClose();
+  };
+
+  const getRetryPayload = (result) => {
+    const firstResult = result?.Results?.[0];
+    if (firstResult?.retryAvailable === true) {
+      return firstResult.retryPayload;
+    }
+    return null;
+  };
+
+  const mergeApiDataWithRetry = (baseData, retryPayload) => {
+    if (!retryPayload) {
+      return baseData;
+    }
+
+    return {
+      ...baseData,
+      ...retryPayload,
+      CIPPAPI: {
+        ...(baseData.CIPPAPI || {}),
+        ...(retryPayload.CIPPAPI || {}),
+      },
+    };
+  };
+
+  const handleAddClientAfterEffect = (result) => {
+    setAddClientRetryPayload(getRetryPayload(result));
   };
 
   const actions = [
@@ -101,6 +178,18 @@ const CippApiClientManagement = () => {
           type: "switch",
           name: "Enabled",
           label: "Enable this client",
+        },
+        {
+          type: "switch",
+          name: "MCPAllowed",
+          label: "MCP Access Allowed",
+        },
+        {
+          type: "alert",
+          name: "mcpAccessWarning",
+          severity: "warning",
+          label:
+            "Enabling MCP Access converts this client into the MCP resource app — it can no longer be used as a normal API client, and only one client per tenant can hold this role. Going forward, MCP is only supported on CIPP-NG.",
         },
       ],
       type: "POST",
@@ -177,6 +266,7 @@ const CippApiClientManagement = () => {
                 <MenuItem
                   onClick={() => {
                     handleMenuClose();
+                    setAddClientRetryPayload(null);
                     setOpenAddClientDialog(true);
                   }}
                 >
@@ -230,6 +320,22 @@ const CippApiClientManagement = () => {
               ),
             },
             {
+              label: "MCP API URL",
+              value: azureConfig.data?.Results?.ApiUrl ? (
+                <>
+                  <CippCopyToClipBoard
+                    type="chip"
+                    text={`${azureConfig.data.Results.ApiUrl.replace(/\/+$/, "")}/api/ExecMcp`}
+                  />
+                  <Tooltip title="Use this full URL when adding CIPP as an MCP connector in an AI client (e.g. Claude custom connectors).">
+                    <InfoOutlined color="action" sx={{ fontSize: 16, verticalAlign: "middle" }} />
+                  </Tooltip>
+                </>
+              ) : (
+                "Not Available"
+              ),
+            },
+            {
               label: "Token URL",
               value: azureConfig.data?.Results?.TenantID ? (
                 <CippCopyToClipBoard
@@ -255,13 +361,7 @@ const CippApiClientManagement = () => {
         />
         {azureConfig.isSuccess && apiClients.isSuccess && (
           <>
-            {!isEqual(
-              (apiClients.data?.pages?.[0]?.Results || [])
-                .filter((c) => c.Enabled)
-                .map((c) => c.ClientId)
-                .sort(),
-              (azureConfig.data?.Results?.ClientIDs || []).sort()
-            ) && (
+            {hasUnsavedChanges && (
               <Box sx={{ px: 3 }}>
                 <Alert severity="warning">
                   You have unsaved changes. Click Actions &gt; Save Azure Configuration to update
@@ -291,7 +391,7 @@ const CippApiClientManagement = () => {
             data: { Action: "List" },
             dataKey: "Results",
           }}
-          simpleColumns={["Enabled", "AppName", "ClientId", "Role", "IPRange"]}
+          simpleColumns={["Enabled", "MCPAllowed", "AppName", "ClientId", "Role", "IPRange"]}
           queryKey={`ApiClients`}
         />
       </Stack>
@@ -299,8 +399,13 @@ const CippApiClientManagement = () => {
       <CippApiDialog
         createDialog={{
           open: openAddClientDialog,
-          handleClose: () => setOpenAddClientDialog(false),
+          handleClose: () => {
+            setOpenAddClientDialog(false);
+            setAddClientRetryPayload(null);
+          },
         }}
+        allowResubmit={true}
+        dialogAfterEffect={handleAddClientAfterEffect}
         title="Add Client"
         fields={[
           {
@@ -340,18 +445,32 @@ const CippApiClientManagement = () => {
             name: "Enabled",
             label: "Enable this client",
           },
+          {
+            type: "switch",
+            name: "MCPAllowed",
+            label: "MCP Access Allowed",
+          },
+          {
+            type: "alert",
+            name: "mcpAccessWarning",
+            severity: "warning",
+            label:
+              "Enabling MCP Access converts this client into the MCP resource app — it can no longer be used as a normal API client, and only one client per tenant can hold this role. Going forward, MCP is only supported on CIPP-NG.",
+          },
         ]}
         api={{
           type: "POST",
           url: "/api/ExecApiClient",
-          data: { Action: "AddUpdate" },
+          data: mergeApiDataWithRetry({ Action: "AddUpdate" }, addClientRetryPayload),
           relatedQueryKeys: [`ApiClients`],
         }}
       />
       <CippApiDialog
         createDialog={{
           open: openAddExistingAppDialog,
-          handleClose: () => setOpenAddExistingAppDialog(false),
+          handleClose: () => {
+            setOpenAddExistingAppDialog(false);
+          },
         }}
         title="Add Existing App"
         fields={[
@@ -407,11 +526,23 @@ const CippApiClientManagement = () => {
             name: "Enabled",
             label: "Enable this client",
           },
+          {
+            type: "switch",
+            name: "MCPAllowed",
+            label: "MCP Access Allowed",
+          },
+          {
+            type: "alert",
+            name: "mcpAccessWarning",
+            severity: "warning",
+            label:
+              "Enabling MCP Access converts this client into the MCP resource app — it can no longer be used as a normal API client, and only one client per tenant can hold this role. Going forward, MCP is only supported on CIPP-NG.",
+          },
         ]}
         api={{
           type: "POST",
           url: "/api/ExecApiClient",
-          data: { Action: "!AddUpdate" },
+          data: { Action: "!AddUpdate", CIPPAPI: { ResetSecret: true } },
           relatedQueryKeys: [`ApiClients`],
         }}
       />

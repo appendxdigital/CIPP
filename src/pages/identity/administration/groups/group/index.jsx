@@ -19,6 +19,7 @@ import {
   GroupAdd,
 } from "@mui/icons-material";
 import { HeaderedTabbedLayout } from "../../../../../layouts/HeaderedTabbedLayout";
+import { CippEntitySwitcher } from "../../../../../components/CippComponents/CippEntitySwitcher";
 import tabOptions from "./tabOptions";
 import { CippCopyToClipBoard } from "../../../../../components/CippComponents/CippCopyToClipboard";
 import { Box, Stack } from "@mui/system";
@@ -299,6 +300,16 @@ const Page = () => {
           displayName: "displayName",
           type: "!Group",
         },
+        // Pre-select the current source of authority; leave unselected when the
+        // selected rows have mixed states
+        defaultvalues: (row) => {
+          const states = [
+            ...new Set(
+              (Array.isArray(row) ? row : [row]).map((r) => r?.onPremisesSyncEnabled === true)
+            ),
+          ];
+          return states.length === 1 ? { isCloudManaged: String(!states[0]) } : {};
+        },
         fields: [
           {
             type: "radio",
@@ -308,12 +319,29 @@ const Page = () => {
               { label: "Cloud Managed", value: true },
               { label: "On-Premises Managed", value: false },
             ],
-            validators: { required: "Please select a source of authority" },
+            validators: {
+              required: "Please select a source of authority",
+              validate: (value, formValues, row) => {
+                const states = [
+                  ...new Set(
+                    (Array.isArray(row) ? row : [row]).map((r) => r?.onPremisesSyncEnabled === true)
+                  ),
+                ];
+                if (states.length === 1 && String(value) === String(!states[0])) {
+                  return "Source of authority is unchanged";
+                }
+                return true;
+              },
+            },
           },
         ],
         confirmText:
           "Are you sure you want to change the source of authority for '[displayName]'? Setting it to On-Premises Managed will take until the next sync cycle to show the change.",
         multiPost: false,
+        // Only meaningful for groups that are on-premises managed (convert to cloud) or
+        // were synced at some point (revert to on-premises); hide for cloud-native groups
+        condition: (row) =>
+          row?.onPremisesSyncEnabled === true || !!row?.onPremisesSamAccountName,
       },
       {
         label: "Create template based on group",
@@ -657,6 +685,27 @@ const Page = () => {
     <HeaderedTabbedLayout
       tabOptions={tabOptions}
       title={title}
+      titleControl={
+        <CippEntitySwitcher
+          title={title}
+          currentId={groupId}
+          queryParamKey="groupId"
+          entityName="group"
+          api={{
+            url: "/api/ListGraphRequest",
+            data: {
+              Endpoint: "groups",
+              tenantFilter: router.query.tenantFilter ?? userSettingsDefaults.currentTenant,
+              $select: "id,displayName,mail",
+              $count: true,
+              $orderby: "displayName",
+              $top: 999,
+            },
+            queryKey: `GroupSwitcher-${router.query.tenantFilter ?? userSettingsDefaults.currentTenant}`,
+          }}
+          getSecondary={(group) => group.mail}
+        />
+      }
       actions={groupActions}
       actionsData={data}
       subtitle={subtitle}
@@ -672,7 +721,7 @@ const Page = () => {
         >
           <CippHead title={title} />
           <Grid container spacing={2}>
-            <Grid size={4}>
+            <Grid size={{ xs: 12, lg: 4 }}>
               <Card>
                 <CardHeader title="Group Details" />
                 <Divider />
@@ -779,7 +828,7 @@ const Page = () => {
                 </PropertyList>
               </Card>
             </Grid>
-            <Grid size={8}>
+            <Grid size={{ xs: 12, lg: 8 }}>
               <Stack spacing={3}>
                 <Typography variant="h6">Members</Typography>
                 <CippBannerListCard

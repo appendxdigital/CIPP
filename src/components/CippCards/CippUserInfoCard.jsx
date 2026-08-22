@@ -18,6 +18,7 @@ import { getCippFormatting } from "../../utils/get-cipp-formatting";
 import { Stack, Grid, Box } from "@mui/system";
 import { useState, useRef, useCallback } from "react";
 import { ApiPostCall } from "../../api/ApiCall";
+import { useLicenseBackfill } from "../../hooks/use-license-backfill";
 
 export const CippUserInfoCard = (props) => {
   const { user, tenant, isFetching = false, ...other } = props;
@@ -25,6 +26,9 @@ export const CippUserInfoCard = (props) => {
   const [uploadError, setUploadError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const fileInputRef = useRef(null);
+  
+  // Hook to trigger re-render when license backfill completes
+  const { updateTrigger } = useLicenseBackfill();
 
   // API mutations
   const setPhotoMutation = ApiPostCall({ urlFromData: true });
@@ -133,8 +137,10 @@ export const CippUserInfoCard = (props) => {
               <Skeleton variant="text" width={200} />
             ) : (
               <Grid container spacing={3} alignItems="center">
-                {/* Avatar section */}
-                <Grid size={{ xs: 12, sm: 4, md: 3 }}>
+                {/* Avatar section — "auto" rather than a full row on xs: the picture is a
+                    fixed 64px, so collapsing it to its own line only pushes the identity
+                    fields down without making the picture any bigger. */}
+                <Grid size={{ xs: "auto", sm: 4, md: 3 }}>
                   <Stack alignItems="center" spacing={1}>
                     <Box position="relative">
                       <Avatar
@@ -189,7 +195,7 @@ export const CippUserInfoCard = (props) => {
                           sx={{
                             backgroundColor: "action.hover",
                             "&:hover": {
-                              backgroundColor: "error.light",
+                              backgroundColor: "error.main",
                               color: "error.contrastText",
                             },
                           }}
@@ -212,8 +218,8 @@ export const CippUserInfoCard = (props) => {
                   </Stack>
                 </Grid>
 
-                {/* Status information section */}
-                <Grid size={{ xs: 12, sm: 8, md: 9 }}>
+                {/* Status information section — grows into whatever the avatar leaves */}
+                <Grid size={{ xs: true, sm: 8, md: 9 }} sx={{ minWidth: 0 }}>
                   <Grid container spacing={2}>
                     <Grid size={{ xs: 12, sm: 6 }}>
                       <Typography variant="inherit" color="text.primary" gutterBottom>
@@ -280,6 +286,7 @@ export const CippUserInfoCard = (props) => {
         <PropertyListItem
           divider
           label="Licenses"
+          key={`licenses-${updateTrigger}`}
           value={
             isFetching ? (
               <Skeleton variant="text" width={180} />

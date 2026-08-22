@@ -89,8 +89,8 @@ const Page = () => {
     queryKey: `BackupTasks-${currentTenant}`,
   });
 
-  // Use the actual backup files as the backup data
-  const filteredBackupData = Array.isArray(backupList.data) ? backupList.data : [];
+  // Use the actual backup files as the backup data — filter out any null entries
+  const filteredBackupData = Array.isArray(backupList.data) ? backupList.data.filter(Boolean) : [];
   // Generate backup tags from actual API response items - use raw items directly
   const generateBackupTags = (backup) => {
     // Use the Items array directly from the API response without any translation
@@ -173,11 +173,12 @@ const Page = () => {
   };
 
   // Filter backup data by selected tenant if in AllTenants view
+  const selectedTenantValue = backupTenantFilter?.value ?? backupTenantFilter;
   const tenantFilteredBackupData =
     settings.currentTenant === "AllTenants" &&
-    backupTenantFilter &&
-    backupTenantFilter !== "AllTenants"
-      ? filteredBackupData.filter((backup) => backup.TenantFilter === backupTenantFilter)
+    selectedTenantValue &&
+    selectedTenantValue !== "AllTenants"
+      ? filteredBackupData.filter((backup) => backup.TenantFilter === selectedTenantValue)
       : filteredBackupData;
 
   const backupDisplayItems = tenantFilteredBackupData.map((backup, index) => ({
@@ -188,7 +189,7 @@ const Page = () => {
     tags: generateBackupTags(backup),
   }));
 
-  // Process existing backup configuration, find tenantFilter. by comparing settings.currentTenant with Tenant.value
+  // Process existing backup configuration
   const currentConfig = Array.isArray(existingBackupConfig.data)
     ? existingBackupConfig.data.find(
         (tenant) =>
@@ -383,8 +384,9 @@ const Page = () => {
                 <Alert severity="info">
                   <AlertTitle>No Backup Configuration</AlertTitle>
                   No backup schedule is currently configured for{" "}
-                  {settings.currentTenant === "AllTenants" ? "any tenant" : settings.currentTenant}.
-                  Click "Add Backup Schedule" to create an automated backup configuration.
+                  {settings.currentTenant === "AllTenants" ? "AllTenants" : settings.currentTenant}.
+                  Click "Add Backup Schedule" to create an automated backup configuration that will apply to all tenants.
+                  A tenant specific backup can exist alongside a global backup, and will run according to its own schedule.
                 </Alert>
               )}
             </Stack>
@@ -399,15 +401,26 @@ const Page = () => {
                   sx={{ height: "100%", display: "flex", flexDirection: "column" }}
                 >
                   <Box
-                    sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexWrap: "wrap",
+                      rowGap: 1,
+                    }}
                   >
                     <Typography variant="h6" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <History color="primary" />
                       Backup History
                     </Typography>
-                    <Stack direction="row" spacing={2} alignItems="center">
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                      sx={{ width: { xs: "100%", md: "auto" } }}
+                    >
                       {settings.currentTenant === "AllTenants" && (
-                        <Box sx={{ minWidth: 250 }}>
+                        <Box sx={{ minWidth: { md: 250 }, flexGrow: 1 }}>
                           <CippFormTenantSelector
                             formControl={tenantFilterForm}
                             componentType="select"
@@ -458,9 +471,12 @@ const Page = () => {
                                     display: "flex",
                                     justifyContent: "space-between",
                                     alignItems: "flex-start",
+                                    flexWrap: "wrap",
+                                    rowGap: 1,
+                                    columnGap: 1,
                                   }}
                                 >
-                                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                                  <Box sx={{ flex: "1 1 auto", minWidth: 150 }}>
                                     <Typography variant="h6" sx={{ fontSize: "1rem" }}>
                                       {(() => {
                                         const match = backup.name.match(
@@ -483,7 +499,12 @@ const Page = () => {
                                       />
                                     )}
                                   </Box>
-                                  <Stack direction="row" spacing={1} sx={{ flexShrink: 0 }}>
+                                  <Stack
+                                    direction="row"
+                                    spacing={1}
+                                    useFlexGap
+                                    sx={{ flexWrap: "wrap", minWidth: 0 }}
+                                  >
                                     <Button
                                       size="small"
                                       variant="outlined"

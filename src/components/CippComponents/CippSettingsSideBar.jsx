@@ -60,10 +60,18 @@ export const CippSettingsSideBar = (props) => {
       // General Settings
       usageLocation: formValues.usageLocation,
       tablePageSize: formValues.tablePageSize,
+      tableViewMode: formValues.tableViewMode,
+      defaultTestSuite: formValues.defaultTestSuite,
       userAttributes: formValues.userAttributes,
 
       // Table Filter Preferences
       persistFilters: formValues.persistFilters,
+
+      // Navigation Settings
+      bookmarkSidebar: formValues.bookmarkSidebar,
+      bookmarkPopover: formValues.bookmarkPopover,
+      bookmarkReorderMode: formValues.bookmarkReorderMode,
+      compactNav: formValues.compactNav,
 
       // Portal Links Configuration
       portalLinks: {
@@ -98,6 +106,13 @@ export const CippSettingsSideBar = (props) => {
         RemoveMFADevices: formValues.offboardingDefaults?.RemoveMFADevices,
         RemoveTeamsPhoneDID: formValues.offboardingDefaults?.RemoveTeamsPhoneDID,
         ClearImmutableId: formValues.offboardingDefaults?.ClearImmutableId,
+        removeCalendarPermissions: formValues.offboardingDefaults?.removeCalendarPermissions,
+        DisableOneDriveSharing: formValues.offboardingDefaults?.DisableOneDriveSharing,
+        postExecution: {
+          psa: formValues.offboardingDefaults?.postExecution?.psa,
+          email: formValues.offboardingDefaults?.postExecution?.email,
+          webhook: formValues.offboardingDefaults?.postExecution?.webhook,
+        },
       },
     };
 

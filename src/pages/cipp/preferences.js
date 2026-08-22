@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Box, Container, Stack } from "@mui/material";
+import { Alert, Box, Container, Stack } from "@mui/material";
 import { Grid } from "@mui/system";
 import { Layout as DashboardLayout } from "../../layouts/index.js";
 import { CippPropertyListCard } from "../../components/CippCards/CippPropertyListCard";
@@ -36,6 +36,12 @@ const Page = () => {
   const auth = ApiGetCall({
     url: "/api/me",
     queryKey: "authmecipp",
+  });
+
+  // Test suites for the default Home page suite selector (shared cache with the dashboard)
+  const reportsApi = ApiGetCall({
+    url: "/api/ListTestReports",
+    queryKey: "ListTestReports",
   });
 
   const cleanedSettings = { ...settings };
@@ -183,47 +189,47 @@ const Page = () => {
   const portalLinksConfig = [
     {
       name: "portalLinks.M365_Portal",
-      label: "M365 Portal",
+      label: "M365",
     },
     {
       name: "portalLinks.Exchange_Portal",
-      label: "Exchange Portal",
+      label: "Exchange",
     },
     {
       name: "portalLinks.Entra_Portal",
-      label: "Entra Portal",
+      label: "Entra",
     },
     {
       name: "portalLinks.Teams_Portal",
-      label: "Teams Portal",
+      label: "Teams",
     },
     {
       name: "portalLinks.Azure_Portal",
-      label: "Azure Portal",
+      label: "Azure",
     },
     {
       name: "portalLinks.Intune_Portal",
-      label: "Intune Portal",
+      label: "Intune",
     },
     {
       name: "portalLinks.SharePoint_Admin",
-      label: "SharePoint Admin",
+      label: "SharePoint",
     },
     {
       name: "portalLinks.Security_Portal",
-      label: "Security Portal",
+      label: "Security",
     },
     {
       name: "portalLinks.Compliance_Portal",
-      label: "Compliance Portal",
+      label: "Purview",
     },
     {
       name: "portalLinks.Power_Platform_Portal",
-      label: "Power Platform Portal",
+      label: "Power Platform",
     },
     {
       name: "portalLinks.Power_BI_Portal",
-      label: "Power BI Portal",
+      label: "Power BI",
     },
   ];
 
@@ -288,6 +294,42 @@ const Page = () => {
                           ),
                         },
                         {
+                          label: "Table view on small screens",
+                          value: (
+                            <CippFormComponent
+                              type="autoComplete"
+                              creatable={false}
+                              disableClearable={true}
+                              defaultValue={{ value: "auto", label: "Automatic (cards on mobile)" }}
+                              name="tableViewMode"
+                              formControl={formcontrol}
+                              multiple={false}
+                              options={[
+                                { value: "auto", label: "Automatic (cards on mobile)" },
+                                { value: "cards", label: "Always card list" },
+                                { value: "table", label: "Always classic table" },
+                              ]}
+                            />
+                          ),
+                        },
+                        {
+                          label: "Default test suite on the Home page",
+                          value: (
+                            <CippFormComponent
+                              type="autoComplete"
+                              creatable={false}
+                              name="defaultTestSuite"
+                              formControl={formcontrol}
+                              multiple={false}
+                              options={(reportsApi.data || []).map((report) => ({
+                                value: report.id,
+                                label: report.name,
+                              }))}
+                              isFetching={reportsApi.isFetching}
+                            />
+                          ),
+                        },
+                        {
                           label: "Added Attributes when creating a new user",
                           value: (
                             <CippFormComponent
@@ -311,7 +353,62 @@ const Page = () => {
                         },
                       ]}
                     />
-                    <CippOffboardingDefaultSettings formControl={formcontrol} />
+                    <CippPropertyListCard
+                      layout="two"
+                      showDivider={false}
+                      title="Navigation Settings"
+                      propertyItems={[
+                        {
+                          label: "Show Sidebar Bookmarks",
+                          value: (
+                            <CippFormComponent
+                              type="switch"
+                              name="bookmarkSidebar"
+                              formControl={formcontrol}
+                            />
+                          ),
+                        },
+                        {
+                          label: "Show Popover Bookmarks",
+                          value: (
+                            <CippFormComponent
+                              type="switch"
+                              name="bookmarkPopover"
+                              formControl={formcontrol}
+                            />
+                          ),
+                        },
+                        {
+                          label: "Bookmark Reorder Mode",
+                          value: (
+                            <CippFormComponent
+                              type="radio"
+                              name="bookmarkReorderMode"
+                              formControl={formcontrol}
+                              row={true}
+                              options={[
+                                { value: "arrows", label: "Arrow Buttons" },
+                                { value: "drag", label: "Drag and Drop" },
+                              ]}
+                            />
+                          ),
+                        },
+                        {
+                          label: "Compact Navigation",
+                          value: (
+                            <CippFormComponent
+                              type="switch"
+                              name="compactNav"
+                              formControl={formcontrol}
+                            />
+                          ),
+                        },
+                      ]}
+                    />
+                    <CippOffboardingDefaultSettings
+                      formControl={formcontrol}
+                      defaultsSource={cleanedSettings.offboardingDefaultsSource}
+                    />
                   </Stack>
                 </Grid>
                 <Grid size={{ xs: 12, lg: 4 }}>

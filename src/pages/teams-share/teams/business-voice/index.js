@@ -1,9 +1,19 @@
 import { Layout as DashboardLayout } from "../../../../layouts/index.js";
 import { CippTablePage } from "../../../../components/CippComponents/CippTablePage.jsx";
+import { useCippReportDB } from "../../../../components/CippComponents/CippReportDBControls";
 import { PersonAdd, PersonRemove, LocationOn } from "@mui/icons-material";
 
 const Page = () => {
   const pageTitle = "Teams Business Voice";
+
+  const reportDB = useCippReportDB({
+    apiUrl: "/api/ListTeamsVoice",
+    queryKey: "ListTeamsVoice",
+    cacheName: "TeamsVoice",
+    syncTitle: "Sync Teams Business Voice Report",
+    allowToggle: true,
+    defaultCached: false,
+  });
 
   const actions = [
     // the modal dropdowns that were added below may not exist yet, and will need to be tested.
@@ -25,7 +35,17 @@ const Page = () => {
           multiple: false,
           creatable: false,
           api: {
-            url: "/api/listUsers",
+            url: "/api/ListGraphRequest",
+            queryKey: "TeamsVoiceAssignableUsers",
+            dataKey: "Results",
+            data: {
+              Endpoint: "users",
+              manualPagination: true,
+              $select: "id,userPrincipalName,displayName",
+              $count: true,
+              $orderby: "displayName",
+              $top: 999,
+            },
             labelField: (input) => `${input.displayName} (${input.userPrincipalName})`,
             valueField: "userPrincipalName",
           },
@@ -61,7 +81,16 @@ const Page = () => {
           label: "Emergency Location",
           api: {
             url: "/api/ListTeamsLisLocation",
-            labelField: "Description",
+            queryKey: "TeamsLisLocations",
+            // Description is optional on a location, so fall back to the place name and
+            // then the street address rather than rendering "No label found".
+            labelField: (location) =>
+              location.Description ||
+              location.Location ||
+              [location.HouseNumber, location.StreetName, location.City]
+                .filter(Boolean)
+                .join(" ") ||
+              location.LocationId,
             valueField: "LocationId",
           },
         },
@@ -76,39 +105,47 @@ const Page = () => {
       "AcquiredCapabilities",
       "AssignmentStatus",
       "AssignedTo",
+      "EmergencyLocation",
     ],
     actions: actions,
   };
 
   return (
-    <CippTablePage
-      title={pageTitle}
-      apiUrl="/api/ListTeamsVoice"
-      actions={actions}
-      offCanvas={offCanvas}
-      simpleColumns={[
-        "AssignedTo",
-        "TelephoneNumber",
-        "AssignmentStatus",
-        "NumberType",
-        "AcquiredCapabilities",
-        "IsoCountryCode",
-        "PlaceName",
-        "ActivationState",
-        "IsOperatorConnect",
-        "AcquisitionDate",
-      ]}
-      filterlist={[
-        {
-          filterName: "Unassigned User Numbers",
-          filter:
-            "Complex: AssignmentStatus eq Unassigned; AcquiredCapabilities like UserAssignment",
-        },
-      ]}
-    />
+    <>
+      <CippTablePage
+        title={pageTitle}
+        apiUrl={reportDB.resolvedApiUrl}
+        queryKey={reportDB.resolvedQueryKey}
+        actions={actions}
+        offCanvas={offCanvas}
+        simpleColumns={[
+          ...reportDB.cacheColumns,
+          "AssignedTo.userPrincipalName",
+          "TelephoneNumber",
+          "AssignmentStatus",
+          "NumberType",
+          "EmergencyLocation",
+          "AcquiredCapabilities",
+          "IsoCountryCode",
+          "PlaceName",
+          "ActivationState",
+          "IsOperatorConnect",
+          "AcquisitionDate",
+        ]}
+        filterlist={[
+          {
+            filterName: "Unassigned User Numbers",
+            filter:
+              "Complex: AssignmentStatus eq Unassigned; AcquiredCapabilities like UserAssignment",
+          },
+        ]}
+        dataSourceControls={reportDB.controls}
+      />
+      {reportDB.syncDialog}
+    </>
   );
 };
 
-Page.getLayout = (page) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page) => <DashboardLayout allTenantsSupport={true}>{page}</DashboardLayout>;
 
 export default Page;
