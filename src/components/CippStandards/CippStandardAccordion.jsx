@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { CippIcons } from "../../utils/icon-registry";
 import {
   Card,
   Stack,
+  Alert,
   Avatar,
   Box,
   Typography,
@@ -15,23 +17,15 @@ import {
   InputAdornment,
   ButtonGroup,
   Button,
+  Menu,
+  MenuItem,
+  Checkbox,
+  ListItemText,
 } from "@mui/material";
-import {
-  ExpandMore as ExpandMoreIcon,
-  Delete,
-  Add,
-  Public,
-  Search,
-  Close,
-  FilterAlt,
-  NotificationImportant,
-  Assignment,
-  Construction,
-} from "@mui/icons-material";
 import { Grid } from "@mui/system";
 import CippFormComponent from "../CippComponents/CippFormComponent";
 import { useWatch, useFormState } from "react-hook-form";
-import _ from "lodash";
+import { get, isEqual, cloneDeep } from "lodash";
 import Microsoft from "../../icons/iconly/bulk/microsoft";
 import Azure from "../../icons/iconly/bulk/azure";
 import Exchange from "../../icons/iconly/bulk/exchange";
@@ -39,7 +33,7 @@ import Defender from "../../icons/iconly/bulk/defender";
 import Intune from "../../icons/iconly/bulk/intune";
 import GDAPRoles from "../../data/GDAPRoles";
 import timezoneList from "../../data/timezoneList";
-import standards from "../../data/standards.json";
+import { getStandards } from "../../utils/standards-data";
 import { CippFormCondition } from "../CippComponents/CippFormCondition";
 import { CippPolicyImportDrawer } from "../CippComponents/CippPolicyImportDrawer";
 import ReactMarkdown from "react-markdown";
@@ -53,8 +47,9 @@ const getAvailableActions = (disabledFeatures) => {
   return allActions.filter((action) => !disabledFeatures?.[action.value.toLowerCase()]);
 };
 
-const CippAddedComponent = React.memo(({ standardName, component, formControl }) => {
+const CippAddedComponent = React.memo(({ standardName, component, formControl, currentValue }) => {
   const updatedComponent = { ...component };
+  const fieldName = `${standardName}.${updatedComponent.name}`;
 
   if (component.type === "AdminRolesMultiSelect") {
     updatedComponent.type = "autoComplete";
@@ -73,15 +68,30 @@ const CippAddedComponent = React.memo(({ standardName, component, formControl })
     updatedComponent.type = component.type;
   }
 
+  const warningThreshold = Number(updatedComponent.warningThreshold);
+  const numericValue = Number(currentValue);
+  const showThresholdWarning =
+    Number.isFinite(warningThreshold) &&
+    !Number.isNaN(numericValue) &&
+    `${currentValue}`.trim() !== "" &&
+    numericValue > warningThreshold;
+
+  const warningMessage =
+    updatedComponent.warningMessage ||
+    `Values above ${warningThreshold} can match unrelated policies. Use with caution.`;
+
   return (
     <Grid size={12}>
-      <CippFormComponent
-        type={updatedComponent.type}
-        label={updatedComponent.label}
-        formControl={formControl}
-        {...updatedComponent}
-        name={`${standardName}.${updatedComponent.name}`}
-      />
+      <Stack spacing={1}>
+        <CippFormComponent
+          type={updatedComponent.type}
+          label={updatedComponent.label}
+          formControl={formControl}
+          {...updatedComponent}
+          name={fieldName}
+        />
+        {showThresholdWarning && <Alert severity="warning">{warningMessage}</Alert>}
+      </Stack>
     </Grid>
   );
 });
@@ -103,6 +113,8 @@ const CippStandardAccordion = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [savedValues, setSavedValues] = useState({});
   const [originalValues, setOriginalValues] = useState({});
+  const [bulkAnchorEl, setBulkAnchorEl] = useState(null);
+  const [bulkActions, setBulkActions] = useState([]);
 
   const watchedValues = useWatch({
     control: formControl.control,
@@ -151,7 +163,7 @@ const CippStandardAccordion = ({
 
     // ALWAYS require an action for any standard to be considered configured
     // The action field should be an array with at least one element
-    const actionValue = _.get(values, "action");
+    const actionValue = get(values, "action");
     if (!actionValue || (Array.isArray(actionValue) && actionValue.length === 0)) return false;
 
     // Additional checks for required components
@@ -171,7 +183,7 @@ const CippStandardAccordion = ({
         // Handle conditional fields
         if (component.condition) {
           const conditionField = component.condition.field;
-          const conditionValue = _.get(values, conditionField);
+          const conditionValue = get(values, conditionField);
           const compareType = component.condition.compareType || "is";
           const compareValue = component.condition.compareValue;
           const propertyName = component.condition.propertyName || "value";
@@ -180,10 +192,10 @@ const CippStandardAccordion = ({
           if (propertyName === "value") {
             switch (compareType) {
               case "is":
-                conditionMet = _.isEqual(conditionValue, compareValue);
+                conditionMet = isEqual(conditionValue, compareValue);
                 break;
               case "isNot":
-                conditionMet = !_.isEqual(conditionValue, compareValue);
+                conditionMet = !isEqual(conditionValue, compareValue);
                 break;
               default:
                 conditionMet = false;
@@ -207,7 +219,7 @@ const CippStandardAccordion = ({
         if (!isRequired) return true;
 
         // Get field value using lodash's get to properly handle nested properties
-        const fieldValue = _.get(values, component.name);
+        const fieldValue = get(values, component.name);
 
         // Check if field has a value based on its type and multiple property
         if (component.type === "autoComplete" || component.type === "select") {
@@ -218,6 +230,12 @@ const CippStandardAccordion = ({
             // For single selection, check if value exists
             return !!fieldValue;
           }
+        }
+
+        // Number fields now carry a real 0 (or null when empty) instead of a string - "0" was
+        // truthy so !!fieldValue passed, but 0 is falsy and would wrongly read as unfilled.
+        if (component.type === "number") {
+          return fieldValue !== undefined && fieldValue !== null && fieldValue !== "";
         }
 
         // For other field types
@@ -246,10 +264,10 @@ const CippStandardAccordion = ({
 
       // For each standard, get its current values and determine if it's configured
       Object.keys(selectedStandards).forEach((standardName) => {
-        const currentValues = _.get(watchedValues, standardName);
+        const currentValues = get(watchedValues, standardName);
         if (!currentValues) return;
 
-        initial[standardName] = _.cloneDeep(currentValues);
+        initial[standardName] = cloneDeep(currentValues);
 
         const baseStandardName = standardName.split("[")[0];
         const standard = providedStandards.find((s) => s.name === baseStandardName);
@@ -257,7 +275,7 @@ const CippStandardAccordion = ({
           initialConfigured[standardName] = isStandardConfigured(
             standardName,
             standard,
-            currentValues
+            currentValues,
           );
         }
       });
@@ -271,10 +289,52 @@ const CippStandardAccordion = ({
     }
   }, [watchedValues, selectedStandards, editMode]);
 
+  // Sync internal state when selectedStandards keys change (e.g., after re-indexing on removal)
+  useEffect(() => {
+    const currentKeys = Object.keys(selectedStandards);
+    const stateKeys = Object.keys(savedValues);
+    if (stateKeys.length === 0) return;
+
+    const currentSet = new Set(currentKeys);
+    const stateSet = new Set(stateKeys);
+
+    const removedKeys = stateKeys.filter((k) => !currentSet.has(k));
+    const addedKeys = currentKeys.filter((k) => !stateSet.has(k));
+
+    if (removedKeys.length > 0 || addedKeys.length > 0) {
+      setSavedValues((prev) => {
+        const updated = { ...prev };
+        removedKeys.forEach((k) => delete updated[k]);
+        addedKeys.forEach((k) => {
+          const currentValues = get(watchedValues, k);
+          if (currentValues) {
+            updated[k] = cloneDeep(currentValues);
+          }
+        });
+        return updated;
+      });
+
+      setConfiguredState((prev) => {
+        const updated = { ...prev };
+        removedKeys.forEach((k) => delete updated[k]);
+        addedKeys.forEach((k) => {
+          const baseStandardName = k.split("[")[0];
+          const standard = providedStandards.find((s) => s.name === baseStandardName);
+          const currentValues = get(watchedValues, k);
+          if (standard && currentValues) {
+            updated[k] = isStandardConfigured(k, standard, currentValues);
+          }
+        });
+        return updated;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStandards]);
+
   // Save changes for a standard
   const handleSave = (standardName, standard, current) => {
     // Clone the current values to avoid reference issues
-    const newValues = _.cloneDeep(current);
+    const newValues = cloneDeep(current);
 
     // Update saved values
     setSavedValues((prev) => ({
@@ -307,14 +367,52 @@ const CippStandardAccordion = ({
     formControl.setValue(`${standardName}.action`, action);
   };
 
+  // Apply the selected action set to every standard in the template
+  const handleBulkSetActions = () => {
+    // Collapse any expanded accordion so the action change isn't edited underneath the user
+    if (expanded) {
+      handleAccordionToggle(null);
+    }
+
+    const newSaved = {};
+    const newConfigured = {};
+
+    Object.keys(selectedStandards).forEach((standardName) => {
+      const baseStandardName = standardName.split("[")[0];
+      const standard = providedStandards.find((s) => s.name === baseStandardName);
+      if (!standard) return; // unknown/removed standard — skip
+      if (standard.deprecated) return; // deprecated standards can't be configured
+
+      // Replace the action selection, keeping only actions this standard supports
+      const nextActions = getAvailableActions(standard.disabledFeatures).filter((action) =>
+        bulkActions.includes(action.value),
+      );
+      if (nextActions.length === 0) return;
+
+      formControl.setValue(`${standardName}.action`, nextActions, { shouldDirty: true });
+
+      // Only the action is saved — any other unsaved edits stay unsaved so Cancel still reverts them
+      const previous = get(savedValues, standardName);
+      const merged = previous
+        ? { ...cloneDeep(previous), action: nextActions }
+        : { action: nextActions };
+      newSaved[standardName] = merged;
+      newConfigured[standardName] = isStandardConfigured(standardName, standard, merged);
+    });
+
+    setSavedValues((prev) => ({ ...prev, ...newSaved }));
+    setConfiguredState((prev) => ({ ...prev, ...newConfigured }));
+    setBulkAnchorEl(null);
+  };
+
   // Cancel changes for a standard
   const handleCancel = (standardName) => {
     // Get the last saved values
-    const savedValue = _.get(savedValues, standardName);
+    const savedValue = get(savedValues, standardName);
     if (!savedValue) return;
 
     // Set the entire standard's value at once to ensure proper handling of nested objects and arrays
-    formControl.setValue(standardName, _.cloneDeep(savedValue));
+    formControl.setValue(standardName, cloneDeep(savedValue));
 
     // Find the original standard definition to get the base standard
     const baseStandardName = standardName.split("[")[0];
@@ -342,9 +440,25 @@ const CippStandardAccordion = ({
     Object.keys(selectedStandards).forEach((standardName) => {
       const baseStandardName = standardName.split("[")[0];
       const standard = providedStandards.find((s) => s.name === baseStandardName);
-      if (!standard) return;
 
-      const standardInfo = standards.find((s) => s.name === baseStandardName);
+      if (!standard) {
+        // Unknown/deprecated standard — surface it so the user can remove it
+        const unknownCategory = "Unknown Standards";
+        if (!result[unknownCategory]) {
+          result[unknownCategory] = [];
+        }
+        result[unknownCategory].push({
+          standardName,
+          standard: {
+            _unknown: true,
+            name: baseStandardName,
+            label: baseStandardName,
+          },
+        });
+        return;
+      }
+
+      const standardInfo = getStandards().find((s) => s.name === baseStandardName);
       const category = standardInfo?.cat || "Other Standards";
 
       if (!result[category]) {
@@ -390,9 +504,12 @@ const CippStandardAccordion = ({
           (standard.cat && standard.cat.toLowerCase().includes(searchLower)) ||
           (standard.tag &&
             Array.isArray(standard.tag) &&
-            standard.tag.some((tag) => tag.toLowerCase().includes(searchLower)));
+            standard.tag.some((tag) => tag.toLowerCase().includes(searchLower))) ||
+          (standard.appliesToTest &&
+            Array.isArray(standard.appliesToTest) &&
+            standard.appliesToTest.some((testId) => testId.toLowerCase().includes(searchLower)));
 
-        const isConfigured = _.get(configuredState, standardName);
+        const isConfigured = get(configuredState, standardName);
         const matchesFilter =
           filter === "all" ||
           (filter === "configured" && isConfigured) ||
@@ -438,13 +555,20 @@ const CippStandardAccordion = ({
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={2}
+            useFlexGap
             sx={{
+              flexWrap: "wrap",
               mt: 2,
               mb: 3,
-              alignItems: { xs: "flex-start", sm: "center" },
-            }}
-          >
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ flexGrow: 1 }}>
+              alignItems: { xs: "flex-start", sm: "center" }
+            }}>
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                alignItems: "center",
+                flexGrow: 1
+              }}>
               <TextField
                 size="small"
                 variant="filled"
@@ -463,7 +587,7 @@ const CippStandardAccordion = ({
                   input: {
                     startAdornment: (
                       <InputAdornment position="start" sx={{ margin: "0 !important" }}>
-                        <Search />
+                        <CippIcons.Search />
                       </InputAdornment>
                     ),
                     endAdornment: searchQuery && (
@@ -480,7 +604,7 @@ const CippStandardAccordion = ({
                             }}
                             aria-label="Clear search"
                           >
-                            <Close />
+                            <CippIcons.Close />
                           </IconButton>
                         </Tooltip>
                       </InputAdornment>
@@ -492,7 +616,7 @@ const CippStandardAccordion = ({
             <ButtonGroup variant="outlined" color="primary" size="small">
               <Button disabled={true} color="primary">
                 <SvgIcon fontSize="small">
-                  <FilterAlt />
+                  <CippIcons.FilterAlt />
                 </SvgIcon>
               </Button>
               <Button
@@ -532,11 +656,59 @@ const CippStandardAccordion = ({
                 Unconfigured ({standardCounts.unconfiguredCount})
               </Button>
             </ButtonGroup>
+            {!isDriftMode && (
+              <>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  onClick={(e) => setBulkAnchorEl(e.currentTarget)}
+                >
+                  Set All Actions
+                </Button>
+                <Menu
+                  anchorEl={bulkAnchorEl}
+                  open={Boolean(bulkAnchorEl)}
+                  onClose={() => setBulkAnchorEl(null)}
+                >
+                  {getAvailableActions({}).map((action) => (
+                    <MenuItem
+                      key={action.value}
+                      dense
+                      onClick={() =>
+                        setBulkActions((prev) =>
+                          prev.includes(action.value)
+                            ? prev.filter((v) => v !== action.value)
+                            : [...prev, action.value],
+                        )
+                      }
+                    >
+                      <Checkbox
+                        size="small"
+                        checked={bulkActions.includes(action.value)}
+                        disableRipple
+                        sx={{ p: 0.5, mr: 1 }}
+                      />
+                      <ListItemText primary={action.label} />
+                    </MenuItem>
+                  ))}
+                  <Divider />
+                  <MenuItem dense disabled={bulkActions.length === 0} onClick={handleBulkSetActions}>
+                    <ListItemText
+                      primary="Apply to all standards"
+                      slotProps={{ primary: { color: "primary" } }}
+                    />
+                  </MenuItem>
+                </Menu>
+              </>
+            )}
           </Stack>
 
           {!hasFilteredStandards && (
             <Box sx={{ textAlign: "center", my: 4 }}>
-              <Typography variant="body1" color="text.secondary">
+              <Typography variant="body1" sx={{
+                color: "text.secondary"
+              }}>
                 No standards match the selected filter criteria or search query.
               </Typography>
             </Box>
@@ -551,13 +723,83 @@ const CippStandardAccordion = ({
           </Typography>
 
           {filteredGroupedStandards[category].map(({ standardName, standard }) => {
+            if (standard._unknown) {
+              const isExpanded = expanded === standardName;
+              const rawData = get(watchedValues, standardName);
+              return (
+                <Card key={standardName} sx={{ mb: 2, borderLeft: "4px solid", borderColor: "warning.main" }}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      p: 2
+                    }}>
+                    <Stack direction="row" spacing={2} sx={{
+                      alignItems: "center"
+                    }}>
+                      <Avatar sx={{ bgcolor: "warning.main" }}>
+                        <CippIcons.Warning />
+                      </Avatar>
+                      <Stack>
+                        <Typography variant="h6">{standard.label}</Typography>
+                        <Typography variant="body2" sx={{
+                          color: "text.secondary"
+                        }}>
+                          This standard no longer exists and should be removed.
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                    <Stack direction="row" spacing={1} sx={{
+                      alignItems: "center"
+                    }}>
+                      <Tooltip title="Remove Unknown Standard">
+                        <IconButton color="error" onClick={() => handleRemoveStandard(standardName)}>
+                          <CippIcons.Delete />
+                        </IconButton>
+                      </Tooltip>
+                      <IconButton onClick={() => handleAccordionToggle(standardName)}>
+                        <SvgIcon
+                          component={CippIcons.ExpandMore}
+                          sx={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0)" }}
+                        />
+                      </IconButton>
+                    </Stack>
+                  </Stack>
+                  <Collapse in={isExpanded} unmountOnExit>
+                    <Divider />
+                    <Box sx={{ p: 2 }}>
+                      <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                        Stored Configuration
+                      </Typography>
+                      <Box
+                        component="pre"
+                        sx={{
+                          p: 2,
+                          borderRadius: 1,
+                          bgcolor: "background.default",
+                          overflow: "auto",
+                          maxHeight: 300,
+                          fontSize: "0.8rem",
+                          whiteSpace: "pre-wrap",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {JSON.stringify(rawData, null, 2)}
+                      </Box>
+                    </Box>
+                  </Collapse>
+                </Card>
+              );
+            }
+
             const isExpanded = expanded === standardName;
             const hasAddedComponents =
               standard.addedComponent && standard.addedComponent.length > 0;
-            const isConfigured = _.get(configuredState, standardName);
+            const isConfigured = get(configuredState, standardName);
             const disabledFeatures = standard.disabledFeatures || {};
 
-            let selectedActions = _.get(watchedValues, `${standardName}.action`);
+            let selectedActions = get(watchedValues, `${standardName}.action`);
             if (selectedActions && !Array.isArray(selectedActions)) {
               selectedActions = [selectedActions];
             }
@@ -566,13 +808,13 @@ const CippStandardAccordion = ({
             let templateDisplayName = "";
             if (standardName.startsWith("standards.IntuneTemplate")) {
               // Check for TemplateList selection
-              const templateList = _.get(watchedValues, `${standardName}.TemplateList`);
+              const templateList = get(watchedValues, `${standardName}.TemplateList`);
               if (templateList && templateList.label) {
                 templateDisplayName = templateList.label;
               }
 
               // Check for TemplateList-Tags selection (takes priority)
-              const templateListTags = _.get(watchedValues, `${standardName}.TemplateList-Tags`);
+              const templateListTags = get(watchedValues, `${standardName}.TemplateList-Tags`);
               if (templateListTags && templateListTags.label) {
                 templateDisplayName = templateListTags.label;
               }
@@ -580,25 +822,25 @@ const CippStandardAccordion = ({
 
             // For multiple standards, check the first added component
             const selectedTemplateName = standard.multiple
-              ? _.get(watchedValues, `${standardName}.${standard.addedComponent?.[0]?.name}`)
+              ? get(watchedValues, `${standardName}.${standard.addedComponent?.[0]?.name}`)
               : "";
 
             // Build accordion title with template name if available
             const accordionTitle = templateDisplayName
               ? `${standard.label} - ${templateDisplayName}`
-              : selectedTemplateName && _.get(selectedTemplateName, "label")
-              ? `${standard.label} - ${_.get(selectedTemplateName, "label")}`
-              : standard.label;
+              : selectedTemplateName && get(selectedTemplateName, "label")
+                ? `${standard.label} - ${get(selectedTemplateName, "label")}`
+                : standard.label;
 
             // Get current values and check if they differ from saved values
-            const current = _.get(watchedValues, standardName);
-            const saved = _.get(savedValues, standardName) || {};
+            const current = get(watchedValues, standardName);
+            const saved = get(savedValues, standardName) || {};
 
-            const hasUnsaved = !_.isEqual(current, saved);
+            const hasUnsaved = !isEqual(current, saved);
 
             // Check if all required fields are filled
             const requiredFieldsFilled = current
-              ? standard.addedComponent?.every((component) => {
+              ? (standard.addedComponent?.every((component) => {
                   // Always skip switches regardless of their required property
                   if (component.type === "switch") return true;
 
@@ -609,7 +851,7 @@ const CippStandardAccordion = ({
                   // Handle conditional fields
                   if (component.condition) {
                     const conditionField = component.condition.field;
-                    const conditionValue = _.get(current, conditionField);
+                    const conditionValue = get(current, conditionField);
                     const compareType = component.condition.compareType || "is";
                     const compareValue = component.condition.compareValue;
                     const propertyName = component.condition.propertyName || "value";
@@ -618,10 +860,10 @@ const CippStandardAccordion = ({
                     if (propertyName === "value") {
                       switch (compareType) {
                         case "is":
-                          conditionMet = _.isEqual(conditionValue, compareValue);
+                          conditionMet = isEqual(conditionValue, compareValue);
                           break;
                         case "isNot":
-                          conditionMet = !_.isEqual(conditionValue, compareValue);
+                          conditionMet = !isEqual(conditionValue, compareValue);
                           break;
                         default:
                           conditionMet = false;
@@ -630,7 +872,7 @@ const CippStandardAccordion = ({
                       switch (compareType) {
                         case "valueEq":
                           conditionMet = conditionValue.some(
-                            (item) => item?.[propertyName] === compareValue
+                            (item) => item?.[propertyName] === compareValue,
                           );
                           break;
                         default:
@@ -643,7 +885,7 @@ const CippStandardAccordion = ({
                   }
 
                   // Get field value for validation using lodash's get to properly handle nested properties
-                  const fieldValue = _.get(current, component.name);
+                  const fieldValue = get(current, component.name);
 
                   // Check if required field has a value based on its type and multiple property
                   if (component.type === "autoComplete" || component.type === "select") {
@@ -656,9 +898,16 @@ const CippStandardAccordion = ({
                     }
                   }
 
+                  // Number fields now carry a real 0 (or null when empty) instead of a string -
+                  // "0" was truthy so !!fieldValue passed, but 0 is falsy and would wrongly read
+                  // as unfilled.
+                  if (component.type === "number") {
+                    return fieldValue !== undefined && fieldValue !== null && fieldValue !== "";
+                  }
+
                   // For other field types
                   return !!fieldValue;
-                }) ?? true
+                }) ?? true)
               : false;
 
             // ALWAYS require an action for all standards
@@ -668,16 +917,16 @@ const CippStandardAccordion = ({
             const hasRequiredComponents =
               standard.addedComponent &&
               standard.addedComponent.some(
-                (comp) => comp.type !== "switch" && comp.required !== false
+                (comp) => comp.type !== "switch" && comp.required !== false,
               );
 
             // Action is always required and must be an array with at least one element
-            const actionValue = _.get(current, "action");
+            const actionValue = get(current, "action");
             const hasAction =
               actionValue && (!Array.isArray(actionValue) || actionValue.length > 0);
 
             // Check if this standard has any validation errors
-            const standardErrors = _.get(formErrors, standardName);
+            const standardErrors = get(formErrors, standardName);
             const hasValidationErrors = standardErrors && Object.keys(standardErrors).length > 0;
 
             // Allow saving if:
@@ -691,14 +940,17 @@ const CippStandardAccordion = ({
               <Card key={standardName} sx={{ mb: 2 }}>
                 <Stack
                   direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ p: 2 }}
-                >
-                  <Stack direction="row" alignItems="center" spacing={2}>
+                  sx={{
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    p: 2
+                  }}>
+                  <Stack direction="row" spacing={2} sx={{
+                    alignItems: "center"
+                  }}>
                     <Avatar>
                       {standard.cat === "Global Standards" ? (
-                        <Public />
+                        <CippIcons.Public />
                       ) : standard.cat === "Entra (AAD) Standards" ? (
                         <Azure />
                       ) : standard.cat === "Exchange Standards" ? (
@@ -735,9 +987,9 @@ const CippStandardAccordion = ({
                                   sx={{ mr: 1 }}
                                   icon={
                                     <SvgIcon>
-                                      {action.value === "Report" && <Assignment />}
-                                      {action.value === "warn" && <NotificationImportant />}
-                                      {action.value === "Remediate" && <Construction />}
+                                      {action.value === "Report" && <CippIcons.Assignment />}
+                                      {action.value === "warn" && <CippIcons.NotificationImportant />}
+                                      {action.value === "Remediate" && <CippIcons.Construction />}
                                     </SvgIcon>
                                   }
                                 />
@@ -786,7 +1038,9 @@ const CippStandardAccordion = ({
                       </Box>
                     </Stack>
                   </Stack>
-                  <Stack direction="row" alignItems="center" spacing={1}>
+                  <Stack direction="row" spacing={1} sx={{
+                    alignItems: "center"
+                  }}>
                     {standard.multiple && (
                       <Tooltip
                         title={
@@ -800,7 +1054,7 @@ const CippStandardAccordion = ({
                             onClick={() => handleAddMultipleStandard(standardName)}
                             disabled={standard.deprecated}
                           >
-                            <SvgIcon component={Add} />
+                            <SvgIcon component={CippIcons.Add} />
                           </IconButton>
                         </span>
                       </Tooltip>
@@ -818,13 +1072,13 @@ const CippStandardAccordion = ({
                     </Typography>
                     <Tooltip title="Remove Standard">
                       <IconButton color="error" onClick={() => handleRemoveStandard(standardName)}>
-                        <Delete />
+                        <CippIcons.Delete />
                       </IconButton>
                     </Tooltip>
 
                     <IconButton onClick={() => handleAccordionToggle(standardName)}>
                       <SvgIcon
-                        component={ExpandMoreIcon}
+                        component={CippIcons.ExpandMore}
                         sx={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0)" }}
                       />
                     </IconButton>
@@ -895,6 +1149,10 @@ const CippStandardAccordion = ({
                                     standardName={standardName}
                                     component={component}
                                     formControl={formControl}
+                                    currentValue={get(
+                                      watchedValues,
+                                      `${standardName}.${component.name}`,
+                                    )}
                                   />
                                 </CippFormCondition>
                               ) : (
@@ -903,8 +1161,12 @@ const CippStandardAccordion = ({
                                   standardName={standardName}
                                   component={component}
                                   formControl={formControl}
+                                  currentValue={get(
+                                    watchedValues,
+                                    `${standardName}.${component.name}`,
+                                  )}
                                 />
-                              )
+                              ),
                             )}
                           </>
                         )}
@@ -912,7 +1174,7 @@ const CippStandardAccordion = ({
                     ) : (
                       /* Standard mode layout - original grid layout */
                       <Grid container spacing={2}>
-                        <Grid size={4}>
+                        <Grid size={{ xs: 12, md: 4 }}>
                           <CippFormComponent
                             type="autoComplete"
                             name={`${standardName}.action`}
@@ -925,7 +1187,7 @@ const CippStandardAccordion = ({
                         </Grid>
 
                         {hasAddedComponents && (
-                          <Grid size={8}>
+                          <Grid size={{ xs: 12, md: 8 }}>
                             <Grid container spacing={2}>
                               {/* Add catalog button for Intune Template standard - appears first */}
                               {standardName.startsWith("standards.IntuneTemplate") && (
@@ -953,6 +1215,10 @@ const CippStandardAccordion = ({
                                       standardName={standardName}
                                       component={component}
                                       formControl={formControl}
+                                      currentValue={get(
+                                        watchedValues,
+                                        `${standardName}.${component.name}`,
+                                      )}
                                     />
                                   </CippFormCondition>
                                 ) : (
@@ -961,8 +1227,12 @@ const CippStandardAccordion = ({
                                     standardName={standardName}
                                     component={component}
                                     formControl={formControl}
+                                    currentValue={get(
+                                      watchedValues,
+                                      `${standardName}.${component.name}`,
+                                    )}
                                   />
-                                )
+                                ),
                               )}
                             </Grid>
                           </Grid>
@@ -972,7 +1242,9 @@ const CippStandardAccordion = ({
                   </Box>
                   <Divider sx={{ mt: 2 }} />
                   <Box sx={{ px: 3, py: 2 }}>
-                    <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                    <Stack direction="row" spacing={1} sx={{
+                      justifyContent: "flex-end"
+                    }}>
                       <Button
                         variant="outlined"
                         color="primary"

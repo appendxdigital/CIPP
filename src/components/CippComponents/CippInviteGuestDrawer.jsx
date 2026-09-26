@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
+import { CippIcons } from "../../utils/icon-registry";
 import { Button } from "@mui/material";
 import { Grid } from "@mui/system";
 import { useForm, useFormState } from "react-hook-form";
-import { Send } from "@mui/icons-material";
 import { CippOffCanvas } from "./CippOffCanvas";
 import CippFormComponent from "./CippFormComponent";
 import { CippApiResults } from "./CippApiResults";
 import { useSettings } from "../../hooks/use-settings";
 import { ApiPostCall } from "../../api/ApiCall";
+import { getCippValidator } from "../../utils/get-cipp-validator";
 
 export const CippInviteGuestDrawer = ({
   buttonText = "Invite Guest",
@@ -18,7 +19,7 @@ export const CippInviteGuestDrawer = ({
   const userSettingsDefaults = useSettings();
 
   const formControl = useForm({
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       tenantFilter: userSettingsDefaults.currentTenant,
       displayName: "",
@@ -69,12 +70,24 @@ export const CippInviteGuestDrawer = ({
     });
   };
 
+  const handleOpenDrawer = () => {
+    formControl.reset({
+      tenantFilter: userSettingsDefaults.currentTenant,
+      displayName: "",
+      mail: "",
+      redirectUri: "",
+      message: "",
+      sendInvite: true,
+    });
+    setDrawerVisible(true);
+  };
+
   return (
     <>
       <PermissionButton
-        requiredPermissions={requiredPermissions}
-        onClick={() => setDrawerVisible(true)}
-        startIcon={<Send />}
+        {...(PermissionButton !== Button ? { requiredPermissions } : {})}
+        onClick={handleOpenDrawer}
+        startIcon={<CippIcons.Send />}
       >
         {buttonText}
       </PermissionButton>
@@ -123,10 +136,7 @@ export const CippInviteGuestDrawer = ({
               formControl={formControl}
               validators={{
                 required: "Email address is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
-                },
+                validate: (value) => !value || getCippValidator(value, "email"),
               }}
             />
           </Grid>

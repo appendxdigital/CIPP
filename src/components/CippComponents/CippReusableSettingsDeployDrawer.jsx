@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { CippIcons } from "../../utils/icon-registry";
 import { Button, Stack } from "@mui/material";
-import { RocketLaunch } from "@mui/icons-material";
 import { useForm, useWatch, useFormState } from "react-hook-form";
 import { CippOffCanvas } from "./CippOffCanvas";
 import { ApiGetCall, ApiPostCall } from "../../api/ApiCall";
@@ -27,11 +27,14 @@ export const CippReusableSettingsDeployDrawer = ({
 
   const templates = ApiGetCall({ url: "/api/ListIntuneReusableSettingTemplates", queryKey: "ListIntuneReusableSettingTemplates" });
 
+  const getRawJson = (source) => source?.RawJSON ?? source?.RAWJson ?? source?.rawJSON ?? "";
+
   useEffect(() => {
     if (templates.isSuccess && selectedTemplate?.value) {
       const match = templates.data?.find((t) => t.GUID === selectedTemplate.value);
       if (match) {
-        formControl.setValue("rawJSON", match.RawJSON || "");
+        const rawJsonValue = getRawJson(match);
+        formControl.setValue("rawJSON", rawJsonValue);
         formControl.setValue("TemplateId", match.GUID);
       }
     }
@@ -87,7 +90,7 @@ export const CippReusableSettingsDeployDrawer = ({
       <PermissionButton
         requiredPermissions={requiredPermissions}
         onClick={() => setDrawerVisible(true)}
-        startIcon={<RocketLaunch />}
+        startIcon={<CippIcons.RocketLaunch />}
       >
         {buttonText}
       </PermissionButton>

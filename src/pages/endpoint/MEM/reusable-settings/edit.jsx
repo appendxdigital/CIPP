@@ -3,7 +3,7 @@ import { Alert, Box, Stack } from "@mui/material";
 import { Grid } from "@mui/system";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import { Layout as DashboardLayout } from "../../../../layouts/index.js";
+import { Layout as DashboardLayout } from "../../../../layouts/index";
 import CippFormPage from "../../../../components/CippFormPages/CippFormPage";
 import CippFormSkeleton from "../../../../components/CippFormPages/CippFormSkeleton";
 import CippFormComponent from "../../../../components/CippComponents/CippFormComponent";
@@ -36,22 +36,26 @@ const EditReusableSetting = () => {
 
   const record = Array.isArray(settingQuery.data) ? settingQuery.data[0] : settingQuery.data;
 
+  const getRawJson = (source) => source?.RawJSON ?? "";
+
   useEffect(() => {
     if (record) {
+      const rawJsonValue = getRawJson(record);
       reset({
         tenantFilter: effectiveTenant,
         ID: record.id,
         displayName: record.displayName,
         description: record.description,
-        rawJSON: record.RawJSON,
+        rawJSON: rawJsonValue,
       });
     }
   }, [record, effectiveTenant, reset]);
 
   const safeJson = () => {
-    if (!record?.RawJSON) return null;
+    const rawJsonValue = getRawJson(record);
+    if (!rawJsonValue) return null;
     try {
-      return JSON.parse(record.RawJSON);
+      return JSON.parse(rawJsonValue);
     } catch (e) {
       console.error("Failed to parse RawJSON for reusable setting preview", {
         error: e,

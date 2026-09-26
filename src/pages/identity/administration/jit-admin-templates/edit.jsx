@@ -1,20 +1,29 @@
 import { Box, Divider, Typography } from "@mui/material";
 import { Grid } from "@mui/system";
 import CippFormPage from "../../../../components/CippFormPages/CippFormPage";
-import { Layout as DashboardLayout } from "../../../../layouts/index.js";
+import { Layout as DashboardLayout } from "../../../../layouts/index";
 import { useForm, useWatch } from "react-hook-form";
 import CippFormComponent from "../../../../components/CippComponents/CippFormComponent";
 import { CippFormCondition } from "../../../../components/CippComponents/CippFormCondition";
 import { CippFormDomainSelector } from "../../../../components/CippComponents/CippFormDomainSelector";
 import { CippFormUserSelector } from "../../../../components/CippComponents/CippFormUserSelector";
-import gdaproles from "../../../../data/GDAPRoles.json";
+import { CippFormGroupSelector } from "../../../../components/CippComponents/CippFormGroupSelector";
+import jitAdminRoles from "../../../../data/JitAdminRoles.json";
+import countryList from "../../../../data/countryList.json";
 import { useSettings } from "../../../../hooks/use-settings";
+import { useJitAllowedRoles } from "../../../../hooks/use-jit-allowed-roles";
+import { CippJitRoleTemplateApply } from "../../../../components/CippComponents/CippJitRoleTemplateApply";
 import { useRouter } from "next/router";
 import { ApiGetCall } from "../../../../api/ApiCall";
 import { useEffect } from "react";
+import {
+  JIT_TEMPLATE_VARIABLES,
+  JIT_USERNAME_VARIABLES,
+} from "../../../../utils/jit-template-variables";
 
 const Page = () => {
   const userSettingsDefaults = useSettings();
+  const { filterRoles } = useJitAllowedRoles();
   const router = useRouter();
   const { id } = router.query;
 
@@ -27,6 +36,68 @@ const Page = () => {
 
   const watchedTenant = useWatch({ control: formControl.control, name: "tenantFilter" });
   const isAllTenants = watchedTenant?.value === "AllTenants" || watchedTenant === "AllTenants";
+  const tenantDomain = watchedTenant?.value;
+  const useRoles = useWatch({ control: formControl.control, name: "defaultUseRoles" });
+  const useGroups = useWatch({ control: formControl.control, name: "defaultUseGroups" });
+  const defaultUserAction = useWatch({ control: formControl.control, name: "defaultUserAction" });
+  const defaultVacationMode = useWatch({
+    control: formControl.control,
+    name: "defaultVacationMode",
+  });
+  const defaultVacationCAPolicy = useWatch({
+    control: formControl.control,
+    name: "defaultVacationCAPolicy",
+  });
+  const defaultVacationExcludeAuditAlerts = useWatch({
+    control: formControl.control,
+    name: "defaultVacationExcludeAuditAlerts",
+  });
+
+  // Clear fields when switches are toggled off
+  useEffect(() => {
+    if (!useRoles) {
+      formControl.setValue("defaultRoles", []);
+    }
+  }, [useRoles]);
+
+  useEffect(() => {
+    if (!useGroups) {
+      formControl.setValue("defaultGroups", []);
+    }
+  }, [useGroups]);
+
+  // Reset expiration action when switches change
+  useEffect(() => {
+    const currentAction = formControl.getValues("defaultExpireAction");
+    if (!currentAction?.value) return;
+
+    if (!useRoles && currentAction.value === "RemoveRoles") {
+      formControl.setValue("defaultExpireAction", null);
+    } else if (!useGroups && currentAction.value === "RemoveGroups") {
+      formControl.setValue("defaultExpireAction", null);
+    } else if ((!useRoles || !useGroups) && currentAction.value === "RemoveRolesAndGroups") {
+      formControl.setValue("defaultExpireAction", null);
+    } else if (useRoles && useGroups && currentAction.value === "RemoveRoles") {
+      formControl.setValue("defaultExpireAction", null);
+    } else if (useRoles && useGroups && currentAction.value === "RemoveGroups") {
+      formControl.setValue("defaultExpireAction", null);
+    }
+  }, [useRoles, useGroups]);
+
+  // Vacation mode defaults only make sense for a specific-tenant template targeting an
+  // existing user (AllTenants templates are forced to "New User" - see the radio options below)
+  useEffect(() => {
+    if (isAllTenants || defaultUserAction !== "select") {
+      formControl.setValue("defaultVacationMode", false);
+    }
+  }, [isAllTenants, defaultUserAction]);
+
+  useEffect(() => {
+    if (!defaultVacationMode) {
+      formControl.setValue("defaultVacationCAPolicy", []);
+      formControl.setValue("defaultVacationExcludeAuditAlerts", false);
+    }
+  }, [defaultVacationMode]);
 
   // Get the template data
   const template = ApiGetCall({
@@ -50,7 +121,7 @@ const Page = () => {
     <>
       <CippFormPage
         resetForm={false}
-        queryKey={`JITAdminTemplate-${id}`}
+        queryKey="*JITAdminTemplate*"
         formControl={formControl}
         title="Edit JIT Admin Template"
         backButtonTitle="JIT Admin Templates"
@@ -88,25 +159,88 @@ const Page = () => {
 
             <Grid size={{ xs: 12 }}>
               <CippFormComponent
-                type="autoComplete"
-                fullWidth
-                label="Default Roles"
-                name="defaultRoles"
-                creatable={false}
-                options={gdaproles.map((role) => ({ label: role.Name, value: role.ObjectId }))}
+                type="switch"
+                label="Admin Roles"
+                name="defaultUseRoles"
                 formControl={formControl}
-                required={true}
-                validators={{
-                  required: "At least one default role is required",
-                  validate: (options) => {
-                    if (!options?.length) {
-                      return "At least one default role is required";
-                    }
-                    return true;
-                  },
-                }}
               />
+              {!isAllTenants && (
+                <CippFormComponent
+                  type="switch"
+                  label="Group Membership"
+                  name="defaultUseGroups"
+                  formControl={formControl}
+                />
+              )}
+              {!useRoles && !useGroups && (
+                <Box sx={{ color: "error.main", fontSize: "0.875rem" }}>
+                  Please select at least &quot;Admin Roles&quot; or &quot;Group Membership&quot;
+                </Box>
+              )}
             </Grid>
+
+            <CippFormCondition
+              formControl={formControl}
+              field="defaultUseRoles"
+              compareType="is"
+              compareValue={true}
+            >
+              <Grid size={{ xs: 12 }}>
+                <CippJitRoleTemplateApply formControl={formControl} targetField="defaultRoles" />
+              </Grid>
+              <Grid size={{ xs: 12 }}>
+                <CippFormComponent
+                  type="autoComplete"
+                  fullWidth
+                  label="Default Roles"
+                  name="defaultRoles"
+                  creatable={false}
+                  options={filterRoles(jitAdminRoles).map((role) => ({
+                    label: role.Name,
+                    value: role.ObjectId,
+                  }))}
+                  formControl={formControl}
+                  required={true}
+                  validators={{
+                    required: "At least one default role is required",
+                    validate: (options) => {
+                      if (!options?.length) {
+                        return "At least one default role is required";
+                      }
+                      return true;
+                    },
+                  }}
+                />
+              </Grid>
+            </CippFormCondition>
+
+            {!isAllTenants && (
+              <CippFormCondition
+                formControl={formControl}
+                field="defaultUseGroups"
+                compareType="is"
+                compareValue={true}
+              >
+                <Grid size={{ xs: 12 }}>
+                  <CippFormGroupSelector
+                    formControl={formControl}
+                    name="defaultGroups"
+                    label="Default Groups"
+                    multiple={true}
+                    required={true}
+                    validators={{
+                      required: "At least one group is required",
+                      validate: (options) => {
+                        if (!options?.length) {
+                          return "At least one group is required";
+                        }
+                        return true;
+                      },
+                    }}
+                  />
+                </Grid>
+              </CippFormCondition>
+            )}
 
             <Grid size={{ md: 6, xs: 12 }}>
               <CippFormComponent
@@ -149,12 +283,23 @@ const Page = () => {
                 name="defaultExpireAction"
                 multiple={false}
                 creatable={false}
-                options={[
-                  { label: "Delete User", value: "DeleteUser" },
-                  { label: "Disable User", value: "DisableUser" },
-                  { label: "Remove Roles", value: "RemoveRoles" },
-                ]}
+                options={(() => {
+                  const opts = [
+                    { label: "Delete User", value: "DeleteUser" },
+                    { label: "Disable User", value: "DisableUser" },
+                  ];
+                  if (useRoles && useGroups) {
+                    opts.push({ label: "Remove Roles and Groups", value: "RemoveRolesAndGroups" });
+                  } else if (useRoles) {
+                    opts.push({ label: "Remove Roles", value: "RemoveRoles" });
+                  } else if (useGroups) {
+                    opts.push({ label: "Remove Groups", value: "RemoveGroups" });
+                  }
+                  return opts;
+                })()}
                 formControl={formControl}
+                required={true}
+                validators={{ required: "Expiration action is required" }}
               />
             </Grid>
 
@@ -189,10 +334,12 @@ const Page = () => {
                 type="textField"
                 label="Reason Template"
                 name="reasonTemplate"
+                autocompleteOptions={JIT_TEMPLATE_VARIABLES}
                 placeholder="Enter a default reason template for JIT Admin requests"
                 multiline
                 rows={3}
                 formControl={formControl}
+                helperText="Supports %cipptechnician% and %cipptechnicianupn% for the requesting technician."
               />
             </Grid>
 
@@ -231,7 +378,13 @@ const Page = () => {
               compareValue="create"
             >
               <Grid size={{ xs: 12 }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "text.secondary",
+                    mt: 2,
+                    mb: 1
+                  }}>
                   {isAllTenants
                     ? "Pre-fill user details (optional, for AllTenants templates)"
                     : "Pre-fill user details (optional, only for specific tenant templates)"}
@@ -243,6 +396,7 @@ const Page = () => {
                   fullWidth
                   label="Default First Name"
                   name="defaultFirstName"
+                  autocompleteOptions={JIT_TEMPLATE_VARIABLES}
                   formControl={formControl}
                 />
               </Grid>
@@ -252,6 +406,7 @@ const Page = () => {
                   fullWidth
                   label="Default Last Name"
                   name="defaultLastName"
+                  autocompleteOptions={JIT_TEMPLATE_VARIABLES}
                   formControl={formControl}
                 />
               </Grid>
@@ -261,7 +416,9 @@ const Page = () => {
                   fullWidth
                   label="Default Username"
                   name="defaultUserName"
+                  autocompleteOptions={JIT_USERNAME_VARIABLES}
                   formControl={formControl}
+                  helperText="Supports %cipptechnician% (the signed-in technician's account name before the @), resolved when the template is applied."
                 />
               </Grid>
               {!isAllTenants && (
@@ -273,6 +430,19 @@ const Page = () => {
                   />
                 </Grid>
               )}
+              <Grid size={{ md: 6, xs: 12 }}>
+                <CippFormComponent
+                  type="autoComplete"
+                  label="Default Usage Location"
+                  name="defaultUsageLocation"
+                  multiple={false}
+                  options={countryList.map(({ Code, Name }) => ({
+                    label: Name,
+                    value: Code,
+                  }))}
+                  formControl={formControl}
+                />
+              </Grid>
             </CippFormCondition>
 
             <CippFormCondition
@@ -284,7 +454,13 @@ const Page = () => {
               {!isAllTenants && (
                 <>
                   <Grid size={{ xs: 12 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "text.secondary",
+                        mt: 2,
+                        mb: 1
+                      }}>
                       Select default user (optional, only for specific tenant templates)
                     </Typography>
                   </Grid>
@@ -295,6 +471,78 @@ const Page = () => {
                       name="defaultExistingUser"
                       label="Default User"
                     />
+                  </Grid>
+                  <Grid size={{ xs: 12 }}>
+                    <Divider sx={{ my: 2 }} />
+                    <CippFormComponent
+                      type="switch"
+                      label="Enable Vacation Mode by Default"
+                      name="defaultVacationMode"
+                      formControl={formControl}
+                    />
+                    <Box sx={{ color: "text.secondary", fontSize: "0.875rem", mt: 0.5 }}>
+                      Excludes the user from a Conditional Access policy and/or location-based
+                      audit alerts for the same window as the JIT Admin access, plus a 1 hour
+                      buffer.
+                    </Box>
+                    <CippFormCondition
+                      formControl={formControl}
+                      field="defaultVacationMode"
+                      compareType="is"
+                      compareValue={true}
+                      clearOnHide={false}
+                    >
+                      <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                        <Grid size={{ xs: 12 }}>
+                          <CippFormComponent
+                            type="autoComplete"
+                            label={
+                              tenantDomain
+                                ? `Conditional Access Policies in ${tenantDomain}`
+                                : "Select a tenant first"
+                            }
+                            name="defaultVacationCAPolicy"
+                            api={
+                              tenantDomain
+                                ? {
+                                    queryKey: `ListConditionalAccessPolicies-${tenantDomain}`,
+                                    url: "/api/ListGraphRequest",
+                                    data: {
+                                      tenantFilter: tenantDomain,
+                                      Endpoint: "conditionalAccess/policies",
+                                      AsApp: true,
+                                    },
+                                    dataKey: "Results",
+                                    labelField: (option) => `${option.displayName}`,
+                                    valueField: "id",
+                                    showRefresh: true,
+                                  }
+                                : null
+                            }
+                            multiple={true}
+                            creatable={false}
+                            formControl={formControl}
+                            disabled={!tenantDomain}
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12 }}>
+                          <CippFormComponent
+                            type="switch"
+                            label="Exclude from location-based audit log alerts"
+                            name="defaultVacationExcludeAuditAlerts"
+                            formControl={formControl}
+                          />
+                        </Grid>
+                        {!defaultVacationCAPolicy?.length && !defaultVacationExcludeAuditAlerts && (
+                          <Grid size={{ xs: 12 }}>
+                            <Box sx={{ color: "error.main", fontSize: "0.875rem" }}>
+                              Select at least one Conditional Access policy or enable audit alert
+                              exclusion.
+                            </Box>
+                          </Grid>
+                        )}
+                      </Grid>
+                    </CippFormCondition>
                   </Grid>
                 </>
               )}

@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { Alert, Stack } from "@mui/material";
 import { Grid } from "@mui/system";
 import CippWizardStepButtons from "./CippWizardStepButtons";
 import CippFormComponent from "../CippComponents/CippFormComponent";
@@ -8,6 +8,10 @@ export const CippWizardAutopilotOptions = (props) => {
   return (
     <Stack spacing={3}>
       <>
+        <Alert severity="info">
+          Group Name is the Partner Center device batch. Entering the name of an existing batch adds
+          the devices to it; leave blank to create a new batch.
+        </Alert>
         <Grid container spacing={3}>
           <Grid size={{ md: 12, xs: 12 }}>
             <CippFormComponent

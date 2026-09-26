@@ -1,14 +1,15 @@
 import { useState } from "react";
+import { CippIcons } from "../../utils/icon-registry"
 import { Button, Link, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { Grid } from "@mui/system";
 import { useForm, useWatch } from "react-hook-form";
-import { GroupAdd, Delete } from "@mui/icons-material";
 import { CippOffCanvas } from "./CippOffCanvas";
 import CippFormComponent from "./CippFormComponent";
 import { CippDataTable } from "../CippTable/CippDataTable";
 import { CippApiResults } from "./CippApiResults";
 import { useSettings } from "../../hooks/use-settings";
 import { ApiPostCall } from "../../api/ApiCall";
+import { getCippValidator } from "../../utils/get-cipp-validator";
 
 export const CippBulkInviteGuestDrawer = ({
   buttonText = "Bulk Invite Guests",
@@ -22,7 +23,7 @@ export const CippBulkInviteGuestDrawer = ({
   const fields = ["displayName", "mail", "redirectUri"];
 
   const formControl = useForm({
-    mode: "onChange",
+    mode: "onBlur",
     defaultValues: {
       tenantFilter: initialState.currentTenant,
       sendInvite: true,
@@ -129,7 +130,7 @@ export const CippBulkInviteGuestDrawer = ({
 
   const actions = [
     {
-      icon: <Delete />,
+      icon: <CippIcons.Delete />,
       label: "Delete Row",
       confirmText: "Are you sure you want to delete this row?",
       customFunction: handleRemoveItem,
@@ -140,9 +141,9 @@ export const CippBulkInviteGuestDrawer = ({
   return (
     <>
       <PermissionButton
-        requiredPermissions={requiredPermissions}
+        {...(PermissionButton !== Button ? { requiredPermissions } : {})}
         onClick={() => setDrawerVisible(true)}
-        startIcon={<GroupAdd />}
+        startIcon={<CippIcons.GroupAdd />}
       >
         {buttonText}
       </PermissionButton>
@@ -255,6 +256,10 @@ export const CippBulkInviteGuestDrawer = ({
                   label="E-mail Address"
                   type="textField"
                   formControl={formControl}
+                  validators={{
+                    required: "E-mail address is required",
+                    validate: (value) => !value || getCippValidator(value, "email"),
+                  }}
                 />
               </Grid>
               <Grid size={{ xs: 12 }}>

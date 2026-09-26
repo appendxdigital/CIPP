@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CippIcons } from "../../utils/icon-registry";
 import {
   Stack,
   Box,
@@ -20,8 +21,6 @@ import CippFormComponent from "../CippComponents/CippFormComponent";
 import { useWatch } from "react-hook-form";
 import { CippPropertyList } from "../CippComponents/CippPropertyList";
 import { CippCopyToClipBoard } from "../CippComponents/CippCopyToClipboard";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { PlusIcon } from "@heroicons/react/24/outline";
 
 export const CippGDAPTenantSetup = (props) => {
   const { formControl, currentStep, onPreviousStep, onNextStep } = props;
@@ -108,7 +107,7 @@ export const CippGDAPTenantSetup = (props) => {
           This process will help you set up a new GDAP relationship with a customer tenant. You'll
           generate an invite that the customer needs to accept before completing onboarding. For
           more information about GDAP setup, visit the{" "}
-          <Link href="https://docs.cipp.app/setup/gdap" target="_blank" rel="noopener noreferrer">
+          <Link href="https://docs.cipp.app/setup/installation/gdap-invite-wizard#wizard-steps-for-gdap-tenants" target="_blank" rel="noopener noreferrer">
             GDAP documentation
           </Link>
           .
@@ -133,7 +132,7 @@ export const CippGDAPTenantSetup = (props) => {
                   sx={{ ml: 2 }}
                   startIcon={
                     <SvgIcon fontSize="small">
-                      <PlusIcon />
+                      <CippIcons.PlusIcon />
                     </SvgIcon>
                   }
                 >
@@ -165,7 +164,7 @@ export const CippGDAPTenantSetup = (props) => {
           {selectedTemplate?.value && (
             <Box>
               <Accordion variant="outlined">
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <AccordionSummary expandIcon={<CippIcons.ExpandMore />}>
                   <Typography variant="subtitle1">Selected Role Mappings</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -209,7 +208,7 @@ export const CippGDAPTenantSetup = (props) => {
 
           <Box>
             <Accordion variant="outlined" defaultExpanded={true}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <AccordionSummary expandIcon={<CippIcons.ExpandMore />}>
                 <Typography variant="subtitle1">Invite Details</Typography>
               </AccordionSummary>
               <AccordionDetails>
