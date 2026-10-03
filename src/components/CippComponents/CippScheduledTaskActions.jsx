@@ -1,8 +1,8 @@
-import { EyeIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { CopyAll, Edit, PlayArrow } from "@mui/icons-material";
+
+import { CippIcons } from "../../utils/icon-registry"
 import { usePermissions } from "../../hooks/use-permissions";
 
-export const CippScheduledTaskActions = (drawerHandlers = {}) => {
+export const CippScheduledTaskActions = (drawerHandlers = {}, { hideActions = [] } = {}) => {
   const { checkPermissions } = usePermissions();
   const canWriteScheduler = checkPermissions(["CIPP.Scheduler.ReadWrite"]);
   const canReadScheduler = checkPermissions(["CIPP.Scheduler.Read", "CIPP.Scheduler.ReadWrite"]);
@@ -11,7 +11,8 @@ export const CippScheduledTaskActions = (drawerHandlers = {}) => {
     {
       label: "View Task Details",
       link: "/cipp/scheduler/task?id=[RowKey]",
-      icon: <EyeIcon />,
+      pinned: true,
+      icon: <CippIcons.EyeIcon />,
       condition: () => canReadScheduler,
     },
     {
@@ -19,21 +20,21 @@ export const CippScheduledTaskActions = (drawerHandlers = {}) => {
       type: "POST",
       url: "/api/AddScheduledItem",
       data: { RowKey: "RowKey", RunNow: true },
-      icon: <PlayArrow />,
+      icon: <CippIcons.PlayArrow />,
       confirmText: "Are you sure you want to run [Name]?",
       allowResubmit: true,
       condition: () => canWriteScheduler,
     },
     {
       label: "Edit Job",
+      pinned: true,
       customFunction:
         drawerHandlers.openEditDrawer ||
         ((row) => {
-          // Fallback to page navigation if no drawer handler provided
           window.location.href = `/cipp/scheduler/job?id=${row.RowKey}`;
         }),
       multiPost: false,
-      icon: <Edit />,
+      icon: <CippIcons.Edit />,
       color: "success",
       showInActionsMenu: true,
       noConfirm: true,
@@ -44,11 +45,10 @@ export const CippScheduledTaskActions = (drawerHandlers = {}) => {
       customFunction:
         drawerHandlers.openCloneDrawer ||
         ((row) => {
-          // Fallback to page navigation if no drawer handler provided
           window.location.href = `/cipp/scheduler/job?id=${row.RowKey}&Clone=True`;
         }),
       multiPost: false,
-      icon: <CopyAll />,
+      icon: <CippIcons.CopyAll />,
       color: "success",
       showInActionsMenu: true,
       noConfirm: true,
@@ -56,7 +56,7 @@ export const CippScheduledTaskActions = (drawerHandlers = {}) => {
     },
     {
       label: "Delete Job",
-      icon: <TrashIcon />,
+      icon: <CippIcons.Delete />,
       type: "POST",
       url: "/api/RemoveScheduledItem",
       data: { id: "RowKey" },
@@ -64,7 +64,7 @@ export const CippScheduledTaskActions = (drawerHandlers = {}) => {
       multiPost: false,
       condition: () => canWriteScheduler,
     },
-  ];
+  ].filter((action) => !hideActions.includes(action.label));
 };
 
 export default CippScheduledTaskActions;
